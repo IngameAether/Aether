@@ -85,6 +85,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2305141860781152577}
   - component: {fileID: -8713958694460109110}
+  - component: {fileID: 7489497750853960891}
   m_Layer: 0
   m_Name: NormalEnemy
   m_TagString: Untagged
@@ -124,6 +125,20 @@ MonoBehaviour:
   moveSpeed: 5
   defense: 10
   healthBarFillImage: {fileID: 283978782789354860}
+--- !u!114 &7489497750853960891
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5417002623811271532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2315e1719d4ec548b1fe8b531546460, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  waypoints: []
+  moveSpeed: 2
 --- !u!1 &5614385505505001528
 GameObject:
   m_ObjectHideFlags: 0
@@ -261,7 +276,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 124, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4405071363507050400
