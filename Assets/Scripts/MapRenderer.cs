@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class MapRenderer : MonoBehaviour
 {
-    public GameObject pathTile;  // ÀûÀÌ Áö³ª´Ù´Ï´Â Åë·Î Å¸ÀÏ
-    public GameObject mapTile;   // Å¸¿ö ¹èÄ¡ÇÒ ¼ö ÀÖ´Â(º®) Å¸ÀÏ
-    GameObject[,] tileObjects;   // Å¸ÀÏ ÂüÁ¶ÇÒ ¼ö ÀÖ°Ô ÀúÀåÇÒ ¹è¿­
-    bool isBuild;   // ¹èÄ¡ °¡´ÉÇÑ Å¸ÀÏÀÎÁö È®ÀÎ¿ë
+    public GameObject pathTile;  // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ù´Ï´ï¿½ ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½
+    public GameObject mapTile;   // Å¸ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½(ï¿½ï¿½) Å¸ï¿½ï¿½
+    GameObject[,] tileObjects;   // Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½è¿­
+    bool isBuild;   // ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½Î¿ï¿½
 
     public void RenderMap(int[,] mapTiles)
     {
@@ -26,7 +26,7 @@ public class MapRenderer : MonoBehaviour
                 Vector2 position = new Vector2(y-setx,-x+sety);
                 GameObject tileObject = Instantiate(prefab, position, Quaternion.identity);
 
-                tileObject.GetComponent<Tile>().Initialize(x, y, isBuild);  // °¢ Å¸ÀÏÀÇ Á¤º¸¸¦ ±â¾ïÇÏ±â À§ÇØ
+                tileObject.GetComponent<Tile>().Initialize(x, y, isBuild);  // ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½
                 tileObjects[x, y] = tileObject;
             }
         }
