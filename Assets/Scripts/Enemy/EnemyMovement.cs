@@ -8,9 +8,8 @@ public class EnemyMovement : MonoBehaviour
     // 이동할 경로 지점 목록
     public List<Vector3> waypoints = new List<Vector3>();
     // 이동 속도
-    public float moveSpeed = 2f;
-    // 현재 목표 웨이포인트 인덱스
-    private int currentWaypointIndex = 0; 
+    private int currentWaypointIndex = 0;
+    private NormalEnemy normalEnemyStats; // NormalEnemy 인스턴스
 
     // 초기 위치를 설정하는 메소드
     public void SetInitialPosition(Vector3 initialPosition)
@@ -41,7 +40,7 @@ public class EnemyMovement : MonoBehaviour
             // 현재 목표 웨이포인트 위치
             Vector3 targetPosition = waypoints[currentWaypointIndex];
             // 목표 위치로 이동
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, normalEnemyStats.moveSpeed * Time.deltaTime);
             // 목표 위치에 거의 도달했는지 확인
             if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
             {
