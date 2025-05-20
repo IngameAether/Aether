@@ -11,6 +11,16 @@ public class EnemyMovement : MonoBehaviour
     private int currentWaypointIndex = 0;
     private NormalEnemy normalEnemyStats; // NormalEnemy 인스턴스
 
+    private void Awake()
+    {
+        // NormalEnemy 컴포넌트 가져오기
+        normalEnemyStats = GetComponent<NormalEnemy>();
+        if (normalEnemyStats == null)
+        {
+            Debug.LogError("NormalEnemy 컴포넌트를 찾을 수 없습니다.");
+        }
+    }
+
     // 초기 위치를 설정하는 메소드
     public void SetInitialPosition(Vector3 initialPosition)
     {
@@ -34,13 +44,19 @@ public class EnemyMovement : MonoBehaviour
 
     private void Update()
     {
+        if (normalEnemyStats == null)
+        {
+            Debug.LogError("normalEnemyStats가 초기화되지 않음");
+            return; 
+        }
         // 이동할 웨이포인트가 있는지 확인
         if (currentWaypointIndex < waypoints.Count)
         {
             // 현재 목표 웨이포인트 위치
             Vector3 targetPosition = waypoints[currentWaypointIndex];
             // 목표 위치로 이동
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, normalEnemyStats.moveSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition,
+                normalEnemyStats.moveSpeed * Time.deltaTime);
             // 목표 위치에 거의 도달했는지 확인
             if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
             {
