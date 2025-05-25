@@ -14,7 +14,7 @@ public class NormalEnemy : MonoBehaviour
     public float defense = 10f;
 
     // 체력 바 이미지를 연결할 변수
-    public Image healthBarImage; // 체력 바의 이미지
+    public Image healthBarFillImage; // 체력 바의 Fill 타입 이미지
 
     void Start()
     {
@@ -26,7 +26,6 @@ public class NormalEnemy : MonoBehaviour
 
     void Update()
     {
-        
         // 예시: 적이 앞으로 계속 이동한다고 가정
         transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
 
@@ -60,10 +59,10 @@ public class NormalEnemy : MonoBehaviour
     // 체력 바 UI를 업데이트하는 함수
     void UpdateHealthBar()
     {
-        if (healthBarImage != null)
+        if (healthBarFillImage != null)
         {
             // 현재 체력 비율에 맞춰 체력 바 이미지의 Fill Amount를 조절
-            healthBarImage.fillAmount = currentHealth / maxHealth;
+            healthBarFillImage.fillAmount = currentHealth / maxHealth;
         }
     }
 
