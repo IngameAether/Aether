@@ -4,10 +4,6 @@ using UnityEngine;
 [Serializable]
 public class TowerSetting
 {
-    [field: Header("Tower Sprite")]
-    [field: SerializeField] public Sprite towerSprite { get; private set; }
-    [field: SerializeField] public Sprite magicCircleSprite { get; private set; }
-    
     [field: Header("Tower Stats")]
     [field: SerializeField] public string name { get; private set; }
     [field: SerializeField] public string description { get; private set; }
@@ -51,13 +47,8 @@ public abstract class Tower : MonoBehaviour
     /// </summary>
     protected virtual void InitializeTower()
     {
-        var sprites = GetComponents<SpriteRenderer>();
-        
-        spriteRenderer = sprites[0];
-        spriteRenderer.sprite = towerSetting.towerSprite;
-        
-        magicCircleRenderer = sprites[1];
-        magicCircleRenderer.sprite = towerSetting.magicCircleSprite;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
     }
     
     /// <summary>
@@ -154,7 +145,7 @@ public abstract class Tower : MonoBehaviour
     /// <summary>
     /// 마우스 클릭 감지
     /// </summary>
-    private void HandleTowerClicked()
+    public void HandleTowerClicked()
     {
         OnTowerClicked?.Invoke(this);
     }

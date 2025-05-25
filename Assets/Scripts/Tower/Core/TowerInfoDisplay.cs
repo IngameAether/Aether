@@ -8,6 +8,7 @@ using TMPro;
 public class TowerInfoDisplay : MonoBehaviour
 {
     [Header("Info Panel UI")]
+    [SerializeField] private Canvas mainCanvas;
     [SerializeField] private GameObject infoPanelUI;
     [SerializeField] private TMP_Text towerNameText;
     [SerializeField] private TMP_Text towerDescriptionText;
@@ -19,8 +20,13 @@ public class TowerInfoDisplay : MonoBehaviour
     [SerializeField] private GameObject rangeIndicator;
     [SerializeField] private SpriteRenderer rangeRenderer;
     
+    [Header("Position Settings")]
+    [SerializeField] private Vector2 offsetFromTower = new Vector2(0, -100f); // 타워로부터의 오프셋 (픽셀 단위)
+    [SerializeField] private Vector2 screenMargin = new Vector2(50f, 50f);
+    
     private Tower currentSelectedTower;
     private Camera _camera;
+    private RectTransform _infoPanelRect;
     
     private void Start()
     {
@@ -40,9 +46,13 @@ public class TowerInfoDisplay : MonoBehaviour
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
             
         // 타워가 아닌 다른 곳을 클릭했으면 UI 숨기기
-        if (hit.collider == null || hit.collider.GetComponent<Tower>() == null)
+        if (hit.collider == null)
         {
             HideUI();
+            Debug.Log("Hide UI");
+        } else if (hit.collider.TryGetComponent(out Tower tower))
+        {
+            tower.HandleTowerClicked();
         }
     }
     
@@ -65,6 +75,8 @@ public class TowerInfoDisplay : MonoBehaviour
         rangeIndicator.SetActive(false);
             
         flipButton.onClick.AddListener(FlipSelectedTower);
+        
+        _infoPanelRect = infoPanelUI.GetComponent<RectTransform>();
     }
     
     /// <summary>
@@ -73,12 +85,42 @@ public class TowerInfoDisplay : MonoBehaviour
     private void ShowTowerInfoAndRange(Tower tower)
     {
         currentSelectedTower = tower;
-            
+
+        PositionInfoPanelNearTower(tower);
+        
         // 타워 정보 표시
         ShowTowerInfo(tower);
         
         // 사거리 표시
         ShowRange(tower);
+    }
+    
+    /// <summary>
+    /// 정보창을 타워 밑에 위치시키는 함수
+    /// </summary>
+    private void PositionInfoPanelNearTower(Tower tower)
+    {
+        Vector3 towerWorldPos = tower.transform.position;
+        Vector3 towerScreenPos = _camera.WorldToScreenPoint(towerWorldPos);
+        Vector2 targetScreenPos = new Vector2(towerScreenPos.x, towerScreenPos.y) + offsetFromTower;
+        Vector2 panelSize = _infoPanelRect.sizeDelta;
+        
+        targetScreenPos.x = Mathf.Clamp(targetScreenPos.x, 
+            screenMargin.x + panelSize.x * 0.5f, 
+            Screen.width - screenMargin.x - panelSize.x * 0.5f);
+                                       
+        targetScreenPos.y = Mathf.Clamp(targetScreenPos.y, 
+            screenMargin.y + panelSize.y * 0.5f, 
+            Screen.height - screenMargin.y - panelSize.y * 0.5f);
+        
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(
+            (RectTransform)mainCanvas.transform,
+            targetScreenPos,
+            mainCanvas.worldCamera,
+            out Vector2 localPoint
+        );
+        
+        _infoPanelRect.localPosition = localPoint;
     }
     
     /// <summary>
@@ -91,10 +133,10 @@ public class TowerInfoDisplay : MonoBehaviour
         towerNameText.text = towerSetting.name;
         towerDescriptionText.text = towerSetting.description;
             
-        towerStatsText.text = $"등급: {towerSetting.rank}\n" +
-                              $"공격력: {towerSetting.damage}\n" +
-                              $"공격 딜레이: {towerSetting.attackDelay}초\n" +
-                              $"사거리: {towerSetting.range}";
+        towerStatsText.text = $"Rank: {towerSetting.rank}\n" +
+                              $"Atk: {towerSetting.damage}\n" +
+                              $"Atk Delay: {towerSetting.attackDelay}sec\n" +
+                              $"Atk Range: {towerSetting.range}";
         
         infoPanelUI.SetActive(true);
     }
@@ -108,7 +150,7 @@ public class TowerInfoDisplay : MonoBehaviour
         
         // 사거리에 맞게 크기 조정
         float range = tower.GetTowerSetting().range;
-        rangeIndicator.transform.localScale = Vector3.one * range * 2f;
+        rangeIndicator.transform.localScale = Vector3.one * (range * 1.85f);
         
         rangeIndicator.SetActive(true);
     }
