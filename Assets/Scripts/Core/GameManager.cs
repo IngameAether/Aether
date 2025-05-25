@@ -21,8 +21,7 @@ public class GameManager : MonoBehaviour
         else Destroy(gameObject);
     }
 
-    // 테스트용
-    private void Start()
+    public void OnStartGame()
     {
         ChangeScene(EScene.InGame);
     }
