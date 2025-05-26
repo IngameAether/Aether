@@ -222,18 +222,4 @@ public class MapGenerator : MonoBehaviour
         }
         return false;
     }
-
-    void printGrid()
-    {
-        string output = "";
-        for (int x=0; x<SIZE; x++)
-        {
-            for (int y=0; y<SIZE; y++)
-            {
-                output += mapTiles[x, y] == 1 ? "¤·" : "¤±";
-            }
-            output += "\n";
-        }
-        Debug.Log(output);
-    }
 }
