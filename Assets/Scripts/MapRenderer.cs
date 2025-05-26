@@ -9,6 +9,7 @@ public class MapRenderer : MonoBehaviour
     GameObject[,] tileObjects;   // 타일 참조할 수 있게 저장할 배열
     bool isBuild;   // 배치 가능한 타일인지 확인용
     public GameObject[] elementPrefabs;   // 원소 프리팹 담을 배열
+    public Transform parent;
 
     public void RenderMap(int[,] mapTiles)
     {
@@ -26,8 +27,8 @@ public class MapRenderer : MonoBehaviour
                 isBuild = (mapTiles[x, y]==0);
 
                 GameObject prefab = mapTiles[x, y] == 1 ? pathTile : mapTile;
-                Vector2 position = new Vector2(y-setx,-x+sety);
-                GameObject tileObject = Instantiate(prefab, position, Quaternion.identity);   // 타일 prefab 생성
+                Vector2 position = new Vector2(y-setx,-x+sety-0.5f);
+                GameObject tileObject = Instantiate(prefab, position, Quaternion.identity,parent);   // 타일 prefab 생성
 
                 tileObject.GetComponent<Tile>().Initialize(x, y, isBuild);  // 각 타일의 정보를 기억하기 위해
                 tileObjects[x, y] = tileObject;
