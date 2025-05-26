@@ -11,6 +11,12 @@ public class MapGenerator : MonoBehaviour
 
     Vector2Int startTile, endTile;  // 입구, 출구
 
+    // 허용된 입구: 1, 2, 3, 5 에 해당하는 인덱스
+    private List<Vector2Int> allowedStartIndices = new List<Vector2Int>()
+    {
+        new Vector2Int(0, 1), new Vector2Int(0, 6), new Vector2Int(1, 0), new Vector2Int(1, 7)
+    };
+
     private List<Vector2Int> pathTiles = new List<Vector2Int>();
     private HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
 
@@ -33,12 +39,14 @@ public class MapGenerator : MonoBehaviour
         while (!successMap && attemptsMap < 5)
         {
             successMap = findvalidTile();
+            attemptsMap++;
         }
 
         if (successMap)
         {
             Debug.Log(startTile);
             Debug.Log(endTile);
+
         }
 
         else
@@ -55,13 +63,16 @@ public class MapGenerator : MonoBehaviour
         // 초기화
         pathTiles.Clear();
         visited.Clear();
+        // 맵 그림의 허용된 입구 중 하나를 랜덤으로 선택
+        int randomIndex = Random.Range(0, allowedStartIndices.Count);
+        startTile = allowedStartIndices[randomIndex];
 
         do
         {
             startTile = generateEdgeTile();
             endTile = generateEdgeTile();
         }
-        while (startTile == endTile || startTile.x == endTile.x || startTile.y == endTile.y);
+        while (startTile == endTile || startTile.x == endTile.x || startTile.y == endTile.y || startTile.x == 7);
 
         bool success = false;
         int attempts = 0;
@@ -195,6 +206,14 @@ public class MapGenerator : MonoBehaviour
             if (pathTiles.Contains(sub)) neighbors++;
         }
         return neighbors <= 1;
+    }
+
+    // 생성된 경로 타일 인덱스 목록을 반환하는 public 메서드
+    public List<Vector2Int> GetPathIndices()
+    {
+        // pathTiles 리스트는 generateMap 또는 findvalidTile 실행 후 유효합니다.
+        // generateMap이 false를 반환하면 pathTiles는 비어있거나 불완전할 수 있습니다.
+        return pathTiles;
     }
 
     // 3X3 형태인 벽이 있으면 true 반환

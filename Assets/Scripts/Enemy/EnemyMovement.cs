@@ -44,9 +44,9 @@ public class EnemyMovement : MonoBehaviour
 
     private void Update()
     {
-        if (normalEnemyStats == null)
+        // NormalEnemyStats가 없거나 경로가 없으면 이동하지 않음
+        if (normalEnemyStats == null || waypoints == null || waypoints.Count == 0)
         {
-            Debug.LogError("normalEnemyStats가 초기화되지 않음");
             return; 
         }
         // 이동할 웨이포인트가 있는지 확인
@@ -55,10 +55,10 @@ public class EnemyMovement : MonoBehaviour
             // 현재 목표 웨이포인트 위치
             Vector3 targetPosition = waypoints[currentWaypointIndex];
             // 목표 위치로 이동
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition,
-                normalEnemyStats.moveSpeed * Time.deltaTime);
+            float step = normalEnemyStats.moveSpeed * Time.deltaTime;
+            transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
             // 목표 위치에 거의 도달했는지 확인
-            if (Vector3.Distance(transform.position, targetPosition) < 0.01f)
+            if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
             {
                 // 다음 웨이포인트로 이동 목표 변경
                 currentWaypointIndex++;

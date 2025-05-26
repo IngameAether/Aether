@@ -1,5 +1,7 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.UI; // UI 관련 기능을 위해 추가
 
 public class NormalEnemy : MonoBehaviour
 {
@@ -9,7 +11,7 @@ public class NormalEnemy : MonoBehaviour
     private float currentHealth;
 
     // 이동 속도
-    public float moveSpeed = 5f;
+    public float moveSpeed = 2f;
     // 방어력
     public float defense = 10f;
 
@@ -24,17 +26,6 @@ public class NormalEnemy : MonoBehaviour
         UpdateHealthBar();
     }
 
-    void Update()
-    {
-        // 예시: 적이 앞으로 계속 이동한다고 가정
-        transform.Translate(Vector3.forward * moveSpeed * Time.deltaTime);
-
-        // 움직임이 발생했음을 콘솔에 출력 (애니메이션 확인용 디버그)
-        Debug.Log("적 이동 중...");
-
-        // TODO: 여기에 적의 이동, 공격, 상태 변화 등 실제 게임 로직을 추가
-        // 예시: 플레이어를 추적하는 로직 등
-    }
 
     // 적이 피해를 입었을 때 호출될 함수
     public void TakeDamage(float damageAmount)

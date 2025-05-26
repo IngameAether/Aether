@@ -1,59 +1,91 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [Header("적 스폰 위치 설정")]
+    [Header("적 스폰 설정")]
     // 스폰할 적 프리탭
     public GameObject enemyPrefab;
-    [Header("스폰 위치 및 경로 설정")]
-    // 적이 처음 스폰될 위치 (SetInitialPosition 메소드에서 사용)
-    public Transform spawnPoint;
-    // 적이 따라 이동할 경로 (watpoints 목록)
-    public List<Vector3> enemyPath = new List<Vector3>();
+    public MapManage mapManage; // MapManage 스크립트 레퍼런스
 
     [Header("스폰 타이밍 설정")]
     // 스폰 시작까지 대기 시간
     public float startDelay = 1f;
     // 적 스폰 간격
-    public float spawnInterval = 1f;
-    // 스폰할 적의 총 마릿수 = 3;
-    public int numberOfEnemiesToSpawn = 3;
+    public float spawnInterval = 0.5f;
+    // 스폰할 적의 총 마릿수
+    public int numberOfEnemiesToSpawn = 20;
     // 현재까지 스폰된 적 수
     private int enemiesSpawned = 0;
+    // 스폰이 현재 진행 중인지 확인하는 플래그
+    private bool isSpawning = false;
 
     private void Start()
     {
-        // Inspector에서 경로가 비어있을 경우 경고 메시지를 출력
-        if (enemyPath == null || enemyPath.Count == 0)
+        // Inspector에서 프리팹과 MapManage 레퍼런스가 연결되었는지 확인
+        if (enemyPrefab == null)
         {
-            Debug.LogWarning("SpawnManager: 적 이동 경로(enemyPath)가 설정되지 않았습니다!");
+            Debug.LogError("SpawnManager: 스폰할 적 프리팹이 지정되지 않았습니다!");
         }
-        // 코루틴을 사용하여 일정 간격으로 적 스폰 시작
+        if (mapManage == null)
+        {
+            Debug.LogError("SpawnManager: MapManage 레퍼런스가 지정되지 않았습니다!");
+        }
+        Debug.Log("SpawnManager 초기화 완료. Start 버튼 클릭 대기 중.");
+    }
+
+    // ClickBtn 스크립트의 Start 버튼 클릭 이벤트에 연결될 public 메서드
+    public void StartSpawningFromButton()
+    {
+        if (enemyPrefab == null || mapManage == null)
+        {
+            Debug.LogError("스폰 시작 불가: 적 프리팹 또는 MapManage 레퍼런스가 누락되었습니다.");
+            return;
+        }
+
+        if (isSpawning)
+        {
+            Debug.LogWarning("SpawnManager: 이미 스폰이 진행 중입니다.");
+            return;
+        }
+
+        // 스폰 코루틴 시작
+        Debug.Log("Start 버튼 클릭! 적 스폰 시작 코루틴 시작.");
         StartCoroutine(SpawnEnmiesRoutine());
     }
 
     IEnumerator SpawnEnmiesRoutine()
     {
+        isSpawning = true; // 스폰 시작 플래그 설정
+        enemiesSpawned = 0; // 스폰된 적 수 초기화
+
+        // MapManage로부터 생성된 경로 데이터를 가져옴
+        List<Vector3> path = mapManage.GetPathWorldPositions();
         // 시작 지연 시간 대기
         yield return new WaitForSeconds(startDelay);
 
         while (enemiesSpawned < numberOfEnemiesToSpawn)
         {
-            SpawnSingleEnemy(); // 적 하나 스폰
+            // 경로의 첫 번째 지점을 스폰 위치로 사용
+            Vector3 spawnPosition = path[0];
+
+            // 적 하나 스폰 및 경로 설정
+            SpawnSingleEnemy(spawnPosition, path); // 아래 메서드 호출
             enemiesSpawned++;   // 스폰된 적 수 증가
-            // 모든 적 다 스폰했을 경우
+
             if (enemiesSpawned >= numberOfEnemiesToSpawn)
             {
                 Debug.Log("모든 적 스폰 완료");
-                yield break; // 루프 종료
+                break; // 루프 종료
             }
             yield return new WaitForSeconds(spawnInterval);
         }
+        isSpawning = false; // 스폰 종료 플래그 설정
     }
 
-    void SpawnSingleEnemy()
+    void SpawnSingleEnemy(Vector3 initialSpawnPosition, List<Vector3> path)
     {
         if (enemyPrefab == null)
         {
@@ -61,33 +93,19 @@ public class SpawnManager : MonoBehaviour
             return;
         }
 
-        Vector3 initialSpawnPosition;
-        if (spawnPoint != null)
-        {
-            // spawnPoint Transform이 지정되어 있으면 해당 위치를 사용
-            initialSpawnPosition = spawnPoint.position;
-            Debug.Log($"SpawnManager: 적 #{enemiesSpawned + 1}을 지정된 스폰 지점({initialSpawnPosition})에 스폰.");
-        }
-        else
-        {
-            // spawnPoint가 지정되지 않았으면 SpawnManager 오브젝트 자체의 위치를 사용
-            initialSpawnPosition = transform.position;
-            Debug.Log($"SpawnManager: 적 #{enemiesSpawned + 1}을 SpawnManager 위치({initialSpawnPosition})에 스폰.");
-        }
-
-        // 적 프리팹 인스턴스 생성
+        // 적 프리팹 인스턴스 생성 (지정된 스폰 위치와 회전 없이)
         GameObject newEnemy = Instantiate(enemyPrefab, initialSpawnPosition, Quaternion.identity);
-        // EnemyMovement 스크립트 가져오기
+
+        // 생성된 적 오브젝트에서 EnemyMovement 스크립트 가져오기
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
         if (enemyMovement != null)
         {
-            enemyMovement.SetPath(enemyPath);
-            Debug.Log($"SpawnManager: 적 #{enemiesSpawned + 1}에 이동 경로 설정 완료.");
-        }
-        else
-        {
-            Debug.LogWarning("적 프리팹에 EnemyMovement 스크립트가 없음");
+            // EnemyMovement 스크립트의 SetInitialPosition 메서드 호출
+            enemyMovement.SetInitialPosition(initialSpawnPosition);
+            // 가져온 경로(Vector3 리스트) 전달
+            enemyMovement.SetPath(path); 
         }
     }
+
 }
