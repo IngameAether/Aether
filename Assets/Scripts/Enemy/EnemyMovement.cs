@@ -10,6 +10,7 @@ public class EnemyMovement : MonoBehaviour
     // 이동 속도
     private int currentWaypointIndex = 0;
     private NormalEnemy normalEnemyStats; // NormalEnemy 인스턴스
+    private float currentMoveSpeed; // 특수 이동 속도
 
     private void Awake()
     {
@@ -49,13 +50,17 @@ public class EnemyMovement : MonoBehaviour
         {
             return; 
         }
+
+        // 특수 이동 속도 갱신
+        currentMoveSpeed = normalEnemyStats.moveSpeed;
+
         // 이동할 웨이포인트가 있는지 확인
         if (currentWaypointIndex < waypoints.Count)
         {
             // 현재 목표 웨이포인트 위치
             Vector3 targetPosition = waypoints[currentWaypointIndex];
             // 목표 위치로 이동
-            float step = normalEnemyStats.moveSpeed * Time.deltaTime;
+            float step = currentMoveSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
             // 목표 위치에 거의 도달했는지 확인
             if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
