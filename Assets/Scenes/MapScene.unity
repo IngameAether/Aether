@@ -1111,6 +1111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapManage: {fileID: 98405527}
+  spawnManager: {fileID: 0}
 --- !u!114 &1216907998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1940,7 +1941,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: b247059ec8e95364ea99f1c3d9c2e7e6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 1bbd4401f753bbf4296fa3f68e6b1a08, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
