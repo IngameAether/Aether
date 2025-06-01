@@ -220,7 +220,7 @@ GameObject:
   - component: {fileID: 7489497750853960891}
   - component: {fileID: 8009288525915194780}
   m_Layer: 0
-  m_Name: NormalEnemy
+  m_Name: MagicApprentice
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -254,9 +254,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8907b1b01cc3ef44887b52732f077535, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
-  moveSpeed: 2
-  magicResistance: 21
+  maxHealth: 5
+  moveSpeed: 0.5
+  magicResistance: 5
   mentalStrength: 10
   healthBarFillImage: {fileID: 8889762675385409390}
 --- !u!114 &7489497750853960891
