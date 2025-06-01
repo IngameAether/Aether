@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class MapRenderer : MonoBehaviour
 {
-    public GameObject pathTile;  // ���� �����ٴϴ� ��� Ÿ��
-    public GameObject mapTile;   // Ÿ�� ��ġ�� �� �ִ�(��) Ÿ��
-    GameObject[,] tileObjects;   // Ÿ�� ������ �� �ְ� ������ �迭
-    bool isBuild;   // ��ġ ������ Ÿ������ Ȯ�ο�
+    public GameObject pathTile;  // 적이 지나다니는 통로 타일
+    public GameObject mapTile;   // 타워 배치할 수 있는(벽) 타일
+    GameObject[,] tileObjects;   // 타일 참조할 수 있게 저장할 배열
+    bool isBuild;   // 배치 가능한 타일인지 확인용
+    public GameObject[] elementPrefabs;   // 원소 프리팹 담을 배열
+    public Transform parent;
 
     public void RenderMap(int[,] mapTiles)
     {
+<<<<<<< HEAD:Assets/Scripts/Map/MapRenderer.cs
         // 기존 타일 오브젝트가 있다면 모두 제거
         ClearMap();
+=======
+        TileInteraction.staticElementPrefabs = elementPrefabs;  // 전역 변수에 원소 프리팹 배열 저장
+>>>>>>> Test:Assets/Scripts/MapRenderer.cs
 
         tileObjects = new GameObject[mapTiles.GetLength(0), mapTiles.GetLength(1)];
 
@@ -26,10 +32,15 @@ public class MapRenderer : MonoBehaviour
                 isBuild = (mapTiles[x, y] == 0);
 
                 GameObject prefab = mapTiles[x, y] == 1 ? pathTile : mapTile;
+<<<<<<< HEAD:Assets/Scripts/Map/MapRenderer.cs
                 Vector2 position = new Vector2(y - setx, -x + sety);
                 GameObject tileObject = Instantiate(prefab, position, Quaternion.identity);
+=======
+                Vector2 position = new Vector2(y-setx,-x+sety-0.5f);
+                GameObject tileObject = Instantiate(prefab, position, Quaternion.identity,parent);   // 타일 prefab 생성
+>>>>>>> Test:Assets/Scripts/MapRenderer.cs
 
-                tileObject.GetComponent<Tile>().Initialize(x, y, isBuild);  // �� Ÿ���� ������ ����ϱ� ����
+                tileObject.GetComponent<Tile>().Initialize(x, y, isBuild);  // 각 타일의 정보를 기억하기 위해
                 tileObjects[x, y] = tileObject;
             }
         }
