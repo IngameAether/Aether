@@ -14,6 +14,8 @@ public class TileInteraction : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (Time.timeScale == 0f) return;   // 게임이 멈추면 클릭 등 상호작용 무시
+
         tile.ChangeCurrentTileColor();
         tile.PrintTileInfo();
 
