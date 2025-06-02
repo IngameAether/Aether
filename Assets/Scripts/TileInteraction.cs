@@ -22,8 +22,14 @@ public class TileInteraction : MonoBehaviour
         if (!tile.isBuild || !tile.isElementBuild) return;
 
         int ranNum = Random.Range(0, staticElementPrefabs.Length);
-        Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
+        GameObject elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
+        
+        // 원소가 배치된 타일 저장
+        ElementController ec = elementObj.GetComponent<ElementController>();
+        if (ec != null) ec.selectTile = tile;
+
         Debug.Log($"소환된 원소: {staticElementPrefabs[ranNum]}");
         tile.isElementBuild = false;
+        tile.element = elementObj;
     }
 }

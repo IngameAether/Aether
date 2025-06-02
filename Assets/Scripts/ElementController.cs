@@ -9,6 +9,7 @@ public class ElementController : MonoBehaviour
     private Vector3 offset;
     private SaleController saleZone;
     bool isOver;
+    public Tile selectTile;
 
     void Start()
     {
@@ -31,7 +32,7 @@ public class ElementController : MonoBehaviour
             transform.position = mousePosition + offset;
 
             Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position);
-            isOver = RectTransformUtility.RectangleContainsScreenPoint(saleZone.RectTransform, screenPos, Camera.main);
+            isOver = RectTransformUtility.RectangleContainsScreenPoint(saleZone.RectTransform, screenPos, null);
 
             saleZone.SetHighlightColor(isOver);
         }
@@ -41,8 +42,13 @@ public class ElementController : MonoBehaviour
     {
         if (isDrag)
         {
-            if (!isOver)
+            if (isOver)
             {
+                if (selectTile != null)
+                {
+                    selectTile.isElementBuild = true;
+                    selectTile.element = null;
+                }
                 Destroy(gameObject);
                 saleZone.coin += 10;
                 saleZone.coinTxt.text = saleZone.coin.ToString();
