@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // UI 관련 기능을 위해 추가
 
+
 public class ClickBtn : MonoBehaviour
 {
     public MapManage mapManage;
