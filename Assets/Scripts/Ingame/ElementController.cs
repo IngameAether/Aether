@@ -50,11 +50,10 @@ public class ElementController : MonoBehaviour
                     selectTile.element = null;
                 }
                 Destroy(gameObject);
-                saleZone.coin += 10;
-                saleZone.coinTxt.text = saleZone.coin.ToString();
+                SaleController.coin += 10;
             }
         }
-        saleZone?.SetHighlightColor(false);
+        saleZone?.SetHighlightColor(false); // if saleZone != null
         isDrag = false;
     }
 

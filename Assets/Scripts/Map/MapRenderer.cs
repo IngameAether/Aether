@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class MapRenderer : MonoBehaviour
@@ -10,6 +11,7 @@ public class MapRenderer : MonoBehaviour
     bool isBuild;   // 배치 가능한 타일인지 확인용
     public GameObject[] elementPrefabs;   // 원소 프리팹 담을 배열
     public Transform parent;
+    private SaleController saleZone;
 
     public void RenderMap(int[,] mapTiles)
     {
@@ -43,10 +45,20 @@ public class MapRenderer : MonoBehaviour
         {
             for (int y=0; y<tileObjects.GetLength(1); y++)
             {
+                // 배치된 원소 삭제
+                if (tileObjects[x,y].GetComponent<Tile>().element != null)
+                {
+                    Destroy(tileObjects[x, y].GetComponent<Tile>().element);
+                    tileObjects[x, y].GetComponent<Tile>().element = null;
+                    tileObjects[x, y].GetComponent<Tile>().isElementBuild = true;
+                }
+                // 타일 오브젝트 삭제
                 if (tileObjects[x,y] != null)
                     Destroy(tileObjects[x,y]);
             }
         }
+        // 코인 0으로 초기화
+        SaleController.coin = 0;
     }
 
     public Vector3 GetTileWorldPosition(int tileX, int tileY, int mapWidth, int mapHeight)

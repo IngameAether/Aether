@@ -9,13 +9,18 @@ public class SaleController : MonoBehaviour
     Image image;
     public Color normalColor;
     public Color highlightColor;
-    public int coin = 0;
+    public static int coin = 0;
     public TextMeshProUGUI coinTxt;
     public RectTransform RectTransform => GetComponent<RectTransform>();
 
     void Awake()
     {
         image = GetComponent<Image>();
+    }
+
+    void Update()
+    {
+        coinTxt.text = coin.ToString();
     }
 
     public void SetHighlightColor(bool isHighlight)

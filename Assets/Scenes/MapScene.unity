@@ -1544,6 +1544,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   normalColor: {r: 1, g: 1, b: 1, a: 0.19607843}
   highlightColor: {r: 1, g: 0, b: 0, a: 0.19607843}
+  coin: 0
+  coinTxt: {fileID: 273794447}
 --- !u!1 &703239568
 GameObject:
   m_ObjectHideFlags: 0
@@ -2388,6 +2390,55 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 964808203}
   m_CullTransparentMesh: 1
+--- !u!1 &994136628
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 994136630}
+  - component: {fileID: 994136629}
+  m_Layer: 0
+  m_Name: SpawnManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &994136629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 994136628}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d26f27856ee105439031e9936ad39f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  enemyPrefab: {fileID: 5417002623811271532, guid: b33a8bbd5b62d0e498d1a82dc8f8f8f9, type: 3}
+  mapManage: {fileID: 98405527}
+  startDelay: 1
+  spawnInterval: 0.5
+  numberOfEnemiesToSpawn: 20
+--- !u!4 &994136630
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 994136628}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1114478444
 GameObject:
   m_ObjectHideFlags: 0
@@ -5129,3 +5180,4 @@ SceneRoots:
   - {fileID: 98405528}
   - {fileID: 1216908000}
   - {fileID: 2096956411}
+  - {fileID: 994136630}
