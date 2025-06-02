@@ -2681,7 +2681,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mapManage: {fileID: 98405527}
-  spawnManager: {fileID: 0}
+  spawnManager: {fileID: 994136629}
 --- !u!114 &1216907998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2975,7 +2975,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 1216907997}
         m_TargetAssemblyTypeName: ClickBtn, Assembly-CSharp
         m_MethodName: OnStartBtnClicked
         m_Mode: 1
