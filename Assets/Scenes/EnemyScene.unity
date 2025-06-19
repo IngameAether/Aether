@@ -152,8 +152,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d885394345065e84b9a876f294efd3b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathTile: {fileID: 9069186201208080902, guid: c69c29fb1d5cf1e449010a1e35e042c0, type: 3}
-  mapTile: {fileID: 1159285178380513776, guid: f9ad910d1eca52349a632c609f440816, type: 3}
+  pathTile: {fileID: 0}
+  mapTile: {fileID: 0}
+  elementPrefabs: []
+  parent: {fileID: 0}
 --- !u!114 &343723084
 MonoBehaviour:
   m_ObjectHideFlags: 0
