@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI; 
+using UnityEngine.Rendering.PostProcessing; 
+using System.Collections;
 
 public enum EScene
 {
     MainMenu,
     InGame,
+    // 필요한 다른 씬 추가
 }
 
 public class GameManager : MonoBehaviour

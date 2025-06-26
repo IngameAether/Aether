@@ -126,6 +126,12 @@ BoxCollider2D:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1159285178380513776}
   m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 24ba401d119567348b3407fd74b8cd23, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapManage: {fileID: 0}
+  spawnManager: {fileID: 0}
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:
