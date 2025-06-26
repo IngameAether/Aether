@@ -14,14 +14,22 @@ public class TileInteraction : MonoBehaviour
 
     private void OnMouseDown()
     {
+        if (Time.timeScale == 0f) return;   // 게임이 멈추면 클릭 등 상호작용 무시
+
         tile.ChangeCurrentTileColor();
         tile.PrintTileInfo();
 
         if (!tile.isBuild || !tile.isElementBuild) return;
 
         int ranNum = Random.Range(0, staticElementPrefabs.Length);
-        Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
+        GameObject elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
+        
+        // 원소가 배치된 타일 저장
+        ElementController ec = elementObj.GetComponent<ElementController>();
+        if (ec != null) ec.selectTile = tile;
+
         Debug.Log($"소환된 원소: {staticElementPrefabs[ranNum]}");
         tile.isElementBuild = false;
+        tile.element = elementObj;
     }
 }
