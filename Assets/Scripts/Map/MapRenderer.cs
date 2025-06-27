@@ -19,8 +19,8 @@ public class MapRenderer : MonoBehaviour
 
         tileObjects = new GameObject[mapTiles.GetLength(0), mapTiles.GetLength(1)];
 
-        float setx = (mapTiles.GetLength(0) - 1) / 2;
-        float sety = (mapTiles.GetLength(1) - 1) / 2;
+        float setx = (mapTiles.GetLength(0) - 1) / 2.0f;
+        float sety = (mapTiles.GetLength(1) - 1) / 2.0f;
 
         for (int x=0; x<mapTiles.GetLength(0); x++)
         {
@@ -67,12 +67,12 @@ public class MapRenderer : MonoBehaviour
         float offsetY = (mapHeight - 1) / 2.0f;
 
         // RenderMap에서 사용된 타일 기준점 위치 계산
-        float baseX = tileY - offsetX;
+        float baseX = tileY - offsetX - 0.5f;
         float baseY = -tileX + offsetY;
 
         // 타일 크기가 1x1 유닛이므로 타일 중앙 좌표 계산 시 0.5f 오프셋 적용
         float tileCenterX = baseX + 0.5f;
-        float tileCenterY = baseY + 0.5f - 1.0f;
+        float tileCenterY = baseY + 0.5f;
 
         float tileZ = 0f; // 또는 필요한 Z 값
 

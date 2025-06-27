@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 504029057997776798}
   - component: {fileID: 7495279805454929132}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EnemyHPbar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 5486729930703194377}
   - component: {fileID: 2846169635008446282}
   - component: {fileID: 8889762675385409390}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -173,7 +173,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3348888694080771107}
   - component: {fileID: 220458573038209037}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: EnemyImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -219,7 +219,7 @@ GameObject:
   - component: {fileID: -8713958694460109110}
   - component: {fileID: 7489497750853960891}
   - component: {fileID: 8009288525915194780}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: MagicApprentice
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -311,7 +311,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 431246251
-  m_SortingLayer: 1
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: bb7bf2a04e78b434a95966ba3bff6929, type: 3}
   m_Color: {r: 0.6377357, g: 0.3164613, b: 0.3164613, a: 1}
@@ -336,7 +336,7 @@ GameObject:
   - component: {fileID: 9130794898787216891}
   - component: {fileID: 8426032792196200660}
   - component: {fileID: 3609771872965417257}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
