@@ -10,6 +10,7 @@ public class SpawnManager : MonoBehaviour
     public GameObject enemyPrefab;
     public MapManage mapManage; // MapManage 스크립트 레퍼런스
 
+    /*
     [Header("스폰 타이밍 설정")]
     // 스폰 시작까지 대기 시간
     public float startDelay = 1f;
@@ -17,8 +18,15 @@ public class SpawnManager : MonoBehaviour
     public float spawnInterval = 0.5f;
     // 스폰할 적의 총 마릿수
     public int numberOfEnemiesToSpawn = 20;
+    */
+
+    [Header("웨이브 설정")]
+    public List<Wave> waves;
+    public float initialDelay = 1f; // 첫 웨이브 시작 전 대기 시간
+    public float waveBreakTime = 10f; // 웨이브 간 대기 시간
+
     // 현재까지 스폰된 적 수
-    private int enemiesSpawned = 0;
+    private int enemiesSpawnedInCurrentWave = 0;
     // 스폰이 현재 진행 중인지 확인하는 플래그
     private bool isSpawning = false;
 
@@ -28,61 +36,72 @@ public class SpawnManager : MonoBehaviour
         if (enemyPrefab == null)
         {
             Debug.LogError("SpawnManager: 스폰할 적 프리팹이 지정되지 않았습니다!");
+            return;
         }
         if (mapManage == null)
         {
             Debug.LogError("SpawnManager: MapManage 레퍼런스가 지정되지 않았습니다!");
+            return;
+        }
+        if (waves == null || waves.Count == 0)
+        {
+            Debug.LogError("SpawnManager: 웨이브 설정이 비어있습니다!");
+            return;
         }
         Debug.Log("SpawnManager 초기화 완료. Start 버튼 클릭 대기 중.");
-    }
-
-    // ClickBtn 스크립트의 Start 버튼 클릭 이벤트에 연결될 public 메서드
-    public void StartSpawningFromButton()
-    {
-        if (enemyPrefab == null || mapManage == null)
-        {
-            Debug.LogError("스폰 시작 불가: 적 프리팹 또는 MapManage 레퍼런스가 누락되었습니다.");
-            return;
-        }
-
-        if (isSpawning)
-        {
-            Debug.LogWarning("SpawnManager: 이미 스폰이 진행 중입니다.");
-            return;
-        }
-
-        // 스폰 코루틴 시작
-        Debug.Log("Start 버튼 클릭! 적 스폰 시작 코루틴 시작.");
         StartCoroutine(SpawnEnmiesRoutine());
     }
 
     IEnumerator SpawnEnmiesRoutine()
     {
         isSpawning = true; // 스폰 시작 플래그 설정
-        enemiesSpawned = 0; // 스폰된 적 수 초기화
 
         // MapManage로부터 생성된 경로 데이터를 가져옴
         List<Vector3> path = mapManage.GetPathWorldPositions();
-        // 시작 지연 시간 대기
-        yield return new WaitForSeconds(startDelay);
-
-        while (enemiesSpawned < numberOfEnemiesToSpawn)
+        if (path == null || path.Count == 0)
         {
-            // 경로의 첫 번째 지점을 스폰 위치로 사용
-            Vector3 spawnPosition = path[0];
-
-            // 적 하나 스폰 및 경로 설정
-            SpawnSingleEnemy(spawnPosition, path); // 아래 메서드 호출
-            enemiesSpawned++;   // 스폰된 적 수 증가
-
-            if (enemiesSpawned >= numberOfEnemiesToSpawn)
-            {
-                Debug.Log("모든 적 스폰 완료");
-                break; // 루프 종료
-            }
-            yield return new WaitForSeconds(spawnInterval);
+            Debug.LogError("SpawnManager: 유효한 경로 데이터를 가져올 수 없습니다. 적 스폰 중단.");
+            isSpawning = false;
+            yield break; // 경로가 없으면 코루틴 종료
         }
-        isSpawning = false; // 스폰 종료 플래그 설정
+        // 시작 지연 시간 대기
+        yield return new WaitForSeconds(initialDelay);
+
+        for (int waveIndex = 0; waveIndex < waves.Count; waveIndex++)
+        {
+            Wave currentWave = waves[waveIndex];
+            Debug.Log($"--- 웨이브 {waveIndex + 1} 시작! (적 {currentWave.numberOfEnemies}마리) ---");
+
+            enemiesSpawnedInCurrentWave = 0; // 현재 웨이브 스폰된 적 수 초기화
+
+            while (enemiesSpawnedInCurrentWave < currentWave.numberOfEnemies)
+            {
+                Vector3 spawnPosition = path[0]; // 경로의 첫 번째 지점을 스폰 위치로 사용
+                SpawnSingleEnemy(spawnPosition, path);
+                enemiesSpawnedInCurrentWave++;
+
+                // 현재 웨이브의 모든 적을 스폰하기 전까지는 스폰 간격 대기
+                if (enemiesSpawnedInCurrentWave < currentWave.numberOfEnemies)
+                {
+                    yield return new WaitForSeconds(currentWave.spawnInterval);
+                }
+            }
+
+            Debug.Log($"--- 웨이브 {waveIndex + 1} 적 스폰 완료. ---");
+
+            // 마지막 웨이브가 아니라면 웨이브 간 대기 시간 적용
+            if (waveIndex < waves.Count - 1)
+            {
+                Debug.Log($"다음 웨이브까지 {waveBreakTime}초 대기...");
+                yield return new WaitForSeconds(waveBreakTime);
+            }
+            else
+            {
+                Debug.Log("모든 웨이브 완료!");
+            }
+        }
+
+        isSpawning = false; // 모든 웨이브 스폰 종료 플래그 설정
     }
 
     void SpawnSingleEnemy(Vector3 initialSpawnPosition, List<Vector3> path)
@@ -93,19 +112,24 @@ public class SpawnManager : MonoBehaviour
             return;
         }
 
-        // 적 프리팹 인스턴스 생성 (지정된 스폰 위치와 회전 없이)
         GameObject newEnemy = Instantiate(enemyPrefab, initialSpawnPosition, Quaternion.identity);
-
-        // 생성된 적 오브젝트에서 EnemyMovement 스크립트 가져오기
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
         if (enemyMovement != null)
         {
-            // EnemyMovement 스크립트의 SetInitialPosition 메서드 호출
             enemyMovement.SetInitialPosition(initialSpawnPosition);
-            // 가져온 경로(Vector3 리스트) 전달
-            enemyMovement.SetPath(path); 
+            enemyMovement.SetPath(path);
+        }
+        else
+        {
+            Debug.LogError("SpawnManager: 스폰된 적 프리팹에 EnemyMovement 컴포넌트가 없습니다.");
         }
     }
+}
 
+[System.Serializable] 
+public class Wave
+{
+    public int numberOfEnemies; // 이 웨이브에서 스폰할 적의 수
+    public float spawnInterval; // 이 웨이브에서 적 스폰 간격
 }
