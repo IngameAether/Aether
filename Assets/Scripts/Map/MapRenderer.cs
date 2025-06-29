@@ -6,7 +6,16 @@ using UnityEngine;
 public class MapRenderer : MonoBehaviour
 {
     public GameObject pathTile;  // 적이 지나다니는 통로 타일
-    public GameObject mapTile;   // 타워 배치할 수 있는(벽) 타일
+    public GameObject mapTile_Normal;   // 타워 배치할 수 있는(벽) 타일
+    public GameObject mapTile_Bot;
+    public GameObject mapTile_Left;
+    public GameObject mapTile_LeftBot;
+    public GameObject mapTile_LeftTop;
+    public GameObject mapTile_Right;
+    public GameObject mapTile_RightBot;
+    public GameObject mapTile_RightTop;
+    public GameObject mapTile_Top;
+
     GameObject[,] tileObjects;   // 타일 참조할 수 있게 저장할 배열
     bool isBuild;   // 배치 가능한 타일인지 확인용
     public GameObject[] elementPrefabs;   // 원소 프리팹 담을 배열
@@ -28,7 +37,26 @@ public class MapRenderer : MonoBehaviour
             {
                 isBuild = (mapTiles[x, y]==0);
 
-                GameObject prefab = mapTiles[x, y] == 1 ? pathTile : mapTile;
+                GameObject prefab = null;
+                if (mapTiles[x, y] == 1) prefab = pathTile;
+                else
+                {
+                    // 가장자리 타일 지정
+                    if (x == 0 && y == 0) prefab = mapTile_LeftTop;
+                    else if (x == 0 && y == 7) prefab = mapTile_RightTop;
+                    else if (x == 7 && y == 0) prefab = mapTile_LeftBot;
+                    else if (x == 7 && y == 7) prefab = mapTile_RightBot;
+
+                    // 벽 타일 지정
+                    else if (x == 0) prefab = mapTile_Top;
+                    else if (y == 0) prefab = mapTile_Left;
+                    else if (x == 7) prefab = mapTile_Bot;
+                    else if (y == 7) prefab = mapTile_Right;
+
+                    else prefab = mapTile_Normal;
+
+                }
+
                 Vector2 position = new Vector2(y-setx,-x+sety-0.5f);
                 GameObject tileObject = Instantiate(prefab, position, Quaternion.identity,parent);   // 타일 prefab 생성
 
