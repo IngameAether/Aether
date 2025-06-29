@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI; 
 using UnityEngine.Rendering.PostProcessing; 
 using System.Collections;
+using TMPro;
 
 // Wave 데이터를 관리할 구조체 정의
 [System.Serializable]
@@ -10,6 +11,7 @@ public struct WaveData
 {
     public string waveName; // 예: "1 Wave", "2 Wave"
     public Sprite waveImage; // 해당 Wave에 표시될 그림 (Sprite)
+    public string sceneName; // 해당 Wave에 연결된 씬 이름
 }
 
 // UI 패널 상태를 나타내는 열거형
@@ -33,7 +35,7 @@ public class MainMenuUI : MonoBehaviour
     // 블러처리된 배경 이미지
     public GameObject blurBackgroundImage;
 
-    public Text levelNameText; // 레벨 이름을 표시할 UI Text
+    public TMP_Text levelNameText; // 레벨 이름을 표시할 UI Text
     public Image waveImageDisplay; // Wave 이미지 표시할 UI Image
     public Button leftArrowButton; // 왼쪽 화살표 버튼
     public Button rightArrowButton; // 오른쪽 화살표 버튼
@@ -117,7 +119,7 @@ public class MainMenuUI : MonoBehaviour
     // 왼쪽 화살표 버튼 클릭 시 (레벨 선택)
     public void OnLeftArrowButtonClick()
     {
-        currentSelectedWaveIndex--;
+        currentSelectedWaveIndex -= 1;
         if (currentSelectedWaveIndex < 0)
         {
             currentSelectedWaveIndex = waveDatas.Length - 1; // 마지막 레벨로 순환
@@ -127,7 +129,7 @@ public class MainMenuUI : MonoBehaviour
     // 오른쪽 화살표 버튼 클릭 시 (레벨 선택)
     public void OnRightArrowButtonClick()
     {
-        currentSelectedWaveIndex++;
+        currentSelectedWaveIndex += 1;
         if (currentSelectedWaveIndex >= waveDatas.Length)
         {   
             currentSelectedWaveIndex = 0; // 첫 번째 레벨로 순환
@@ -181,7 +183,18 @@ public class MainMenuUI : MonoBehaviour
     // 실제 게임 시작 함수 (GameManager 호출 또는 씬 로드)
     void StartGame(int waveIndex, bool loadSave)
     {
-        Debug.Log($"게임 시작: Wave {waveIndex + 1}, 세이브 불러오기: {loadSave}");
+        // 해당 WaveData에서 씬 이름을 가져옵니다.
+        string sceneToLoad = waveDatas[waveIndex].sceneName;
+
+        if (!string.IsNullOrEmpty(sceneToLoad))
+        {
+            SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
+            Debug.Log($"씬 로드 시작: {sceneToLoad}");
+        }
+        else
+        {
+            Debug.LogError($"Wave {waveIndex + 1}에 대한 씬 이름이 설정되지 않았습니다!");
+        }
     }
 
     // 설정 적용 버튼 클릭 시
