@@ -19,12 +19,14 @@ public class MapRenderer : MonoBehaviour
     GameObject[,] tileObjects;   // 타일 참조할 수 있게 저장할 배열
     bool isBuild;   // 배치 가능한 타일인지 확인용
     public GameObject[] elementPrefabs;   // 원소 프리팹 담을 배열
+    public GameObject[] towerPrefabs;     // 타워 프리팹 담을 배열
     public Transform parent;
     private SaleController saleZone;
 
     public void RenderMap(int[,] mapTiles)
     {
         TileInteraction.staticElementPrefabs = elementPrefabs;  // 전역 변수에 원소 프리팹 배열 저장
+        TileInteraction.staticTowerPrefabs = towerPrefabs;
 
         tileObjects = new GameObject[mapTiles.GetLength(0), mapTiles.GetLength(1)];
 
@@ -85,8 +87,9 @@ public class MapRenderer : MonoBehaviour
                     Destroy(tileObjects[x,y]);
             }
         }
-        // 코인 0으로 초기화
-        SaleController.coin = 0;
+        
+        SaleController.coin = 0;    // 코인 0으로 초기화
+        TileInteraction.clickNum = 0;
     }
 
     public Vector3 GetTileWorldPosition(int tileX, int tileY, int mapWidth, int mapHeight)

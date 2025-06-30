@@ -6,6 +6,8 @@ public class TileInteraction : MonoBehaviour
 {
     Tile tile;
     public static GameObject[] staticElementPrefabs;  // 전역 변수로 선언(모든 tile이 공유할 내용이므로)
+    public static GameObject[] staticTowerPrefabs;
+    public static int clickNum = 0;  // 전체에서 클릭 횟수를 공유해야 하므로 static 선언
 
     void Start()
     {
@@ -21,8 +23,20 @@ public class TileInteraction : MonoBehaviour
 
         if (!tile.isBuild || !tile.isElementBuild) return;
 
-        int ranNum = Random.Range(0, staticElementPrefabs.Length);
-        GameObject elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
+        int ranNum = 0; GameObject elementObj = null;
+        if (clickNum == 0)
+        {
+            elementObj = Instantiate(staticTowerPrefabs[0], tile.transform.position, Quaternion.identity);
+            clickNum++;
+        }
+        else
+        {
+            ranNum = Random.Range(0, staticElementPrefabs.Length);
+            elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
+            clickNum++;
+        }
+        //int ranNum = Random.Range(0, staticElementPrefabs.Length);
+        //GameObject elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
         
         // 원소가 배치된 타일 저장
         ElementController ec = elementObj.GetComponent<ElementController>();
