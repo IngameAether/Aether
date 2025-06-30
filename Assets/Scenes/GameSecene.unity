@@ -528,6 +528,8 @@ MonoBehaviour:
   - {fileID: 6263843287393816421, guid: ccc517438489af940935c59e61c9742f, type: 3}
   - {fileID: 6829641324287958009, guid: f18f98af5cbdb1243998b9f9fd1830c1, type: 3}
   - {fileID: 4957179996845745435, guid: 87b7deb4a70815f46913bb3d90e19000, type: 3}
+  towerPrefabs:
+  - {fileID: 5584138857135854208, guid: 721e41b1c80745041980c74df9f4f3d3, type: 3}
   parent: {fileID: 0}
 --- !u!114 &134308587
 MonoBehaviour:
