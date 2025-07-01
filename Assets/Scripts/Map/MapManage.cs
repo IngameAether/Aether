@@ -29,7 +29,7 @@ public class MapManage : MonoBehaviour
         MapTiles = mapGenerator.generateMap();
 
         // MapGenerator로부터 생성된 경로 인덱스 가져와 저장
-        PathIndices = mapGenerator.GetPathIndices();
+        if (MapTiles != null) PathIndices = mapGenerator.GetPathIndices();
 
         // MapRenderer를 사용하여 맵 시각화
         if (MapTiles != null && MapTiles.GetLength(0) > 0)

@@ -28,7 +28,7 @@ public class MapGenerator : MonoBehaviour
         bool successMap = false;
         int attemptsMap = 0;
 
-        while (!successMap && attemptsMap < 5)
+        while (!successMap && attemptsMap < 10)
         {
             successMap = findvalidTile();
             attemptsMap++;
@@ -38,15 +38,14 @@ public class MapGenerator : MonoBehaviour
         {
             Debug.Log(startTile);
             Debug.Log(endTile);
-
+            return mapTiles;
         }
 
         else
         {
             Debug.Log("경로 생성 실패");
+            return null;
         }
-
-        return mapTiles;
     }
 
     // 적합한 경로를 못 찾을 경우에 입,출구부터 다시 지정하게 하기 위해 generateMap() 메소드와 분리
@@ -56,8 +55,8 @@ public class MapGenerator : MonoBehaviour
         pathTiles.Clear();
         visited.Clear();
         // 맵 그림의 허용된 입구 중 하나를 랜덤으로 선택
-        int randomIndex = Random.Range(0, allowedStartIndices.Count);
-        startTile = allowedStartIndices[randomIndex];
+        //int randomIndex = Random.Range(0, allowedStartIndices.Count);
+        //startTile = allowedStartIndices[randomIndex];
 
         do
         {
@@ -131,7 +130,6 @@ public class MapGenerator : MonoBehaviour
         }
 
         Vector2Int[] sortedDirs = SortedDirections(current, end);
-        //Shuffle(directions);
         foreach (var dir in sortedDirs)
         {
             Vector2Int next = current + dir;
