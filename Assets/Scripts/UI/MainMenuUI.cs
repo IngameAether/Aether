@@ -56,7 +56,24 @@ public class MainMenuUI : MonoBehaviour
         if (leftArrowButton != null) leftArrowButton.onClick.AddListener(OnLeftArrowButtonClick);
         if (rightArrowButton != null) rightArrowButton.onClick.AddListener(OnRightArrowButtonClick);
         if (playLevelButton != null) playLevelButton.onClick.AddListener(OnPlayLevelButtonClick); // 새 버튼 이벤트 연결
-}
+
+        if (leftArrowButton != null)
+        {
+            // 기존 리스너 제거 (안전 장치)
+            leftArrowButton.onClick.RemoveAllListeners(); // <- 기존 리스너 모두 제거
+            leftArrowButton.onClick.AddListener(OnLeftArrowButtonClick);
+        }
+        if (rightArrowButton != null)
+        {
+            rightArrowButton.onClick.RemoveAllListeners(); // <- 기존 리스너 모두 제거
+            rightArrowButton.onClick.AddListener(OnRightArrowButtonClick);
+        }
+        if (playLevelButton != null)
+        {
+            playLevelButton.onClick.RemoveAllListeners(); // <- 기존 리스너 모두 제거
+            playLevelButton.onClick.AddListener(OnPlayLevelButtonClick);
+        }
+    }
 
     // 특정 패널만 활성화하고 다른 패널은 비활성화하는 함수
     void ShowPanel(UIPanelState targetPanel)
@@ -119,7 +136,8 @@ public class MainMenuUI : MonoBehaviour
     // 왼쪽 화살표 버튼 클릭 시 (레벨 선택)
     public void OnLeftArrowButtonClick()
     {
-        currentSelectedWaveIndex -= 1;
+        Debug.Log("OnLeftArrowButtonClick 호출됨! 현재 Wave Index: " + currentSelectedWaveIndex); // <--- 추가
+        currentSelectedWaveIndex--;
         if (currentSelectedWaveIndex < 0)
         {
             currentSelectedWaveIndex = waveDatas.Length - 1; // 마지막 레벨로 순환
@@ -129,7 +147,8 @@ public class MainMenuUI : MonoBehaviour
     // 오른쪽 화살표 버튼 클릭 시 (레벨 선택)
     public void OnRightArrowButtonClick()
     {
-        currentSelectedWaveIndex += 1;
+        Debug.Log("OnRightArrowButtonClick 호출됨! 현재 Wave Index: " + currentSelectedWaveIndex); // <--- 추가
+        currentSelectedWaveIndex++;
         if (currentSelectedWaveIndex >= waveDatas.Length)
         {   
             currentSelectedWaveIndex = 0; // 첫 번째 레벨로 순환
