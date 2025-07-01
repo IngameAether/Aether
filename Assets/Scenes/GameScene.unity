@@ -513,13 +513,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d885394345065e84b9a876f294efd3b8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pathTile: {fileID: 9069186201208080902, guid: c69c29fb1d5cf1e449010a1e35e042c0, type: 3}
-  mapTile: {fileID: 1159285178380513776, guid: f9ad910d1eca52349a632c609f440816, type: 3}
+  pathTile: {fileID: 1213674234638705067, guid: 99d060ddfeb08a84fb614ce4ee324242, type: 3}
+  mapTile_Normal: {fileID: 487703974697220596, guid: fa0b15135f1ca4648a1daf36589411aa, type: 3}
+  mapTile_Bot: {fileID: 6209415211918803184, guid: cd45e71c0e4445d4fb3cb399a0f771f0, type: 3}
+  mapTile_Left: {fileID: 8556332863950358420, guid: b98245aeb26af824793889fac1586d73, type: 3}
+  mapTile_LeftBot: {fileID: 8162360828234113446, guid: 98eb181032afccb4085832407b747ef6, type: 3}
+  mapTile_LeftTop: {fileID: 5105625461135548553, guid: 63b4ba3c12638b3468a0d513502691d4, type: 3}
+  mapTile_Right: {fileID: 6776257187741054437, guid: 5e03294bfa974da46a86de1553f3a098, type: 3}
+  mapTile_RightBot: {fileID: 1186858333872429725, guid: 63a3a09a7a498bf469a18a618064339a, type: 3}
+  mapTile_RightTop: {fileID: 4108538401709629752, guid: b5484284f407e8947980e5878c424f3e, type: 3}
+  mapTile_Top: {fileID: 5030619349875335852, guid: 9fa0810610b85dc4fa4c743b8fc40f0d, type: 3}
   elementPrefabs:
   - {fileID: 5056616401189597618, guid: e2680e229abfaf242905543270b2af42, type: 3}
   - {fileID: 6263843287393816421, guid: ccc517438489af940935c59e61c9742f, type: 3}
   - {fileID: 6829641324287958009, guid: f18f98af5cbdb1243998b9f9fd1830c1, type: 3}
   - {fileID: 4957179996845745435, guid: 87b7deb4a70815f46913bb3d90e19000, type: 3}
+  towerPrefabs:
+  - {fileID: 5584138857135854208, guid: 721e41b1c80745041980c74df9f4f3d3, type: 3}
   parent: {fileID: 0}
 --- !u!114 &134308587
 MonoBehaviour:
