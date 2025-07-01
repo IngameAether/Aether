@@ -59,7 +59,7 @@ public class MapRenderer : MonoBehaviour
 
                 }
 
-                Vector2 position = new Vector2(y-setx,-x+sety-0.5f);
+                Vector2 position = new Vector2(y-setx,-x+sety);
                 GameObject tileObject = Instantiate(prefab, position, Quaternion.identity,parent);   // 타일 prefab 생성
 
                 tileObject.GetComponent<Tile>().Initialize(x, y, isBuild);  // 각 타일의 정보를 기억하기 위해
