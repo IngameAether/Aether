@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 504029057997776798}
   - component: {fileID: 7495279805454929132}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: EnemyHPbar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -99,7 +99,7 @@ GameObject:
   - component: {fileID: 5486729930703194377}
   - component: {fileID: 2846169635008446282}
   - component: {fileID: 8889762675385409390}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -173,7 +173,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3348888694080771107}
   - component: {fileID: 220458573038209037}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: EnemyImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -219,7 +219,8 @@ GameObject:
   - component: {fileID: -8713958694460109110}
   - component: {fileID: 7489497750853960891}
   - component: {fileID: 8009288525915194780}
-  m_Layer: 3
+  - component: {fileID: -7153767814763876366}
+  m_Layer: 6
   m_Name: NormalEnemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -324,6 +325,41 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!58 &-7153767814763876366
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5417002623811271532}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 1.0499998
 --- !u!1 &5614385505505001528
 GameObject:
   m_ObjectHideFlags: 0
@@ -336,7 +372,7 @@ GameObject:
   - component: {fileID: 9130794898787216891}
   - component: {fileID: 8426032792196200660}
   - component: {fileID: 3609771872965417257}
-  m_Layer: 3
+  m_Layer: 6
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}

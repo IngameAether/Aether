@@ -23,9 +23,9 @@ public abstract class Tower : MonoBehaviour
     
     protected float lastAttackTime = 0f;
     protected bool isFacingRight = true;
-    protected Transform currentTarget;
+    protected Transform currentTarget;  // 현재 타겟으로 삼고 있는 적의 위치
     
-    public static event Action<Tower> OnTowerClicked;
+    public static event Action<Tower> OnTowerClicked;   
     
     public TowerSetting GetTowerSetting() => towerSetting;
     public Vector3 GetPosition() => transform.position;
@@ -90,7 +90,7 @@ public abstract class Tower : MonoBehaviour
         if (!target) return false;
         
         float distance = Vector2.Distance(transform.position, target.position);
-        return distance <= towerSetting.range;
+        return distance <= towerSetting.range;  // 타겟과의 거리가 사거리보다 작거나 같은지 확인
     }
     
     /// <summary>
