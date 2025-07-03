@@ -92,7 +92,7 @@ public abstract class Tower : MonoBehaviour
         float distance = Vector2.Distance(transform.position, target.position);
         return distance <= towerSetting.range;  // 타겟과의 거리가 사거리보다 작거나 같은지 확인
     }
-    
+
     /// <summary>
     /// 가장 가까운 적을 찾는 함수
     /// </summary>
@@ -123,16 +123,29 @@ public abstract class Tower : MonoBehaviour
                 nearestTarget = enemyCollider.transform;
             }
         }
-    
+
         return nearestTarget;
     }
-    
+
+    // 타겟이 살아 있는지 확인
+    protected virtual bool isTargetAlive(Transform target)
+    {
+        if (!target) return false;
+
+        IDamageable damageable = target.GetComponent<IDamageable>();
+        if (damageable == null) return false;
+
+        return damageable.CurrentHealth > 0f;
+    }
+
     /// <summary>
     /// 공격 가능한지 확인 (딜레이 체크)
     /// </summary>
     protected virtual bool CanAttack()
     {
-        return Time.time >= lastAttackTime + towerSetting.attackDelay;
+        bool isDelayOver =  Time.time >= lastAttackTime + towerSetting.attackDelay;
+        bool isAlive = isTargetAlive(currentTarget);
+        return isDelayOver && isAlive;
     }
     
     /// <summary>

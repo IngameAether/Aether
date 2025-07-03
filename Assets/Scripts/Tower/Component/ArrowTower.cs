@@ -5,8 +5,16 @@
 /// </summary>
 public class ArrowTower : Tower
 {
+    IDamageable damageable;
     protected override void Attack()
     {
-        Debug.Log("ArrowTower: Attack !");       
+        if (!currentTarget) return;
+
+        damageable = currentTarget.GetComponent<IDamageable>();
+        if (damageable != null)
+        {
+            Debug.Log($"{gameObject.name}이 {currentTarget.name}에게 {towerSetting.damage}의 피해를 입혔습니다");
+            damageable.TakeDamage(towerSetting.damage);
+        }
     }
 }

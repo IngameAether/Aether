@@ -8,6 +8,7 @@ public enum EScene
 {
     MainMenu,
     InGame,
+    Game,
     // 필요한 다른 씬 추가
 }
 

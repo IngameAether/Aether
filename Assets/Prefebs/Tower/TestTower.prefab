@@ -187,9 +187,9 @@ MonoBehaviour:
     <name>k__BackingField: "\uD14C\uC2A4\uD2B8 \uD0C0\uC6CC"
     <description>k__BackingField: "\uD14C\uC2A4\uD2B8"
     <rank>k__BackingField: 1
-    <damage>k__BackingField: 2
+    <damage>k__BackingField: 10
     <attackDelay>k__BackingField: 2
-    <range>k__BackingField: 5
+    <range>k__BackingField: 2
 --- !u!58 &8300866107100621093
 CircleCollider2D:
   m_ObjectHideFlags: 0

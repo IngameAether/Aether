@@ -98,12 +98,12 @@ public class MapRenderer : MonoBehaviour
         float offsetY = (mapHeight - 1) / 2.0f;
 
         // RenderMap에서 사용된 타일 기준점 위치 계산
-        float baseX = tileY - offsetX - 0.5f;
-        float baseY = -tileX + offsetY - 1.0f;
+        float baseX = tileY - offsetX;
+        float baseY = -tileX + offsetY;
 
         // 타일 크기가 1x1 유닛이므로 타일 중앙 좌표 계산 시 0.5f 오프셋 적용
-        float tileCenterX = baseX + 0.5f;
-        float tileCenterY = baseY + 0.5f;
+        float tileCenterX = baseX;
+        float tileCenterY = baseY;
 
         float tileZ = 0f; // 또는 필요한 Z 값
 
