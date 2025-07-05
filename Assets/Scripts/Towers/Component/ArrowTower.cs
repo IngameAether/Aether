@@ -19,6 +19,13 @@ namespace Towers.Component
                 Debug.Log($"{gameObject.name}이 {currentTarget.name}에게 {towerSetting.damage}의 피해를 입혔습니다");
                 damageable.TakeDamage(towerSetting.damage);
             }
+
+            Animator animator = transform.Find("Mouth")?.GetComponent<Animator>();
+            if (animator != null)
+            {
+                Debug.Log($"{name}: Animator 실행");
+                animator.SetTrigger("CanAttack");
+            }
         }
     }
 }

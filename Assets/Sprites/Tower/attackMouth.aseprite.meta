@@ -2,7 +2,12 @@ fileFormatVersion: 2
 guid: a278114ecdf9fe44cb315e7733085e61
 ScriptedImporter:
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:AnimationClip
+      assembly: UnityEngine.AnimationModule
+      name: attackMouth_Clip
+    second: {fileID: 7400000, guid: caa241a5c40f1af42b29bb2bd3e8354a, type: 2}
   serializedVersion: 2
   userData: 
   assetBundleName: 
@@ -98,7 +103,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638872428928094373
+  platformSettingsDirtyTick: 638873389373982500
   textureAssetName: 
   singleSpriteImportData:
   - name: 
