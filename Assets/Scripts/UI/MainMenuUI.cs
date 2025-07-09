@@ -56,8 +56,6 @@ public class MainMenuUI : MonoBehaviour
     public Slider sfxSlider;
     public TMP_Text sfxValueText;
     public Toggle sfxMuteToggle;
-    public UnityEngine.Audio.AudioMixer masterMixer;
-
 
     private void Awake()
     {
@@ -79,7 +77,7 @@ public class MainMenuUI : MonoBehaviour
             sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
         if (sfxMuteToggle != null)
             sfxMuteToggle.onValueChanged.AddListener(OnSFXMuteToggled);
-        LoadSavedSoundSettings();
+        UpdateSoundSettingsUIFromPrefs();
     }
 
     // 특정 패널만 활성화하고 다른 패널은 비활성화하는 함수
@@ -89,6 +87,7 @@ public class MainMenuUI : MonoBehaviour
         if (targetPanel == UIPanelState.Settings)
         {
             stateBeforeSettings = currentPanelState; // 현재 상태를 저장
+            UpdateSoundSettingsUIFromPrefs(); // 설정 패널을 열 때 UI에 현재 설정 값을 로드
         }
 
         // 모든 패널 비활성화
@@ -224,15 +223,20 @@ public class MainMenuUI : MonoBehaviour
     // 설정 적용 버튼 클릭 시
     public void OnApplySettingsButtonClick()
     {
-        // TODO: 설정 UI 요소들(슬라이더, 토글 등)의 값을 읽어서 적용 및 저장
         Debug.Log("설정 적용됨");
-        // 설정 적용 후 이전 상태로 돌아가기
+        // AudioManager를 통해 현재 UI 값들을 PlayerPrefs에 저장
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.SaveSoundSettings(bgmSlider.value, bgmMuteToggle.isOn, sfxSlider.value, sfxMuteToggle.isOn);
+        }
         ShowPanel(stateBeforeSettings);
     }
 
     public void OnCancelSettingsButtonClick()
     {
         Debug.Log("설정 취소됨");
+        // UI를 PlayerPrefs에 저장된 값으로 원상복구
+        UpdateSoundSettingsUIFromPrefs();
         ShowPanel(stateBeforeSettings);
     }
 
@@ -304,95 +308,10 @@ public class MainMenuUI : MonoBehaviour
         return false;
     }
 
-    // 사운드 설정 관련 메서드
-    // 저장된 사운드 설정을 로드하여 게임에 적용하고 UI에 반영
-    private void LoadSavedSoundSettings()
-    {
-        // PlayerPrefs에서 값을 로드하거나 기본값 설정
-        // 배경음악
-        float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 5f); // 기본값 5
-        bool bgmMute = PlayerPrefs.GetInt("BGMMute", 0) == 1; // 기본값 음소거 아님 (0)
-        // 효과음
-        float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 5f); // 기본값 5
-        bool sfxMute = PlayerPrefs.GetInt("SFXMute", 0) == 1; // 기본값 음소거 아님 (0)
+    // --- 사운드 설정 관련 메서드 (MainMenuUI에서 UI 업데이트 및 AudioManager 호출) ---
 
-        // 실제 Audio Mixer에 적용
-        SetMixerVolume("BGMVolume", bgmVolume);
-        SetMixerMute("BGMMute", bgmMute);
-
-        SetMixerVolume("SFXVolume", sfxVolume);
-        SetMixerMute("SFXMute", sfxMute);
-
-        // UI에 반영 (설정 패널이 열려있지 않아도 초기값은 반영)
-        if (bgmSlider != null)
-            bgmSlider.value = bgmVolume;
-        if (bgmMuteToggle != null)
-            bgmMuteToggle.isOn = bgmMute;
-        if (sfxSlider != null)
-            sfxSlider.value = sfxVolume;
-        if (sfxMuteToggle != null)
-            sfxMuteToggle.isOn = sfxMute;
-
-        // 슬라이더 값 텍스트 업데이트
-        if (bgmValueText != null)
-            bgmValueText.text = bgmVolume.ToString("F0");
-        if (sfxValueText != null)
-            sfxValueText.text = sfxVolume.ToString("F0");
-    }
-
-    // UI 슬라이더/토글 값 변경 시 호출 (실시간 반영)
-    private void OnBGMVolumeChanged(float value)
-    {
-        SetMixerVolume("BGMVolume", value);
-        if (bgmValueText != null) bgmValueText.text = value.ToString("F0");
-        // 슬라이더 조절 시 음소거 해제
-        if (bgmMuteToggle != null && bgmMuteToggle.isOn) bgmMuteToggle.isOn = false;
-    }
-
-    private void OnBGMMuteToggled(bool isMuted)
-    {
-        SetMixerMute("BGMMute", isMuted);
-        // 음소거 시 슬라이더 값을 0으로 (UI만)
-        if (bgmSlider != null && isMuted)
-            bgmSlider.value = 0;
-        else if (bgmSlider != null && !isMuted)
-            bgmSlider.value = PlayerPrefs.GetFloat("BGMVolume", 7f); // 음소거 해제 시 저장된 값으로 복구
-    }
-
-    private void OnSFXVolumeChanged(float value)
-    {
-        SetMixerVolume("SFXVolume", value);
-        if (sfxValueText != null)
-            sfxValueText.text = value.ToString("F0");
-        // 슬라이더 조절 시 음소거 해제
-        if (sfxMuteToggle != null && sfxMuteToggle.isOn)
-            sfxMuteToggle.isOn = false;
-    }
-
-    private void OnSFXMuteToggled(bool isMuted)
-    {
-        SetMixerMute("SFXMute", isMuted);
-        // 음소거 시 슬라이더 값을 0으로 (UI만)
-        if (sfxSlider != null && isMuted)
-            sfxSlider.value = 0;
-        else if (sfxSlider != null && !isMuted)
-            sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 7f); // 음소거 해제 시 저장된 값으로 복구
-    }
-
-    // 설정 적용 버튼 클릭 시 호출 (PlayerPrefs에 저장)
-    private void SaveSoundSettings()
-    {
-        if (bgmSlider != null) PlayerPrefs.SetFloat("BGMVolume", bgmSlider.value);
-        if (bgmMuteToggle != null) PlayerPrefs.SetInt("BGMMute", bgmMuteToggle.isOn ? 1 : 0);
-        if (sfxSlider != null) PlayerPrefs.SetFloat("SFXVolume", sfxSlider.value);
-        if (sfxMuteToggle != null) PlayerPrefs.SetInt("SFXMute", sfxMuteToggle.isOn ? 1 : 0);
-
-        PlayerPrefs.Save(); // 변경사항 즉시 저장
-        Debug.Log("사운드 설정 저장 완료.");
-    }
-
-    // 설정 패널 열 때 UI에 현재 설정 값을 반영 (PlayerPrefs에서 직접 로드)
-    private void UpdateSoundSettingsUI()
+    // UI에 저장된 사운드 설정 로드 (PlayerPrefs에서 UI로 직접 로드)
+    private void UpdateSoundSettingsUIFromPrefs()
     {
         // UI 요소들이 null이 아닌지 다시 확인하고, 현재 PlayerPrefs 값을 UI에 반영
         if (bgmSlider != null) bgmSlider.value = PlayerPrefs.GetFloat("BGMVolume", 5f);
@@ -405,47 +324,54 @@ public class MainMenuUI : MonoBehaviour
         if (sfxValueText != null) sfxValueText.text = sfxSlider.value.ToString("F0");
     }
 
-    // Audio Mixer 볼륨 설정 (0~10 스케일을 dB 스케일로 변환)
-    private void SetMixerVolume(string parameterName, float volume)
+    // UI 슬라이더/토글 값 변경 시 호출 (실시간 반영)
+    private void OnBGMVolumeChanged(float value)
     {
-        if (masterMixer == null)
+        if (AudioManager.Instance != null)
         {
-            Debug.LogWarning("Audio Mixer가 연결되지 않았습니다. 사운드 볼륨을 조절할 수 없습니다.");
-            return;
+            AudioManager.Instance.SetGroupVolume("BGMVolume", value);
         }
-
-        // 0~10 스케일을 로그 스케일 dB로 변환 (0은 -80dB, 10은 0dB)
-        // 볼륨이 0일 때는 -80dB (완전 소거)
-        if (volume == 0)
-        {
-            masterMixer.SetFloat(parameterName, -80f);
-        }
-        else
-        {
-            // Mathf.Log10(volume / 10f) * 20f;
-            // 0~10 -> 0.001~1.0 (선형) -> 로그 스케일 dB
-            masterMixer.SetFloat(parameterName, Mathf.Log10(volume / 10f) * 20f);
-        }
+        if (bgmValueText != null) bgmValueText.text = value.ToString("F0");
+        // 슬라이더 조절 시 음소거 해제
+        if (bgmMuteToggle != null && bgmMuteToggle.isOn) bgmMuteToggle.isOn = false;
     }
 
-    // Audio Mixer 그룹 음소거 설정
-    private void SetMixerMute(string parameterName, bool isMuted)
+    private void OnBGMMuteToggled(bool isMuted)
     {
-        if (masterMixer == null)
+        if (AudioManager.Instance != null)
         {
-            Debug.LogWarning("Audio Mixer가 연결되지 않았습니다. 사운드 음소거를 조절할 수 없습니다.");
-            return;
+            AudioManager.Instance.SetGroupMute("BGMMute", isMuted);
         }
-        if (isMuted)
+        // 음소거 시 슬라이더 값을 0으로 (UI만)
+        if (bgmSlider != null && isMuted)
+            bgmSlider.value = 0;
+        else if (bgmSlider != null && !isMuted)
+            bgmSlider.value = PlayerPrefs.GetFloat("BGMVolume", 5f); // 음소거 해제 시 저장된 값으로 복구
+    }
+
+    private void OnSFXVolumeChanged(float value)
+    {
+        if (AudioManager.Instance != null)
         {
-            // 음소거 시 -80dB로 설정 (완전 소거)
-            masterMixer.SetFloat(parameterName.Replace("Mute", "Volume"), -80f);
+            AudioManager.Instance.SetGroupVolume("SFXVolume", value);
         }
-        else
+        if (sfxValueText != null)
+            sfxValueText.text = value.ToString("F0");
+        // 슬라이더 조절 시 음소거 해제
+        if (sfxMuteToggle != null && sfxMuteToggle.isOn)
+            sfxMuteToggle.isOn = false;
+    }
+
+    private void OnSFXMuteToggled(bool isMuted)
+    {
+        if (AudioManager.Instance != null)
         {
-            // 음소거 해제 시 저장된 볼륨값으로 복구
-            float savedVolume = PlayerPrefs.GetFloat(parameterName.Replace("Mute", "Volume"), 5f);
-            masterMixer.SetFloat(parameterName.Replace("Mute", "Volume"), Mathf.Log10(savedVolume / 10f) * 20f);
+            AudioManager.Instance.SetGroupMute("SFXMute", isMuted);
         }
+        // 음소거 시 슬라이더 값을 0으로 (UI만)
+        if (sfxSlider != null && isMuted)
+            sfxSlider.value = 0;
+        else if (sfxSlider != null && !isMuted)
+            sfxSlider.value = PlayerPrefs.GetFloat("SFXVolume", 5f); // 음소거 해제 시 저장된 값으로 복구
     }
 }
