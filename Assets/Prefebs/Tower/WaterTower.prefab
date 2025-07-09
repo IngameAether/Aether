@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 3629844487390936657}
   - component: {fileID: -3648078788251662077}
   - component: {fileID: 8841763817496565554}
+  - component: {fileID: 7465735765992540103}
   m_Layer: 0
   m_Name: WaterTower
   m_TagString: Untagged
@@ -90,6 +91,27 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!95 &7465735765992540103
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2255666967045128489}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: bcae028731ed8c4438adbc900390086f, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &3354781947211632409
 GameObject:
   m_ObjectHideFlags: 0

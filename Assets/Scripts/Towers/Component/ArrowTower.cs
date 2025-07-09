@@ -20,11 +20,19 @@ namespace Towers.Component
                 damageable.TakeDamage(towerSetting.damage);
             }
 
-            Animator animator = transform.Find("Mouth")?.GetComponent<Animator>();
-            if (animator != null)
+            Animator mouthAnimator = transform.Find("Mouth")?.GetComponent<Animator>();
+            Animator scaleAnimator = GetComponent<Animator>();
+
+            if (mouthAnimator != null)
             {
-                Debug.Log($"{name}: Animator 실행");
-                animator.SetTrigger("CanAttack");
+                Debug.Log("{mouth}: Animator 실행");
+                mouthAnimator.SetTrigger("CanAttack");
+            }
+
+            if (scaleAnimator != null)
+            {
+                Debug.Log("{scale}: Animator 실행");
+                scaleAnimator.SetTrigger("CanAttack");
             }
         }
     }
