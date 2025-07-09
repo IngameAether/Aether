@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // UI 관련 기능을 위해 추가
 
-public class NormalEnemy : MonoBehaviour
+public class NormalEnemy : MonoBehaviour, IDamageable
 {
     // 적의 최대 체력
-    public float maxHealth = 100f;
+    public float maxHealth = 10f;
     // 현재 체력
     private float currentHealth;
+    public float CurrentHealth => currentHealth;
 
     // 이동 속도
     public float moveSpeed = 2f;
@@ -50,7 +51,7 @@ public class NormalEnemy : MonoBehaviour
         float modifiedDamage = damageAmount;
 
         // 특수 능력 적용 (예: 마법 저항력)
-        modifiedDamage = CalculateDamageAfterResistance(modifiedDamage);
+        //modifiedDamage = CalculateDamageAfterResistance(modifiedDamage);
 
         // 최종 데미지 적용
         currentHealth -= modifiedDamage;
