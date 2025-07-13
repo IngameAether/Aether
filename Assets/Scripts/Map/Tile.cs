@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class Tile : MonoBehaviour
 {
-    public int x, y;   // Å¸ÀÏ ÁÂÇ¥
-    public bool isBuild;    // 1=Å¸¿ö »ı¼º °¡´ÉÇÑ °÷, 0=ÀûÀÌ Áö³ª°¡´Â °æ·Î
+    public int x, y;   // íƒ€ì¼ ì¢Œí‘œ
+    public bool isBuild;    // 1=íƒ€ì›Œ ìƒì„± ê°€ëŠ¥í•œ ê³³, 0=ì ì´ ì§€ë‚˜ê°€ëŠ” ê²½ë¡œ
     public bool isElementBuild;
     public GameObject element;
     public GameObject tower;
 
     private SpriteRenderer spriteRenderer;
     public Color originColor;
-    static Tile currentTile = null;    // ÇöÀç ¼±ÅÃµÈ Å¸ÀÏ
+    static Tile currentTile = null;    // í˜„ì¬ ì„ íƒëœ íƒ€ì¼
 
-    // ÃÊ±âÈ­
+    // ì´ˆê¸°í™”
     public void Initialize(int x, int y, bool isBuild)
     {
         this.x = x;
@@ -38,7 +38,7 @@ public class Tile : MonoBehaviour
 
     public void ChangeCurrentTileColor()
     {
-        if (currentTile != null && currentTile != this)   // ´Ù¸¥ Å¸ÀÏ ¼±ÅÃÇÏ¸é ÀÌÀü Å¸ÀÏ »ö ¿ø·¡´ë·Î µÇµ¹¸²
+        if (currentTile != null && currentTile != this)   // ë‹¤ë¥¸ íƒ€ì¼ ì„ íƒí•˜ë©´ ì´ì „ íƒ€ì¼ ìƒ‰ ì›ë˜ëŒ€ë¡œ ë˜ëŒë¦¼
             currentTile.spriteRenderer.color = originColor;
 
         currentTile = this;
@@ -47,6 +47,6 @@ public class Tile : MonoBehaviour
 
     public void PrintTileInfo()
     {
-        Debug.Log($"Å¸ÀÏ ÁÂÇ¥:({x},{y}), ¼³Ä¡ °¡´É:{isBuild}, ¿ø¼Ò ¼³Ä¡ ¿©ºÎ:{isElementBuild}");
+        Debug.Log($"íƒ€ì¼ ì¢Œí‘œ:({x},{y}), ì„¤ì¹˜ ê°€ëŠ¥:{isBuild}, ì›ì†Œ ì„¤ì¹˜ ì—¬ë¶€:{isElementBuild}");
     }
 }

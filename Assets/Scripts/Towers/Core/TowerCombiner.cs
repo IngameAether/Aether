@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Towers.Core
@@ -7,7 +8,8 @@ namespace Towers.Core
     {
         Fire,       // 불 원소
         Water,      // 물 원소  
-        Lightning,  // 번개 원소
+        Earth,      // 땅 원소
+        Air,        // 공기 원소
         None        // 원소 없음
     }
     
@@ -15,17 +17,26 @@ namespace Towers.Core
     
     public class TowerCombiner : MonoBehaviour
     {
+        public static TowerCombiner Instance {  get; private set; }
+        
         [Header("타워 조합 설정")] 
-        [SerializeField] private GameObject arrowTowerPrefab;
+        [SerializeField] private GameObject waterPrefab;
+        [SerializeField] private GameObject earthPrefab;
+        [SerializeField] private GameObject airPrefab;
+        [SerializeField] private GameObject firePrefab;
         [SerializeField] private Transform towerParent;
-
-        [Header("조합 결과 설정")] 
-        [SerializeField] private Vector3 spawnPosition = Vector3.zero;
         
-        private readonly List<ElementType> _selectedElements = new List<ElementType>();
-        
+        private readonly List<ElementController> _selectedElements = new List<ElementController>();
         private Dictionary<ElementType, GameObject> _elementTowerMap;
 
+        private void Awake()
+        {
+            if (Instance == null)
+            {
+                Instance = this;
+            }
+        }
+        
         private void Start()
         {
             InitializeTowerMapping();
@@ -39,9 +50,10 @@ namespace Towers.Core
         {
             _elementTowerMap = new Dictionary<ElementType, GameObject>
             {
-                { ElementType.Fire, arrowTowerPrefab },
-                { ElementType.Water, arrowTowerPrefab },
-                { ElementType.Lightning, arrowTowerPrefab },
+                { ElementType.Fire, waterPrefab },
+                { ElementType.Water, waterPrefab },
+                { ElementType.Earth, waterPrefab },
+                { ElementType.Air, waterPrefab },
             };
         }
 
@@ -50,7 +62,7 @@ namespace Towers.Core
         ///     최대 3개까지 선택할 수 있습니다
         /// </summary>
         /// <param name="elementType">선택할 원소 타입</param>
-        public void SelectElement(ElementType elementType)
+        public void SelectElement(ElementController element)
         {
             if (_selectedElements.Count >= 3)
             {
@@ -58,14 +70,14 @@ namespace Towers.Core
                 return;
             }
             
-            if (elementType == ElementType.None)
+            if (element.type == ElementType.None)
             {
                 Debug.LogWarning("유효하지 않은 원소입니다.");
                 return;
             }
 
-            _selectedElements.Add(elementType);
-            Debug.Log($"{elementType} 원소가 선택되었습니다. 현재 선택된 원소 수: {_selectedElements.Count}/3");
+            _selectedElements.Add(element);
+            Debug.Log($"{element.type } 원소가 선택되었습니다. 현재 선택된 원소 수: {_selectedElements.Count}/3");
             
             if (_selectedElements.Count == 3) TryTowerCombination();
         }
@@ -76,18 +88,19 @@ namespace Towers.Core
         /// </summary>
         public void TryTowerCombination()
         {
-            ElementType element1 = _selectedElements[0];
-            ElementType element2 = _selectedElements[1];
-            ElementType element3 = _selectedElements[2];
+            var element1 = _selectedElements[0];
+            var element2 = _selectedElements[1];
+            var element3 = _selectedElements[2];
             
-            if (element1 == element2 && element2 == element3)
+            if (element1.type == element2.type && element2.type == element3.type)
             {
                 Debug.Log($"조합 성공! {element1} 원소 3개가 조합되어 1단계 타워가 생성됩니다.");
-                CreateLevel1Tower(element1);
+                CreateLevel1Tower();
+                return;
             }
             else
             {
-                Debug.Log($"조합 실패! 같은 원소 3개가 아닙니다. 선택된 원소: {element1}, {element2}, {element3}");
+                Debug.Log($"조합 실패! 같은 원소 3개가 아닙니다. 선택된 원소: {element1.type}, {element2.type}, {element3.type}");
             }
 
             ClearSelectedElements();
@@ -97,29 +110,33 @@ namespace Towers.Core
         ///     1단계 타워를 생성하는 함수
         /// </summary>
         /// <param name="elementType">생성할 타워의 원소 타입</param>
-        private void CreateLevel1Tower(ElementType elementType)
+        private void CreateLevel1Tower()
         {
-            if (_elementTowerMap.TryGetValue(elementType, out var towerPrefab))
+            var element = _selectedElements[2];
+            if (_elementTowerMap.TryGetValue(element.type, out var towerPrefab))
             {
                 if (towerPrefab)
                 {
-                    var newTower = Instantiate(towerPrefab, spawnPosition, Quaternion.identity);
+                    var newTower = element.tileInteraction.PlacedTower(towerPrefab);
                     if (towerParent) newTower.transform.SetParent(towerParent);
-                    
-                    newTower.name = $"{elementType}_Tower_Level1";
+                    newTower.name = $"{element.type}_Tower_Level1";
 
-                    OnTowerCreated(newTower, elementType);
+                    _selectedElements[0].tileInteraction.TileReset();
+                    _selectedElements[1].tileInteraction.TileReset();
+                    Destroy(_selectedElements[2].gameObject);
                     
-                    Debug.Log($"{elementType} 타입의 1단계 타워가 {spawnPosition}에 생성되었습니다!");
+                    OnTowerCreated(newTower, element.type);
+                    Debug.Log($"{element.type} 타입의 1단계 타워 생성되었습니다!");
+                    ClearSelectedElements();
                 }
                 else
                 {
-                    Debug.LogError($"{elementType} 원소에 대한 타워 프리팹이 설정되지 않았습니다!");
+                    Debug.LogError($"{element.type} 원소에 대한 타워 프리팹이 설정되지 않았습니다!");
                 }
             }
             else
             {
-                Debug.LogError($"{elementType} 원소가 타워 매핑에 존재하지 않습니다!");
+                Debug.LogError($"{element.type} 원소가 타워 매핑에 존재하지 않습니다!");
             }
         }
 
@@ -147,37 +164,6 @@ namespace Towers.Core
         {
             _selectedElements.Clear();
             Debug.Log("선택된 원소들이 초기화되었습니다.");
-        }
-
-        /// <summary>
-        ///     타워 생성 위치를 설정하는 함수
-        /// </summary>
-        /// <param name="position">새로운 생성 위치</param>
-        public void SetSpawnPosition(Vector3 position)
-        {
-            spawnPosition = position;
-            Debug.Log($"타워 생성 위치가 {position}로 설정되었습니다.");
-        }
-
-        /// <summary>
-        ///     현재 선택된 원소들을 반환하는 함수
-        ///     UI에서 현재 상태를 표시할 때 사용할 수 있습니다
-        /// </summary>
-        /// <returns>선택된 원소들의 리스트 복사본</returns>
-        public List<ElementType> GetSelectedElements()
-        {
-            return new List<ElementType>(_selectedElements);
-        }
-
-        /// <summary>
-        ///     테스트용 함수
-        /// </summary>
-        private void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1)) SelectElement(ElementType.Fire);
-            if (Input.GetKeyDown(KeyCode.Alpha2)) SelectElement(ElementType.Water);
-            if (Input.GetKeyDown(KeyCode.Alpha3)) SelectElement(ElementType.Lightning);
-            if (Input.GetKeyDown(KeyCode.R)) ClearSelectedElements(); // R키로 초기화
         }
     }
 }
