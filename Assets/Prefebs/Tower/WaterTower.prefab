@@ -51,7 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerSetting:
     <name>k__BackingField: Water Tower
-    <description>k__BackingField: 
+    <description>k__BackingField: straight projectile
     <rank>k__BackingField: 1
     <damage>k__BackingField: 8
     <attackDelay>k__BackingField: 1.5
