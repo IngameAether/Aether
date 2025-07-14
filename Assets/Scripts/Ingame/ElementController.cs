@@ -12,7 +12,7 @@ public class ElementController : MonoBehaviour
     public TileInteraction tileInteraction;
     public ElementType type;
     bool isOver;
-    private bool isClick;
+    public bool isClick;
     public Tile selectTile;
 
     void Start()
@@ -31,11 +31,15 @@ public class ElementController : MonoBehaviour
         // ���콺�� ������Ʈ ������ ���� �����ؼ� �ڿ������� �巡���ϱ� ����
         Vector3 mousePosition = GetMouseWorldPosition();
         offset = transform.position - mousePosition;
-        
-        if (isClick) return;
-        TowerCombiner.Instance.SelectElement(this);
-        Debug.LogWarning("원소 클릭함");
+
+        if (isClick)
+        {
+            Debug.LogError("isClick True인데???????");
+            return;
+        }
         isClick = true;
+        Debug.LogWarning("원소 클릭함");
+        TowerCombiner.Instance.SelectElement(this);
     }
 
     void OnMouseDrag()

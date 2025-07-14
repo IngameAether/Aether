@@ -77,7 +77,7 @@ namespace Towers.Core
             }
 
             _selectedElements.Add(element);
-            Debug.Log($"{element.type } 원소가 선택되었습니다. 현재 선택된 원소 수: {_selectedElements.Count}/3");
+            Debug.LogWarning($"{element.type } 원소가 선택되었습니다. 현재 선택된 원소 수: {_selectedElements.Count}/3");
             
             if (_selectedElements.Count == 3) TryTowerCombination();
         }
@@ -94,15 +94,12 @@ namespace Towers.Core
             
             if (element1.type == element2.type && element2.type == element3.type)
             {
-                Debug.Log($"조합 성공! {element1} 원소 3개가 조합되어 1단계 타워가 생성됩니다.");
+                Debug.LogWarning($"조합 성공! {element1} 원소 3개가 조합되어 1단계 타워가 생성됩니다.");
                 CreateLevel1Tower();
                 return;
             }
-            else
-            {
-                Debug.Log($"조합 실패! 같은 원소 3개가 아닙니다. 선택된 원소: {element1.type}, {element2.type}, {element3.type}");
-            }
-
+            
+            Debug.LogWarning($"조합 실패! 같은 원소 3개가 아닙니다. 선택된 원소: {element1.type}, {element2.type}, {element3.type}"); 
             ClearSelectedElements();
         }
 
@@ -162,6 +159,13 @@ namespace Towers.Core
         /// </summary>
         public void ClearSelectedElements()
         {
+            if (_selectedElements[0] != null) 
+                _selectedElements[0].isClick = false;
+            if (_selectedElements[1] != null) 
+                _selectedElements[1].isClick = false;
+            if (_selectedElements[2] != null) 
+                _selectedElements[2].isClick = false;
+            
             _selectedElements.Clear();
             Debug.Log("선택된 원소들이 초기화되었습니다.");
         }
