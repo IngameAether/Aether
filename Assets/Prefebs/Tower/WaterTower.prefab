@@ -56,6 +56,8 @@ MonoBehaviour:
     <damage>k__BackingField: 8
     <attackDelay>k__BackingField: 1.5
     <range>k__BackingField: 2.5
+  direction: {x: 0, y: 0, z: 0}
+  waterProjectilePrefab: {fileID: 4766331063098911513, guid: 14d41416ca05d3a448b9c9394a949701, type: 3}
 --- !u!58 &8841763817496565554
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -88,9 +90,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0.01, y: 0.015}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.4580881
 --- !u!95 &7465735765992540103
 Animator:
   serializedVersion: 5

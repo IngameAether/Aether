@@ -28,7 +28,8 @@ namespace Towers.Core
 
         protected float lastAttackTime = 0f;
         protected bool isFacingRight = true;
-        protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
+        protected Transform currentTarget;  // 현재 타겟으로 삼고 있는 적의 위치
+        public Vector3 direction;   // 적 방향
 
         public static event Action<Tower> OnTowerClicked;
 
@@ -82,6 +83,7 @@ namespace Towers.Core
 
             if (CanAttack())
             {
+                direction = (currentTarget.transform.position - transform.position).normalized;
                 Attack();
                 lastAttackTime = Time.time;
             }
