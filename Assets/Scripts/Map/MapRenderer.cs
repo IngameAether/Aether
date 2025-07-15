@@ -103,7 +103,7 @@ public class MapRenderer : MonoBehaviour
 
         // 타일 크기가 1x1 유닛이므로 타일 중앙 좌표 계산 시 0.5f 오프셋 적용
         float tileCenterX = baseX;
-        float tileCenterY = baseY;
+        float tileCenterY = baseY - 0.5f;
 
 
         float tileZ = 0f; // 또는 필요한 Z 값

@@ -8,6 +8,7 @@ public class TileInteraction : MonoBehaviour
     public static GameObject[] staticElementPrefabs;  // 전역 변수로 선언(모든 tile이 공유할 내용이므로)
     public static GameObject[] staticTowerPrefabs;
     public static int clickNum = 0;  // 전체에서 클릭 횟수를 공유해야 하므로 static 선언
+    public static bool isTowerJustCreated = false;  // Ÿ���� Ŭ���� Ÿ���� ��ġ�� ������ Ÿ���� Ŭ���� ������ �����ϱ� ����
 
     private void Start()
     {
@@ -30,6 +31,7 @@ public class TileInteraction : MonoBehaviour
         {
             elementObj = PlacedTower(staticTowerPrefabs[0]);
             clickNum++;
+            isTowerJustCreated = true;
         }
         else
         {

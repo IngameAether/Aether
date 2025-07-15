@@ -7,32 +7,33 @@ namespace Towers.Component
     /// </summary>
     public class ArrowTower : Core.Tower
     {
-        IDamageable damageable;
+        public GameObject waterProjectilePrefab;
+        private float projectileSpeed = 300f;
 
         protected override void Attack()
         {
             if (!currentTarget) return;
 
-            damageable = currentTarget.GetComponent<IDamageable>();
-            if (damageable != null)
-            {
-                Debug.Log($"{gameObject.name}이 {currentTarget.name}에게 {towerSetting.damage}의 피해를 입혔습니다");
-                damageable.TakeDamage(towerSetting.damage);
-            }
+            SpawnProjectile();
 
             Animator mouthAnimator = transform.Find("Mouth")?.GetComponent<Animator>();
             Animator scaleAnimator = GetComponent<Animator>();
-
-            if (mouthAnimator != null)
+            if (mouthAnimator != null && scaleAnimator != null)
             {
-                Debug.Log("{mouth}: Animator 실행");
                 mouthAnimator.SetTrigger("CanAttack");
-            }
-
-            if (scaleAnimator != null)
-            {
-                Debug.Log("{scale}: Animator 실행");
                 scaleAnimator.SetTrigger("CanAttack");
+                Debug.Log("Animation 실행");
+            }
+        }
+        
+        // 투사체 생성 및 발사
+        private void SpawnProjectile()
+        {
+            GameObject waterProjectile = Instantiate(waterProjectilePrefab, transform.position, Quaternion.identity);
+            var waterProjectileScript = waterProjectile.GetComponent<TowerAttack>();
+            if (waterProjectileScript != null )
+            {
+                waterProjectileScript.Initialize(towerSetting.damage, currentTarget, direction, projectileSpeed);
             }
         }
     }
