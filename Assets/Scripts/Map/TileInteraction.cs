@@ -4,31 +4,35 @@ using UnityEngine;
 
 public class TileInteraction : MonoBehaviour
 {
-    Tile tile;
-    public static GameObject[] staticElementPrefabs;  // Àü¿ª º¯¼ö·Î ¼±¾ğ(¸ğµç tileÀÌ °øÀ¯ÇÒ ³»¿ëÀÌ¹Ç·Î)
+    public Tile tile;
+    public static GameObject[] staticElementPrefabs;  // ì „ì—­ ë³€ìˆ˜ë¡œ ì„ ì–¸(ëª¨ë“  tileì´ ê³µìœ í•  ë‚´ìš©ì´ë¯€ë¡œ)
     public static GameObject[] staticTowerPrefabs;
-    public static int clickNum = 0;  // ÀüÃ¼¿¡¼­ Å¬¸¯ È½¼ö¸¦ °øÀ¯ÇØ¾ß ÇÏ¹Ç·Î static ¼±¾ğ
-    public static bool isTowerJustCreated = false;  // Å¸ÀÏÀ» Å¬¸¯ÇØ Å¸¿ö°¡ ¹èÄ¡µÈ °ÍÀÎÁö Å¸¿ö¸¦ Å¬¸¯ÇÑ °ÍÀÎÁö ±¸ºĞÇÏ±â À§ÇØ
+    public static int clickNum = 0;  // ì „ì²´ì—ì„œ í´ë¦­ íšŸìˆ˜ë¥¼ ê³µìœ í•´ì•¼ í•˜ë¯€ë¡œ static ì„ ì–¸
+    public static bool isTowerJustCreated = false;  // Å¸ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½
+    
+    private BoxCollider2D _boxCollider2D;
 
-    void Start()
+    private void Start()
     {
         tile = GetComponent<Tile>();
+        _boxCollider2D = GetComponent<BoxCollider2D>();
     }
 
     private void OnMouseDown()
     {
-        if (Time.timeScale == 0f) return;   // °ÔÀÓÀÌ ¸ØÃß¸é Å¬¸¯ µî »óÈ£ÀÛ¿ë ¹«½Ã
+        if (Time.timeScale == 0f) return;   // ê²Œì„ì´ ë©ˆì¶”ë©´ í´ë¦­ ë“± ìƒí˜¸ì‘ìš© ë¬´ì‹œ
 
         tile.ChangeCurrentTileColor();
         tile.PrintTileInfo();
 
         if (!tile.isBuild || !tile.isElementBuild) return;
-
-        // Å¸ÀÏ Ã¹ Å¬¸¯Àº Å¸¿ö ¹èÄ¡µÇ°Ô: ³ªÁß¿¡ µÇµ¹¸± ¿¹Á¤
-        int ranNum = 0; GameObject elementObj = null;
+        
+        GameObject elementObj = null;
+        int ranNum = 0; 
+        
         if (clickNum == 0)
         {
-            elementObj = Instantiate(staticTowerPrefabs[0], tile.transform.position, Quaternion.identity);
+            elementObj = PlacedTower(staticTowerPrefabs[0]);
             clickNum++;
             isTowerJustCreated = true;
         }
@@ -38,15 +42,34 @@ public class TileInteraction : MonoBehaviour
             elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
             clickNum++;
         }
-        //int ranNum = Random.Range(0, staticElementPrefabs.Length);
-        //GameObject elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
-
-        // ¿ø¼Ò°¡ ¹èÄ¡µÈ Å¸ÀÏ ÀúÀå
+        
+        // ì›ì†Œê°€ ë°°ì¹˜ëœ íƒ€ì¼ ì €ì¥
         ElementController ec = elementObj.GetComponent<ElementController>();
-        if (ec != null) ec.selectTile = tile;
+        if (ec != null)
+        {
+            ec.Initialize(this);
+            ec.selectTile = tile;
+        }
 
-        Debug.Log($"¼ÒÈ¯µÈ ¿ø¼Ò: {staticElementPrefabs[ranNum]}");
+        Debug.Log($"ì†Œí™˜ëœ ì›ì†Œ: {staticElementPrefabs[ranNum]}");
+        _boxCollider2D.enabled = false;
         tile.isElementBuild = false;
         tile.element = elementObj;
+    }
+
+    public GameObject PlacedTower(GameObject prefab)
+    {
+        var elementObj = Instantiate(prefab, tile.transform.position, Quaternion.identity);
+        tile.isElementBuild = false;
+        tile.element = elementObj;
+        return elementObj;
+    }
+    
+    public void TileReset()
+    {
+        tile.isElementBuild = true;
+        Destroy(tile.element.gameObject);
+        tile.element = null;
+        _boxCollider2D.enabled = true;
     }
 }

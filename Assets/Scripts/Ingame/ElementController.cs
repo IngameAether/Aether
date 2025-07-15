@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Towers.Core;
 using UnityEngine;
 
 public class ElementController : MonoBehaviour
@@ -8,7 +9,10 @@ public class ElementController : MonoBehaviour
     private bool isDrag = false;
     private Vector3 offset;
     private SaleController saleZone;
+    public TileInteraction tileInteraction;
+    public ElementType type;
     bool isOver;
+    public bool isClick;
     public Tile selectTile;
 
     void Start()
@@ -16,12 +20,26 @@ public class ElementController : MonoBehaviour
         saleZone = FindObjectOfType<SaleController>();
     }
 
+    public void Initialize(TileInteraction tileInteraction)
+    {
+        this.tileInteraction = tileInteraction;
+    }
+
     void OnMouseDown()
     {
         isDrag = true;
-        // ¸¶¿ì½º¿Í ¿ÀºêÁ§Æ® »çÀÌÀÇ °£°İ À¯ÁöÇØ¼­ ÀÚ¿¬½º·´°Ô µå·¡±×ÇÏ±â À§ÇÔ
+        // ï¿½ï¿½ï¿½ì½ºï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¼ï¿½ ï¿½Ú¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½å·¡ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½
         Vector3 mousePosition = GetMouseWorldPosition();
         offset = transform.position - mousePosition;
+
+        if (isClick)
+        {
+            Debug.LogError("isClick Trueì¸ë°???????");
+            return;
+        }
+        isClick = true;
+        Debug.LogWarning("ì›ì†Œ í´ë¦­í•¨");
+        TowerCombiner.Instance.SelectElement(this);
     }
 
     void OnMouseDrag()
@@ -51,6 +69,7 @@ public class ElementController : MonoBehaviour
                 }
                 Destroy(gameObject);
                 SaleController.coin += 10;
+                TowerCombiner.Instance.ClearSelectedElements();
             }
         }
         saleZone?.SetHighlightColor(false); // if saleZone != null
@@ -59,11 +78,11 @@ public class ElementController : MonoBehaviour
 
     Vector3 GetMouseWorldPosition()
     {
-        // ¸¶¿ì½ºÀÇ position °¡Á®¿À±â
+        // ï¿½ï¿½ï¿½ì½ºï¿½ï¿½ position ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         Vector3 mousePosition = Input.mousePosition;
-        // Á¤È®ÇÑ ¿ùµå ÁÂÇ¥·Î º¯È¯ÇÏ±â À§ÇØ
+        // ï¿½ï¿½È®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½
         mousePosition.z = -Camera.main.transform.position.z; ;
-        // Main Camera ÁÂÇ¥°è¸¦ Àû¿ëÇÏ¿© ¸¶¿ì½ºÀÇ ¿ùµå ÁÂÇ¥ ¾ò±â
+        // Main Camera ï¿½ï¿½Ç¥ï¿½è¸¦ ï¿½ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ï¿½ì½ºï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         return mousePosition;
     }
