@@ -9,10 +9,13 @@ public class TileInteraction : MonoBehaviour
     public static GameObject[] staticTowerPrefabs;
     public static int clickNum = 0;  // 전체에서 클릭 횟수를 공유해야 하므로 static 선언
     public static bool isTowerJustCreated = false;  // Ÿ���� Ŭ���� Ÿ���� ��ġ�� ������ Ÿ���� Ŭ���� ������ �����ϱ� ����
+    
+    private BoxCollider2D _boxCollider2D;
 
     private void Start()
     {
         tile = GetComponent<Tile>();
+        _boxCollider2D = GetComponent<BoxCollider2D>();
     }
 
     private void OnMouseDown()
@@ -49,6 +52,7 @@ public class TileInteraction : MonoBehaviour
         }
 
         Debug.Log($"소환된 원소: {staticElementPrefabs[ranNum]}");
+        _boxCollider2D.enabled = false;
         tile.isElementBuild = false;
         tile.element = elementObj;
     }
@@ -66,5 +70,6 @@ public class TileInteraction : MonoBehaviour
         tile.isElementBuild = true;
         Destroy(tile.element.gameObject);
         tile.element = null;
+        _boxCollider2D.enabled = true;
     }
 }
