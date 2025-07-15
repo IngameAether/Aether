@@ -19,6 +19,7 @@ namespace Towers.Core
         [SerializeField] private TMP_Text towerStatsText;
         [SerializeField] private Button flipButton;
         [SerializeField] private Button sellButton; // (나중에 추가)
+        [SerializeField] private Image towerIndicateImg;
 
         //[Header("Range Display")] [SerializeField]
         //private GameObject rangeIndicator;
@@ -86,6 +87,7 @@ namespace Towers.Core
         {
             infoPanelUI.SetActive(false);
             //rangeIndicator.SetActive(false);
+            towerIndicateImg.enabled = false;
 
             flipButton.onClick.AddListener(FlipSelectedTower);
 
@@ -103,6 +105,9 @@ namespace Towers.Core
 
             // 타워 정보 표시
             ShowTowerInfo(tower);
+
+            // 타워 가리키는 원 표시
+            ShowTowerCircle(tower);
 
             // 사거리 표시
             //ShowRange(tower);
@@ -160,6 +165,17 @@ namespace Towers.Core
             infoPanelUI.SetActive(true);
         }
 
+        // 타워 가리키는 원 표시
+        private void ShowTowerCircle(Tower tower)
+        {
+            Vector3 towerWorldPos = tower.transform.position;
+            Vector3 towerScreenPos = _camera.WorldToScreenPoint(towerWorldPos);
+            Vector2 targetScreenPos = new Vector2(towerScreenPos.x, towerScreenPos.y);
+
+            towerIndicateImg.rectTransform.position = targetScreenPos;
+            towerIndicateImg.enabled = true;
+        }
+
         /// <summary>
         /// 사거리 표시
         /// </summary>
@@ -192,6 +208,7 @@ namespace Towers.Core
         {
             infoPanelUI.SetActive(false);
             //rangeIndicator.SetActive(false);
+            towerIndicateImg.enabled = false;
 
             currentSelectedTower = null;
         }
