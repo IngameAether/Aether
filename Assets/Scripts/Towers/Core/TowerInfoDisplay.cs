@@ -155,12 +155,13 @@ namespace Towers.Core
             var towerSetting = tower.GetTowerSetting();
 
             towerNameText.text = towerSetting.name;
-            towerDescriptionText.text = towerSetting.description;
+            //towerDescriptionText.text = towerSetting.description;
 
             towerStatsText.text = $"Rank: {towerSetting.rank}\n" +
-                                  $"Atk: {towerSetting.damage}\n" +
+                                  $"Attack: {towerSetting.damage}\n" +
+                                  $"Atk Range: {towerSetting.range}" +
                                   $"Atk Delay: {towerSetting.attackDelay}sec\n" +
-                                  $"Atk Range: {towerSetting.range}";
+                                  $"Critical Hit: {towerSetting.criticalHit}";
 
             infoPanelUI.SetActive(true);
         }
@@ -183,7 +184,7 @@ namespace Towers.Core
         //{
         //    rangeIndicator.transform.position = tower.GetPosition();
 
-        //    // 사거리에 맞게 크기 조정
+        //    사거리에 맞게 크기 조정
         //    float range = tower.GetTowerSetting().range;
         //    rangeIndicator.transform.localScale = Vector3.one * (range * 1.85f);
 

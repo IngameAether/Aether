@@ -16,6 +16,7 @@ namespace Towers.Core
         [field: SerializeField] public float damage { get; private set; }
         [field: SerializeField] public float attackDelay { get; private set; }
         [field: SerializeField] public float range { get; private set; }
+        [field: SerializeField] public float criticalHit { get; private set; }
     }
 
     public abstract class Tower : MonoBehaviour

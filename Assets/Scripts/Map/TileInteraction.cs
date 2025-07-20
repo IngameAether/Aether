@@ -28,21 +28,24 @@ public class TileInteraction : MonoBehaviour
         if (!tile.isBuild || !tile.isElementBuild) return;
         
         GameObject elementObj = null;
-        int ranNum = 0; 
-        
-        if (clickNum == 0)
-        {
-            elementObj = PlacedTower(staticTowerPrefabs[0]);
-            clickNum++;
-            isTowerJustCreated = true;
-        }
-        else
-        {
-            ranNum = Random.Range(0, staticElementPrefabs.Length);
-            elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
-            clickNum++;
-        }
-        
+        int ranNum = 0;
+
+        //if (clickNum == 0)
+        //{
+        //    elementObj = PlacedTower(staticTowerPrefabs[0]);
+        //    clickNum++;
+        //    isTowerJustCreated = true;
+        //}
+        //else
+        //{
+        //    ranNum = Random.Range(0, staticElementPrefabs.Length);
+        //    elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
+        //    clickNum++;
+        //}
+
+        ranNum = Random.Range(0, staticElementPrefabs.Length);
+        elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
+
         // 원소가 배치된 타일 저장
         ElementController ec = elementObj.GetComponent<ElementController>();
         if (ec != null)
