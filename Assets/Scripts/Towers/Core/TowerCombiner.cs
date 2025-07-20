@@ -50,10 +50,10 @@ namespace Towers.Core
         {
             _elementTowerMap = new Dictionary<ElementType, GameObject>
             {
-                { ElementType.Fire, waterPrefab },
+                { ElementType.Fire, firePrefab },
                 { ElementType.Water, waterPrefab },
-                { ElementType.Earth, waterPrefab },
-                { ElementType.Air, waterPrefab },
+                { ElementType.Earth, earthPrefab },
+                { ElementType.Air, airPrefab },
             };
         }
 

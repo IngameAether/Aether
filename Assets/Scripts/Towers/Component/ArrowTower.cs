@@ -7,7 +7,7 @@ namespace Towers.Component
     /// </summary>
     public class ArrowTower : Core.Tower
     {
-        public GameObject waterProjectilePrefab;
+        public GameObject projectilePrefab;
         private float projectileSpeed = 300f;
 
         protected override void Attack()
@@ -29,11 +29,11 @@ namespace Towers.Component
         // 투사체 생성 및 발사
         private void SpawnProjectile()
         {
-            GameObject waterProjectile = Instantiate(waterProjectilePrefab, transform.position, Quaternion.identity);
-            var waterProjectileScript = waterProjectile.GetComponent<TowerAttack>();
-            if (waterProjectileScript != null )
+            GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
+            var projectileScript = projectile.GetComponent<TowerAttack>();
+            if (projectileScript != null )
             {
-                waterProjectileScript.Initialize(towerSetting.damage, currentTarget, direction, projectileSpeed);
+                projectileScript.Initialize(towerSetting.damage, currentTarget, direction, projectileSpeed);
             }
         }
     }
