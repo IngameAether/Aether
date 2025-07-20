@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -63,7 +64,7 @@ public class EnemyMovement : MonoBehaviour
             float step = currentMoveSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
             // 목표 위치에 거의 도달했는지 확인
-            if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
+            if (Vector3.Distance(transform.position, targetPosition) < 0.5f)
             {
                 // 다음 웨이포인트로 이동 목표 변경
                 currentWaypointIndex++;
@@ -71,8 +72,9 @@ public class EnemyMovement : MonoBehaviour
         }
         else
         {
+            if (Vector3.Distance(transform.position, waypoints[^1]) < 0.5f) ReachedEndOfPath();
             // 경로 이동이 완료됐다면
-            ReachedEndOfPath();
+            //ReachedEndOfPath();
         }
     }
     // 경로의 끝에 도달했을 때 호출되는 메소드

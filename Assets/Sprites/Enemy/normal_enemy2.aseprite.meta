@@ -2,7 +2,12 @@ fileFormatVersion: 2
 guid: dbfb65909a1f46f4fb2263388c67e797
 ScriptedImporter:
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:AnimationClip
+      assembly: UnityEngine.AnimationModule
+      name: normal_enemy2_Clip
+    second: {fileID: 7400000, guid: b4414412dcd95ad409cb16a6a0e4bd53, type: 2}
   serializedVersion: 2
   userData: 
   assetBundleName: 
@@ -98,7 +103,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638881492450082228
+  platformSettingsDirtyTick: 638886459220243597
   textureAssetName: 
   singleSpriteImportData:
   - name: 

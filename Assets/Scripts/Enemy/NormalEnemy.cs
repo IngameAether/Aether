@@ -15,11 +15,11 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     public float moveSpeed = 2f;
     
     // 마법 저항력 (Magic Resistance)
-    [Range(5, 50)] // Inspector 창에서 5~50 사이의 값만 입력 가능하도록 설정
+    [Range(0, 50)] // Inspector 창에서 5~50 사이의 값만 입력 가능하도록 설정
     public int magicResistance = 5; // 기본 마법 저항력을 5%로 설정
 
     // 정신력 (Mental Strength, 강인함 효과)
-    [Range(10, 100)] // Inspector 창에서 10~100 사이의 값만 입력 가능하도록 설정
+    [Range(0, 100)] // Inspector 창에서 10~100 사이의 값만 입력 가능하도록 설정
     public int mentalStrength = 10; // 기본 정신력을 10%로 설정
 
     // 체력 바 이미지를 연결할 변수

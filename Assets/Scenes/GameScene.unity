@@ -2859,6 +2859,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d26f27856ee105439031e9936ad39f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  enemyPrefabs:
+  - {fileID: 5417002623811271532, guid: b33a8bbd5b62d0e498d1a82dc8f8f8f9, type: 3}
+  - {fileID: 5417002623811271532, guid: 577f837b52c252d49ba0a5f379d7bae7, type: 3}
+  - {fileID: 5417002623811271532, guid: b33a8bbd5b62d0e498d1a82dc8f8f8f9, type: 3}
   enemyPrefab: {fileID: 5417002623811271532, guid: b33a8bbd5b62d0e498d1a82dc8f8f8f9, type: 3}
   mapManage: {fileID: 98405527}
   waves:

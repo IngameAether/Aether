@@ -7,18 +7,9 @@ public class SpawnManager : MonoBehaviour
 {
     [Header("적 스폰 설정")]
     // 스폰할 적 프리탭
+    public GameObject[] enemyPrefabs;
     public GameObject enemyPrefab;
     public MapManage mapManage; // MapManage 스크립트 레퍼런스
-
-    /*
-    [Header("스폰 타이밍 설정")]
-    // 스폰 시작까지 대기 시간
-    public float startDelay = 1f;
-    // 적 스폰 간격
-    public float spawnInterval = 0.5f;
-    // 스폰할 적의 총 마릿수
-    public int numberOfEnemiesToSpawn = 20;
-    */
 
     [Header("웨이브 설정")]
     public List<Wave> waves;
@@ -29,6 +20,7 @@ public class SpawnManager : MonoBehaviour
     private int enemiesSpawnedInCurrentWave = 0;
     // 스폰이 현재 진행 중인지 확인하는 플래그
     private bool isSpawning = false;
+    private static int currentWaveLevel = 0;
 
     private void Start()
     {
@@ -64,11 +56,20 @@ public class SpawnManager : MonoBehaviour
             isSpawning = false;
             yield break; // 경로가 없으면 코루틴 종료
         }
+
+        // 적이 마지막 타일을 벗어나게 하기 위하여 마지막 방향으로 타일 한 칸 더 추가
+        if (path.Count >= 2)
+        {
+            Vector3 dir = (path[^1] - path[^2]).normalized;
+            path.Add(path[^1] + dir);
+        }
+
         // 시작 지연 시간 대기
         yield return new WaitForSeconds(initialDelay);
 
         for (int waveIndex = 0; waveIndex < waves.Count; waveIndex++)
         {
+            currentWaveLevel = waveIndex;
             Wave currentWave = waves[waveIndex];
             Debug.Log($"--- 웨이브 {waveIndex + 1} 시작! (적 {currentWave.numberOfEnemies}마리) ---");
 
@@ -78,7 +79,7 @@ public class SpawnManager : MonoBehaviour
             {
                 Vector3 spawnPosition = path[0]; // 경로의 첫 번째 지점을 스폰 위치로 사용
                 SpawnSingleEnemy(spawnPosition, path);
-                enemiesSpawnedInCurrentWave++;
+                enemiesSpawnedInCurrentWave++;  
 
                 // 현재 웨이브의 모든 적을 스폰하기 전까지는 스폰 간격 대기
                 if (enemiesSpawnedInCurrentWave < currentWave.numberOfEnemies)
@@ -112,7 +113,7 @@ public class SpawnManager : MonoBehaviour
             return;
         }
 
-        GameObject newEnemy = Instantiate(enemyPrefab, initialSpawnPosition, Quaternion.identity);
+        GameObject newEnemy = Instantiate(enemyPrefabs[currentWaveLevel], initialSpawnPosition, Quaternion.identity);
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
         if (enemyMovement != null)
