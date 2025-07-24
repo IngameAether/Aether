@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Towers.Core;
 using UnityEngine;
 
 public class TileInteraction : MonoBehaviour
@@ -9,7 +10,7 @@ public class TileInteraction : MonoBehaviour
     public static GameObject[] staticTowerPrefabs;
     public static int clickNum = 0;  // 전체에서 클릭 횟수를 공유해야 하므로 static 선언
     public static bool isTowerJustCreated = false;  // Ÿ���� Ŭ���� Ÿ���� ��ġ�� ������ Ÿ���� Ŭ���� ������ �����ϱ� ����
-    
+
     private BoxCollider2D _boxCollider2D;
 
     private void Start()
@@ -26,32 +27,47 @@ public class TileInteraction : MonoBehaviour
         tile.PrintTileInfo();
 
         if (!tile.isBuild || !tile.isElementBuild) return;
-        
+
         GameObject elementObj = null;
         int ranNum = 0;
 
-        //if (clickNum == 0)
-        //{
-        //    elementObj = PlacedTower(staticTowerPrefabs[0]);
-        //    clickNum++;
-        //    isTowerJustCreated = true;
-        //}
-        //else
-        //{
-        //    ranNum = Random.Range(0, staticElementPrefabs.Length);
-        //    elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
-        //    clickNum++;
-        //}
+        ElementType assignedElementType = ElementType.None;
 
-        ranNum = Random.Range(0, staticElementPrefabs.Length);
-        elementObj = Instantiate(staticElementPrefabs[ranNum], tile.transform.position, Quaternion.identity);
+        if (clickNum == 0)
+        {
+            elementObj = PlacedTower(staticTowerPrefabs[0]);
+            clickNum++;
+            isTowerJustCreated = true;
+            assignedElementType = ElementType.None;
+        }
+        else
+        {
+            ranNum = Random.Range(0, staticElementPrefabs.Length);
+            GameObject selectedPrefab = staticElementPrefabs[ranNum];
+            ElementController ecFromPrefab = selectedPrefab.GetComponent<ElementController>();
+            if (ecFromPrefab != null)
+            {
+                assignedElementType = ecFromPrefab.type;
+            }
+            else
+            {
+                Debug.LogWarning("프리팹에 ElementController가 없음 or type 할당되지 않음");
+                assignedElementType = ElementType.None;
+            }
+            elementObj = Instantiate(selectedPrefab, tile.transform.position, Quaternion.identity);
+            clickNum++;
+        }
 
         // 원소가 배치된 타일 저장
         ElementController ec = elementObj.GetComponent<ElementController>();
         if (ec != null)
         {
-            ec.Initialize(this);
+            ec.Initialize(this, assignedElementType);
             ec.selectTile = tile;
+        }
+        else
+        {
+            Debug.LogWarning("생성된 elementObj에 ElementController 컴포넌트가 없음, 초기화 불가능");
         }
 
         Debug.Log($"소환된 원소: {staticElementPrefabs[ranNum]}");
@@ -67,7 +83,7 @@ public class TileInteraction : MonoBehaviour
         tile.element = elementObj;
         return elementObj;
     }
-    
+
     public void TileReset()
     {
         tile.isElementBuild = true;

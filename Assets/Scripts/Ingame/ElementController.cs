@@ -8,27 +8,25 @@ public class ElementController : MonoBehaviour
 {
     private bool isDrag = false;
     private Vector3 offset;
-    private SaleController saleZone;
+    private Vector3 initialPosition;
     public TileInteraction tileInteraction;
     public ElementType type;
-    bool isOver;
-    public bool isClick;
+    public bool isClick = false;
     public Tile selectTile;
 
-    void Start()
-    {
-        saleZone = FindObjectOfType<SaleController>();
-    }
+    void Start() { }
 
-    public void Initialize(TileInteraction tileInteraction)
+    public void Initialize(TileInteraction tileInteraction, ElementType elementType)
     {
+        this.type = elementType;
         this.tileInteraction = tileInteraction;
     }
 
     void OnMouseDown()
     {
         isDrag = true;
-        // ���콺�� ������Ʈ ������ ���� �����ؼ� �ڿ������� �巡���ϱ� ����
+        initialPosition = transform.position;
+
         Vector3 mousePosition = GetMouseWorldPosition();
         offset = transform.position - mousePosition;
 
@@ -48,11 +46,6 @@ public class ElementController : MonoBehaviour
         {
             Vector3 mousePosition = GetMouseWorldPosition();
             transform.position = mousePosition + offset;
-
-            Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position);
-            isOver = RectTransformUtility.RectangleContainsScreenPoint(saleZone.RectTransform, screenPos, null);
-
-            saleZone.SetHighlightColor(isOver);
         }
     }
 
@@ -60,30 +53,21 @@ public class ElementController : MonoBehaviour
     {
         if (isDrag)
         {
-            if (isOver)
-            {
-                if (selectTile != null)
-                {
-                    selectTile.isElementBuild = true;
-                    selectTile.element = null;
-                }
-                Destroy(gameObject);
-                SaleController.coin += 10;
-                TowerCombiner.Instance.ClearSelectedElements();
-            }
+            transform.position = initialPosition;
         }
-        saleZone?.SetHighlightColor(false); // if saleZone != null
         isDrag = false;
     }
 
     Vector3 GetMouseWorldPosition()
     {
-        // ���콺�� position ��������
         Vector3 mousePosition = Input.mousePosition;
-        // ��Ȯ�� ���� ��ǥ�� ��ȯ�ϱ� ����
         mousePosition.z = -Camera.main.transform.position.z; ;
-        // Main Camera ��ǥ�踦 �����Ͽ� ���콺�� ���� ��ǥ ���
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         return mousePosition;
+    }
+
+    public void DeselectElement()
+    {
+        isClick = false;
     }
 }
