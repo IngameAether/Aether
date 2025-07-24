@@ -112,8 +112,8 @@ Transform:
   m_GameObject: {fileID: 5584138857135854208}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.2795824, y: -0.78158313, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5288655795794218834}
@@ -187,9 +187,9 @@ MonoBehaviour:
     <name>k__BackingField: "\uD14C\uC2A4\uD2B8 \uD0C0\uC6CC"
     <description>k__BackingField: "\uD14C\uC2A4\uD2B8"
     <rank>k__BackingField: 1
-    <damage>k__BackingField: 2
+    <damage>k__BackingField: 10
     <attackDelay>k__BackingField: 2
-    <range>k__BackingField: 5
+    <range>k__BackingField: 2
 --- !u!58 &8300866107100621093
 CircleCollider2D:
   m_ObjectHideFlags: 0

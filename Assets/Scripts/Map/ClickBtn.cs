@@ -16,12 +16,14 @@ public class ClickBtn : MonoBehaviour
         mapManage.ResetMap();
     }
 
+    /*
     public void OnStartBtnClicked()
     {
         print("게임 시작");
         // SpawnManager의 StartSpawn 메서드를 호출하여 적 스폰 시작
         spawnManager.StartSpawningFromButton();
     }
+    */
 
     public void OnTileClicked()
     {

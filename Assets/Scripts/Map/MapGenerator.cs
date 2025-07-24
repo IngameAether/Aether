@@ -6,7 +6,7 @@ public class MapGenerator : MonoBehaviour
 {
     const int SIZE = 8;
     const int PATH_LENGTH = 22;
-    int[,] mapTiles = new int[SIZE, SIZE];  // 1=타일 지나가는 경로, 0=벽
+    int[,] mapTiles = new int[SIZE, SIZE];  // 1=적 지나가는 경로, 0=타워 설치 가능한 곳
     Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
     Vector2Int startTile, endTile;  // 입구, 출구
@@ -20,14 +20,6 @@ public class MapGenerator : MonoBehaviour
     private List<Vector2Int> pathTiles = new List<Vector2Int>();
     private HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
 
-    //void Start()
-    //{
-    //    mapRenderer = GetComponent<MapRenderer>();
-    //    generateMap();
-    //    printGrid();
-    //    mapRenderer.RenderMap(mapTiles);
-    //}
-
     public int[,] generateMap()
     {
         // 초기화
@@ -36,7 +28,7 @@ public class MapGenerator : MonoBehaviour
         bool successMap = false;
         int attemptsMap = 0;
 
-        while (!successMap && attemptsMap < 5)
+        while (!successMap && attemptsMap < 10)
         {
             successMap = findvalidTile();
             attemptsMap++;
@@ -46,15 +38,14 @@ public class MapGenerator : MonoBehaviour
         {
             Debug.Log(startTile);
             Debug.Log(endTile);
-
+            return mapTiles;
         }
 
         else
         {
             Debug.Log("경로 생성 실패");
+            return null;
         }
-
-        return mapTiles;
     }
 
     // 적합한 경로를 못 찾을 경우에 입,출구부터 다시 지정하게 하기 위해 generateMap() 메소드와 분리
@@ -64,8 +55,8 @@ public class MapGenerator : MonoBehaviour
         pathTiles.Clear();
         visited.Clear();
         // 맵 그림의 허용된 입구 중 하나를 랜덤으로 선택
-        int randomIndex = Random.Range(0, allowedStartIndices.Count);
-        startTile = allowedStartIndices[randomIndex];
+        //int randomIndex = Random.Range(0, allowedStartIndices.Count);
+        //startTile = allowedStartIndices[randomIndex];
 
         do
         {
@@ -105,15 +96,6 @@ public class MapGenerator : MonoBehaviour
             }
         }
 
-        //if (success)
-        //{
-        //    pathTiles.Add(endTile);
-        //    foreach (var tile in pathTiles)
-        //    {
-        //        mapTiles[tile.x, tile.y] = 1;
-        //    }
-        //}
-
         return success;
     }
 
@@ -148,7 +130,6 @@ public class MapGenerator : MonoBehaviour
         }
 
         Vector2Int[] sortedDirs = SortedDirections(current, end);
-        //Shuffle(directions);
         foreach (var dir in sortedDirs)
         {
             Vector2Int next = current + dir;
@@ -180,16 +161,6 @@ public class MapGenerator : MonoBehaviour
             return dist1.CompareTo(dist2);  // 오름차순 정렬
         });
         return dirList.ToArray();   // list를 배열로 변환후 반환
-    }
-
-    // 피셔-에이츠 셔플 알고리즘 사용
-    private void Shuffle(Vector2Int[] array)
-    {
-        for (int i = 0; i < array.Length; i++)
-        {
-            int ran = Random.Range(i, array.Length);
-            (array[i], array[ran]) = (array[ran], array[i]);
-        }
     }
 
     // 다음 타일 유효성 검사

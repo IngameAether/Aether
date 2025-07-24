@@ -1,111 +1,157 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using TMPro;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [Header("Àû ½ºÆù ¼³Á¤")]
-    // ½ºÆùÇÒ Àû ÇÁ¸®ÅÇ
+    [Header("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public GameObject enemyPrefab;
-    public MapManage mapManage; // MapManage ½ºÅ©¸³Æ® ·¹ÆÛ·±½º
+    public MapManage mapManage; // MapManage ï¿½ï¿½Å©ï¿½ï¿½Æ® ï¿½ï¿½ï¿½Û·ï¿½ï¿½ï¿½
 
-    [Header("½ºÆù Å¸ÀÌ¹Ö ¼³Á¤")]
-    // ½ºÆù ½ÃÀÛ±îÁö ´ë±â ½Ã°£
-    public float startDelay = 1f;
-    // Àû ½ºÆù °£°Ý
-    public float spawnInterval = 0.5f;
-    // ½ºÆùÇÒ ÀûÀÇ ÃÑ ¸¶¸´¼ö
-    public int numberOfEnemiesToSpawn = 20;
-    // ÇöÀç±îÁö ½ºÆùµÈ Àû ¼ö
-    private int enemiesSpawned = 0;
-    // ½ºÆùÀÌ ÇöÀç ÁøÇà ÁßÀÎÁö È®ÀÎÇÏ´Â ÇÃ·¡±×
+    [Header("UI")]
+    [SerializeField] private GameObject gameOverUI;
+    [SerializeField] private TMP_Text waveText;
+
+    [Header("ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    public List<Wave> waves;
+    public float initialDelay = 1f; // Ã¹ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    public float waveBreakTime = 10f; // ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½
+    
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½
     private bool isSpawning = false;
+    private float _currentEndTime;
+    private int _reachedEndEnemyCount = 0;
+    private Coroutine _spawnCoroutine;
 
     private void Start()
     {
-        // Inspector¿¡¼­ ÇÁ¸®ÆÕ°ú MapManage ·¹ÆÛ·±½º°¡ ¿¬°áµÇ¾ú´ÂÁö È®ÀÎ
+        // Inspectorï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ°ï¿½ MapManage ï¿½ï¿½ï¿½Û·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ï¿½ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         if (enemyPrefab == null)
         {
-            Debug.LogError("SpawnManager: ½ºÆùÇÒ Àû ÇÁ¸®ÆÕÀÌ ÁöÁ¤µÇÁö ¾Ê¾Ò½À´Ï´Ù!");
+            Debug.LogError("SpawnManager: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½!");
+            return;
         }
         if (mapManage == null)
         {
-            Debug.LogError("SpawnManager: MapManage ·¹ÆÛ·±½º°¡ ÁöÁ¤µÇÁö ¾Ê¾Ò½À´Ï´Ù!");
-        }
-        Debug.Log("SpawnManager ÃÊ±âÈ­ ¿Ï·á. Start ¹öÆ° Å¬¸¯ ´ë±â Áß.");
-    }
-
-    // ClickBtn ½ºÅ©¸³Æ®ÀÇ Start ¹öÆ° Å¬¸¯ ÀÌº¥Æ®¿¡ ¿¬°áµÉ public ¸Þ¼­µå
-    public void StartSpawningFromButton()
-    {
-        if (enemyPrefab == null || mapManage == null)
-        {
-            Debug.LogError("½ºÆù ½ÃÀÛ ºÒ°¡: Àû ÇÁ¸®ÆÕ ¶Ç´Â MapManage ·¹ÆÛ·±½º°¡ ´©¶ôµÇ¾ú½À´Ï´Ù.");
+            Debug.LogError("SpawnManager: MapManage ï¿½ï¿½ï¿½Û·ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¾Ò½ï¿½ï¿½Ï´ï¿½!");
             return;
         }
-
-        if (isSpawning)
+        if (waves == null || waves.Count == 0)
         {
-            Debug.LogWarning("SpawnManager: ÀÌ¹Ì ½ºÆùÀÌ ÁøÇà ÁßÀÔ´Ï´Ù.");
+            Debug.LogError("SpawnManager: ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½Ï´ï¿½!");
             return;
         }
+        
+        gameOverUI.SetActive(false);
+        waveText.text = "0 wave";
 
-        // ½ºÆù ÄÚ·çÆ¾ ½ÃÀÛ
-        Debug.Log("Start ¹öÆ° Å¬¸¯! Àû ½ºÆù ½ÃÀÛ ÄÚ·çÆ¾ ½ÃÀÛ.");
-        StartCoroutine(SpawnEnmiesRoutine());
+        EnemyMovement.OnReachEndPoint += HandleReachedEndEnemy;
+        
+        Debug.Log("SpawnManager ï¿½Ê±ï¿½È­ ï¿½Ï·ï¿½. Start ï¿½ï¿½Æ° Å¬ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½.");
+        _spawnCoroutine = StartCoroutine(SpawnEnmiesRoutine());
     }
 
     IEnumerator SpawnEnmiesRoutine()
     {
-        isSpawning = true; // ½ºÆù ½ÃÀÛ ÇÃ·¡±× ¼³Á¤
-        enemiesSpawned = 0; // ½ºÆùµÈ Àû ¼ö ÃÊ±âÈ­
+        isSpawning = true; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-        // MapManage·ÎºÎÅÍ »ý¼ºµÈ °æ·Î µ¥ÀÌÅÍ¸¦ °¡Á®¿È
+        // MapManageï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         List<Vector3> path = mapManage.GetPathWorldPositions();
-        // ½ÃÀÛ Áö¿¬ ½Ã°£ ´ë±â
-        yield return new WaitForSeconds(startDelay);
-
-        while (enemiesSpawned < numberOfEnemiesToSpawn)
+        if (path == null || path.Count == 0)
         {
-            // °æ·ÎÀÇ Ã¹ ¹øÂ° ÁöÁ¡À» ½ºÆù À§Ä¡·Î »ç¿ë
-            Vector3 spawnPosition = path[0];
-
-            // Àû ÇÏ³ª ½ºÆù ¹× °æ·Î ¼³Á¤
-            SpawnSingleEnemy(spawnPosition, path); // ¾Æ·¡ ¸Þ¼­µå È£Ãâ
-            enemiesSpawned++;   // ½ºÆùµÈ Àû ¼ö Áõ°¡
-
-            if (enemiesSpawned >= numberOfEnemiesToSpawn)
-            {
-                Debug.Log("¸ðµç Àû ½ºÆù ¿Ï·á");
-                break; // ·çÇÁ Á¾·á
-            }
-            yield return new WaitForSeconds(spawnInterval);
+            Debug.LogError("SpawnManager: ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½. ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½.");
+            isSpawning = false;
+            yield break; // ï¿½ï¿½Î°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú·ï¿½Æ¾ ï¿½ï¿½ï¿½ï¿½
         }
-        isSpawning = false; // ½ºÆù Á¾·á ÇÃ·¡±× ¼³Á¤
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½
+        yield return new WaitForSeconds(initialDelay);
+
+        for (int waveIndex = 0; waveIndex < waves.Count; waveIndex++)
+        {
+            waveText.text = $"{waveIndex + 1} wave";
+            
+            yield return new WaitForSeconds(waves[waveIndex].startTime);
+            
+            Wave currentWave = waves[waveIndex];
+            Debug.Log($"--- ï¿½ï¿½ï¿½Ìºï¿½ {waveIndex + 1} ï¿½ï¿½ï¿½ï¿½!---");
+            
+            _currentEndTime = Time.time + waves[waveIndex].endTime;
+
+            while (Time.time <= _currentEndTime)
+            {
+                Vector3 spawnPosition = path[0]; // ï¿½ï¿½ï¿½ï¿½ï¿½ Ã¹ ï¿½ï¿½Â° ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½
+                SpawnSingleEnemy(spawnPosition, path);
+
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+                if (Time.time <= _currentEndTime)
+                {
+                    yield return new WaitForSeconds(currentWave.spawnInterval);
+                }
+            }
+
+            Debug.Log($"--- ï¿½ï¿½ï¿½Ìºï¿½ {waveIndex + 1} ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½. ---");
+
+            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºê°¡ ï¿½Æ´Ï¶ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ ï¿½ï¿½ï¿½ï¿½
+            if (waveIndex < waves.Count - 1)
+            {
+                Debug.Log($"ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ï¿½ {waveBreakTime}ï¿½ï¿½ ï¿½ï¿½ï¿½...");
+                yield return new WaitForSeconds(waveBreakTime);
+            }
+            else
+            {
+                Debug.Log("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½Ï·ï¿½!");
+            }
+        }
+
+        isSpawning = false; // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
     void SpawnSingleEnemy(Vector3 initialSpawnPosition, List<Vector3> path)
     {
         if (enemyPrefab == null)
         {
-            Debug.LogError("½ºÆùÇÒ Àû ÇÁ¸®ÆÕÀ» ÁöÁ¤ÇØ¾ßÇÔ");
+            Debug.LogError("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ø¾ï¿½ï¿½ï¿½");
             return;
         }
 
-        // Àû ÇÁ¸®ÆÕ ÀÎ½ºÅÏ½º »ý¼º (ÁöÁ¤µÈ ½ºÆù À§Ä¡¿Í È¸Àü ¾øÀÌ)
         GameObject newEnemy = Instantiate(enemyPrefab, initialSpawnPosition, Quaternion.identity);
-
-        // »ý¼ºµÈ Àû ¿ÀºêÁ§Æ®¿¡¼­ EnemyMovement ½ºÅ©¸³Æ® °¡Á®¿À±â
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
         if (enemyMovement != null)
         {
-            // EnemyMovement ½ºÅ©¸³Æ®ÀÇ SetInitialPosition ¸Þ¼­µå È£Ãâ
             enemyMovement.SetInitialPosition(initialSpawnPosition);
-            // °¡Á®¿Â °æ·Î(Vector3 ¸®½ºÆ®) Àü´Þ
-            enemyMovement.SetPath(path); 
+            enemyMovement.SetPath(path);
+        }
+        else
+        {
+            Debug.LogError("SpawnManager: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Õ¿ï¿½ EnemyMovement ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
     }
 
+    private void GameOver()
+    {
+        // ê²Œìž„ ëë‚˜ëŠ” ê¸°ì¤€ì´ ì—†ìŒ. ì  5ëª… ì§€ë‚˜ê°€ë©´ ëë‚˜ëŠ”ê±¸ë¡œ ì„¤ì •
+        StopCoroutine(_spawnCoroutine);
+        gameOverUI.SetActive(true);
+    }
+
+    private void HandleReachedEndEnemy()
+    {
+        _reachedEndEnemyCount++;
+        if (_reachedEndEnemyCount >= 5)
+        {
+            GameOver();
+        }
+    }
+}
+
+[System.Serializable] 
+public class Wave
+{
+    public float spawnInterval;
+    public float startTime;
+    public float endTime;
 }

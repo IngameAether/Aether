@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI; // UI 관련 기능을 위해 추가
 
-public class NormalEnemy : MonoBehaviour
+public class NormalEnemy : MonoBehaviour, IDamageable
 {
     // 적의 최대 체력
-    public float maxHealth = 100f;
+    public float maxHealth = 10f;
     // 현재 체력
     private float currentHealth;
+    public float CurrentHealth => currentHealth;
 
     // 이동 속도
     public float moveSpeed = 2f;
     
     // 마법 저항력 (Magic Resistance)
-    [Range(5, 50)] // Inspector 창에서 5~50 사이의 값만 입력 가능하도록 설정
+    [Range(0, 50)] // Inspector 창에서 5~50 사이의 값만 입력 가능하도록 설정
     public int magicResistance = 5; // 기본 마법 저항력을 5%로 설정
 
     // 정신력 (Mental Strength, 강인함 효과)
-    [Range(10, 100)] // Inspector 창에서 10~100 사이의 값만 입력 가능하도록 설정
+    [Range(0, 100)] // Inspector 창에서 10~100 사이의 값만 입력 가능하도록 설정
     public int mentalStrength = 10; // 기본 정신력을 10%로 설정
 
     // 체력 바 이미지를 연결할 변수
@@ -50,7 +51,7 @@ public class NormalEnemy : MonoBehaviour
         float modifiedDamage = damageAmount;
 
         // 특수 능력 적용 (예: 마법 저항력)
-        modifiedDamage = CalculateDamageAfterResistance(modifiedDamage);
+        //modifiedDamage = CalculateDamageAfterResistance(modifiedDamage);
 
         // 최종 데미지 적용
         currentHealth -= modifiedDamage;

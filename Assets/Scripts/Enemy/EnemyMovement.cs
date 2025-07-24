@@ -1,85 +1,88 @@
+using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyMovement : MonoBehaviour
 {
-    [Header("ÀÌµ¿ °æ·Î ¼³Á¤")]
-    // ÀÌµ¿ÇÒ °æ·Î ÁöÁ¡ ¸ñ·Ï
+    [Header("ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½")]
+    // ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     public List<Vector3> waypoints = new List<Vector3>();
-    // ÀÌµ¿ ¼Óµµ
+    // ï¿½Ìµï¿½ ï¿½Óµï¿½
     private int currentWaypointIndex = 0;
-    private NormalEnemy normalEnemyStats; // NormalEnemy ÀÎ½ºÅÏ½º
-    private float currentMoveSpeed; // Æ¯¼ö ÀÌµ¿ ¼Óµµ
+    private NormalEnemy normalEnemyStats; // NormalEnemy ï¿½Î½ï¿½ï¿½Ï½ï¿½
+    private float currentMoveSpeed; // Æ¯ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½Óµï¿½
+
+    public static event Action OnReachEndPoint;
 
     private void Awake()
     {
-        // NormalEnemy ÄÄÆ÷³ÍÆ® °¡Á®¿À±â
+        // NormalEnemy ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         normalEnemyStats = GetComponent<NormalEnemy>();
         if (normalEnemyStats == null)
         {
-            Debug.LogError("NormalEnemy ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError("NormalEnemy ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
     }
 
-    // ÃÊ±â À§Ä¡¸¦ ¼³Á¤ÇÏ´Â ¸Þ¼Òµå
+    // ï¿½Ê±ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼Òµï¿½
     public void SetInitialPosition(Vector3 initialPosition)
     {
         transform.position = initialPosition;
     }
 
-    // °æ·Î(wayPoints)¸¦ ¼³Á¤ÇÏ´Â ¸Þ¼Òµå(¿ÜºÎ¿¡¼­ È£Ãâ, SpawnManager¿¡¼­ »ç¿ë)
+    // ï¿½ï¿½ï¿½(wayPoints)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½Þ¼Òµï¿½(ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ È£ï¿½ï¿½, SpawnManagerï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½)
     public void SetPath(List<Vector3> pathPoints)
     {
         if (pathPoints != null && pathPoints.Count > 0)
         {
             waypoints = pathPoints;
-            // °æ·Î ½ÃÀÛºÎÅÍ ÀÌµ¿
+            // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ûºï¿½ï¿½ï¿½ ï¿½Ìµï¿½
             currentWaypointIndex = 0; 
         }
         else
         {
-            Debug.LogWarning("EnemyMovement: À¯È¿ÇÑ °æ·Î ¼³Á¤ÀÌ ÇÊ¿ä");
+            Debug.LogWarning("EnemyMovement: ï¿½ï¿½È¿ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½");
         }
     }
 
     private void Update()
     {
-        // NormalEnemyStats°¡ ¾ø°Å³ª °æ·Î°¡ ¾øÀ¸¸é ÀÌµ¿ÇÏÁö ¾ÊÀ½
+        // NormalEnemyStatsï¿½ï¿½ ï¿½ï¿½ï¿½Å³ï¿½ ï¿½ï¿½Î°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (normalEnemyStats == null || waypoints == null || waypoints.Count == 0)
         {
             return; 
         }
 
-        // Æ¯¼ö ÀÌµ¿ ¼Óµµ °»½Å
+        // Æ¯ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½Óµï¿½ ï¿½ï¿½ï¿½ï¿½
         currentMoveSpeed = normalEnemyStats.moveSpeed;
 
-        // ÀÌµ¿ÇÒ ¿þÀÌÆ÷ÀÎÆ®°¡ ÀÖ´ÂÁö È®ÀÎ
+        // ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         if (currentWaypointIndex < waypoints.Count)
         {
-            // ÇöÀç ¸ñÇ¥ ¿þÀÌÆ÷ÀÎÆ® À§Ä¡
+            // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½Ä¡
             Vector3 targetPosition = waypoints[currentWaypointIndex];
-            // ¸ñÇ¥ À§Ä¡·Î ÀÌµ¿
+            // ï¿½ï¿½Ç¥ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Ìµï¿½
             float step = currentMoveSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
-            // ¸ñÇ¥ À§Ä¡¿¡ °ÅÀÇ µµ´ÞÇß´ÂÁö È®ÀÎ
+            // ï¿½ï¿½Ç¥ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ß´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
             {
-                // ´ÙÀ½ ¿þÀÌÆ÷ÀÎÆ®·Î ÀÌµ¿ ¸ñÇ¥ º¯°æ
+                // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½
                 currentWaypointIndex++;
             }
         }
         else
         {
-            // °æ·Î ÀÌµ¿ÀÌ ¿Ï·áµÆ´Ù¸é
+            // ï¿½ï¿½ï¿½ ï¿½Ìµï¿½ï¿½ï¿½ ï¿½Ï·ï¿½Æ´Ù¸ï¿½
             ReachedEndOfPath();
         }
     }
-    // °æ·ÎÀÇ ³¡¿¡ µµ´ÞÇßÀ» ¶§ È£ÃâµÇ´Â ¸Þ¼Òµå
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ È£ï¿½ï¿½Ç´ï¿½ ï¿½Þ¼Òµï¿½
     void ReachedEndOfPath()
     {
-        Debug.Log("ÀûÀÌ ¸ñÇ¥ ÁöÁ¡¿¡ µµ´Þ");
-        // ¿ÀºêÁ§Æ® ÆÄ±«
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
         Destroy(gameObject);
+        OnReachEndPoint?.Invoke();
     }
 }

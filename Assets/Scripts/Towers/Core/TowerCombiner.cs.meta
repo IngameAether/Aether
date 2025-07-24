@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: c46b5518e16448ffa7080c1bfb52a388
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - waterPrefab: {fileID: 2255666967045128489, guid: 85fdbda203c8aed4cbccf6461c1ae228, type: 3}
+  - earthPrefab: {fileID: 87051376619690041, guid: 407f851d9ba3201418a26153ad229f81, type: 3}
+  - airPrefab: {fileID: 2156860131253734831, guid: 0437ffc897e652e499c7af10157e99ec, type: 3}
+  - firePrefab: {fileID: 4710304639692687514, guid: 9bb5481bc03426d4cb97168e0f655063, type: 3}
+  - towerParent: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

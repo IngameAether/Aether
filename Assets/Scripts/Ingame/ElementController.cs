@@ -1,27 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Towers.Core;
 using UnityEngine;
 
 public class ElementController : MonoBehaviour
 {
     private bool isDrag = false;
     private Vector3 offset;
-    private SaleController saleZone;
-    bool isOver;
+    private Vector3 initialPosition;
+    public TileInteraction tileInteraction;
+    public ElementType type;
+    public bool isClick = false;
     public Tile selectTile;
 
-    void Start()
+    void Start() { }
+
+    public void Initialize(TileInteraction tileInteraction, ElementType elementType)
     {
-        saleZone = FindObjectOfType<SaleController>();
+        this.type = elementType;
+        this.tileInteraction = tileInteraction;
     }
 
     void OnMouseDown()
     {
         isDrag = true;
-        // ∏∂øÏΩ∫øÕ ø¿∫Í¡ß∆Æ ªÁ¿Ã¿« ∞£∞› ¿Ø¡ˆ«ÿº≠ ¿⁄ø¨Ω∫∑¥∞‘ µÂ∑°±◊«œ±‚ ¿ß«‘
+        initialPosition = transform.position;
+
         Vector3 mousePosition = GetMouseWorldPosition();
         offset = transform.position - mousePosition;
+
+        if (isClick)
+        {
+            Debug.LogError("isClick TrueÏù∏Îç∞???????");
+            return;
+        }
+        isClick = true;
+        Debug.LogWarning("ÏõêÏÜå ÌÅ¥Î¶≠Ìï®");
+        TowerCombiner.Instance.SelectElement(this);
     }
 
     void OnMouseDrag()
@@ -30,11 +46,6 @@ public class ElementController : MonoBehaviour
         {
             Vector3 mousePosition = GetMouseWorldPosition();
             transform.position = mousePosition + offset;
-
-            Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position);
-            isOver = RectTransformUtility.RectangleContainsScreenPoint(saleZone.RectTransform, screenPos, null);
-
-            saleZone.SetHighlightColor(isOver);
         }
     }
 
@@ -42,29 +53,21 @@ public class ElementController : MonoBehaviour
     {
         if (isDrag)
         {
-            if (isOver)
-            {
-                if (selectTile != null)
-                {
-                    selectTile.isElementBuild = true;
-                    selectTile.element = null;
-                }
-                Destroy(gameObject);
-                SaleController.coin += 10;
-            }
+            transform.position = initialPosition;
         }
-        saleZone?.SetHighlightColor(false); // if saleZone != null
         isDrag = false;
     }
 
     Vector3 GetMouseWorldPosition()
     {
-        // ∏∂øÏΩ∫¿« position ∞°¡Æø¿±‚
         Vector3 mousePosition = Input.mousePosition;
-        // ¡§»Æ«— ø˘µÂ ¡¬«•∑Œ ∫Ø»Ø«œ±‚ ¿ß«ÿ
         mousePosition.z = -Camera.main.transform.position.z; ;
-        // Main Camera ¡¬«•∞Ë∏¶ ¿˚øÎ«œø© ∏∂øÏΩ∫¿« ø˘µÂ ¡¬«• æÚ±‚
         mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
         return mousePosition;
+    }
+
+    public void DeselectElement()
+    {
+        isClick = false;
     }
 }
