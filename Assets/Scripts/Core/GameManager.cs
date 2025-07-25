@@ -15,6 +15,7 @@ public enum EScene
 
 public class GameManager : MonoBehaviour
 {
+    public GameTimer gameTimer;
     public static GameManager Instance { get; private set; }
     public bool IsGameOver { get; private set; }
 
