@@ -7,30 +7,35 @@ public class TowerDragSale : MonoBehaviour
 {
     private bool isDrag = false;
     private Vector3 offset;
-    private Vector3 initialPosition; // µå·¡±× ½Ã ÃÊ±â À§Ä¡ ÀúÀå
+    private Vector3 initialPosition; // ë“œë˜ê·¸ ì‹œ ì´ˆê¸° ìœ„ì¹˜ ì €ì¥
     private SaleController saleZone;
-    private bool isOverSaleZone; // ÆÇ¸Å ±¸¿ª À§¿¡ ÀÖ´ÂÁö ÆÇ´Ü
+    private bool isOverSaleZone; // íŒë§¤ êµ¬ì—­ ìœ„ì— ìˆëŠ”ì§€ íŒë‹¨
 
-    public Tile selectTile; // ÀÌ Å¸¿ö°¡ ¹èÄ¡µÈ Å¸ÀÏ ÂüÁ¶
+    public Tile selectTile; // ì´ íƒ€ì›Œê°€ ë°°ì¹˜ëœ íƒ€ì¼ ì°¸ì¡°
+    private BoxCollider2D _boxCollider2D;
 
+    private void Start()
+    {
+        _boxCollider2D = selectTile.GetComponent<BoxCollider2D>();
+    }
     private void Awake()
     {
-        Debug.Log("TowerDragSale Awake ÇÔ¼ö È£ÃâµÊ! SaleController Ã£±â ½Ãµµ.");
+        Debug.Log("TowerDragSale Awake í•¨ìˆ˜ í˜¸ì¶œë¨! SaleController ì°¾ê¸° ì‹œë„.");
         saleZone = FindObjectOfType<SaleController>();
         if (saleZone == null)
         {
-            Debug.LogError("SaleController°¡ Æ÷ÇÔµÈ ¿ÀºêÁ§Æ® È°¼ºÈ­ ÇÊ¿ä");
+            Debug.LogError("SaleControllerê°€ í¬í•¨ëœ ì˜¤ë¸Œì íŠ¸ í™œì„±í™” í•„ìš”");
         }
         else
         {
-            Debug.Log("SaleController¸¦ ¼º°øÀûÀ¸·Î Ã£¾Ò½À´Ï´Ù!"); // ÀÌ ·Î±×°¡ ¶ß´ÂÁö È®ÀÎ
+            Debug.Log("SaleControllerë¥¼ ì„±ê³µì ìœ¼ë¡œ ì°¾ì•˜ìŠµë‹ˆë‹¤!"); // ì´ ë¡œê·¸ê°€ ëœ¨ëŠ”ì§€ í™•ì¸
         }
     }
 
     private void OnMouseDown()
     {
         isDrag = true;
-        initialPosition = transform.position; // ÇöÀç À§Ä¡¸¦ ÃÊ±â À§Ä¡·Î ÀúÀå
+        initialPosition = transform.position; // í˜„ì¬ ìœ„ì¹˜ë¥¼ ì´ˆê¸° ìœ„ì¹˜ë¡œ ì €ì¥
 
         Vector3 mousePosition = GetMouseWorldPosition();
         offset = transform.position - mousePosition;
@@ -67,24 +72,28 @@ public class TowerDragSale : MonoBehaviour
     {
         if (isDrag)
         {
-            if (isOverSaleZone) // ÆÇ¸Å È®Á¤½Ã
+            if (isOverSaleZone) // íŒë§¤ í™•ì •ì‹œ
             {
-                // Å¸ÀÏ¿¡¼­ Å¸¿öÁ¤º¸ Á¦°Å
+                // íƒ€ì¼ì—ì„œ íƒ€ì›Œì •ë³´ ì œê±°
                 if (selectTile != null)
                 {
+                    _boxCollider2D.enabled = true;
                     selectTile.tower = null;
-                    selectTile.isElementBuild = false; // Å¸¿ö ºñ¾úÀ½À» Ç¥½Ã
+                    selectTile.element = null;
+                    selectTile.isElementBuild = true;
                 }
+                Debug.Log($"{gameObject.name} íŒë§¤ë¨");
+
                 Destroy(gameObject);
                 SaleController.coin += 20;
             }
-            else // ÆÇ¸Å Ãë¼Ò ½Ã
+            else // íŒë§¤ ì·¨ì†Œ ì‹œ
             {
-                transform.position = initialPosition; // ÃÊ±â À§Ä¡·Î ÀÌµ¿
+                transform.position = initialPosition; // ì´ˆê¸° ìœ„ì¹˜ë¡œ ì´ë™
             }
         }
 
-        // µå·¡±× ¸ØÃß¸é ÆÇ¸ÅÃ¢ ¼û±è
+        // ë“œë˜ê·¸ ë©ˆì¶”ë©´ íŒë§¤ì°½ ìˆ¨ê¹€
         if (saleZone != null)
         {
             saleZone.SetHighlightColor(false);

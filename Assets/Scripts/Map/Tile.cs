@@ -6,7 +6,7 @@ public class Tile : MonoBehaviour
 {
     public int x, y;   // 타일 좌표
     public bool isBuild;    // 1=타워 생성 가능한 곳, 0=적이 지나가는 경로
-    public bool isElementBuild;
+    public bool isElementBuild;     // true=원소 생성 가능(타일이 비어있는 경우)
     public GameObject element;
     public GameObject tower;
 
