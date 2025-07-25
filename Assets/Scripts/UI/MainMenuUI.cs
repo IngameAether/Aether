@@ -27,7 +27,6 @@ public enum UIPanelState
 public class MainMenuUI : MonoBehaviour
 {
     // 인스펙터에서 연결할 UI 패널들
-    public GameObject mainMenuPanel;
     public GameObject levelSelectPanel;
     public GameObject loadSavePanel; // 새로 추가
     public GameObject settingsPanel;
@@ -91,7 +90,6 @@ public class MainMenuUI : MonoBehaviour
         }
 
         // 모든 패널 비활성화
-        mainMenuPanel.SetActive(false);
         levelSelectPanel.SetActive(false);
         loadSavePanel.SetActive(false);
         settingsPanel.SetActive(false);
@@ -106,9 +104,6 @@ public class MainMenuUI : MonoBehaviour
         // 목표 패널 활성화
         switch (targetPanel)
         {
-            case UIPanelState.MainMenu:
-                mainMenuPanel.SetActive(true);
-                break;
             case UIPanelState.LevelSelect:
                 levelSelectPanel.SetActive(true);
                 UpdateLevelDisplay();

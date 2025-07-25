@@ -7,70 +7,85 @@ using UnityEngine.SceneManagement;
 
 public class FadeManager : MonoBehaviour
 {
-    // ½Ì±ÛÅÏ ÀÎ½ºÅÏ½º
+    // ì‹±ê¸€í„´ ì¸ìŠ¤í„´ìŠ¤
     public static FadeManager Instance { get; private set; }
 
     [Header("UI References")]
-    [SerializeField] private Image fadePanel; // È­¸é ÀüÈ¯¿ë 
-    [SerializeField] private TextMeshProUGUI gameOverText; // À¯´ÙÈñ
-    [SerializeField] private GameObject gameOverButtonContainer; // "´Ù½ÃÇÏ±â", "¸ŞÀÎ¸Ş´º·Î ³ª°¡±â"
-    [SerializeField] private Button restartButton; // ´Ù½ÃÇÏ±â
-    [SerializeField] private Button mainMenuButton; // ¸ŞÀÎ¸Ş´º·Î ³ª°¡±â
+    [SerializeField] private Image fadePanel; // í™”ë©´ ì „í™˜ìš© 
+    [SerializeField] private TextMeshProUGUI gameOverText; // ìœ ë‹¤í¬
+    [SerializeField] private GameObject gameOverButtonContainer; // "ë‹¤ì‹œí•˜ê¸°", "ë©”ì¸ë©”ë‰´ë¡œ ë‚˜ê°€ê¸°"
+    [SerializeField] private Button mainMenuButton; // ë©”ì¸ë©”ë‰´ë¡œ ë‚˜ê°€ê¸°
 
     [Header("Fade Settings")]
-    [SerializeField] private float sceneTransitionFadeDuration = 3.0f; // ¾À ÀüÈ¯ ÆäÀÌµå½Ã°£
-    [SerializeField] private float gameOverFadeDuration = 3.0f; // °ÔÀÓ ¿À¹ö ÆäÀÌµå ¾Æ¿ô ½Ã°£
-    [SerializeField] private float blackScreenHoldDuration = 3.0f; // °ËÀº È­¸é À¯Áö ½Ã°£
+    [SerializeField] private float sceneTransitionFadeDuration = 3.0f; // ì”¬ ì „í™˜ í˜ì´ë“œì‹œê°„
+    [SerializeField] private float gameOverFadeDuration = 3.0f; // ê²Œì„ ì˜¤ë²„ í˜ì´ë“œ ì•„ì›ƒ ì‹œê°„
+    [SerializeField] private float blackScreenHoldDuration = 3.0f; // ê²€ì€ í™”ë©´ ìœ ì§€ ì‹œê°„
    
-    private Canvas fadeCanvas; // ÆäÀÌµå ÆĞ³ÎÀÌ ¼ÓÇÑ Äµ¹ö½º
-    private bool isFading = false; // ÆäÀÌµå ÁßÀÎÁö È®ÀÎ
+    private Canvas fadeCanvas; // í˜ì´ë“œ íŒ¨ë„ì´ ì†í•œ ìº”ë²„ìŠ¤
+    private bool isFading = false; // í˜ì´ë“œ ì¤‘ì¸ì§€ í™•ì¸
 
+    private void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+    private void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // MainMenuSceneì´ ë¡œë“œë  ë•Œë§Œ Main Menu ë²„íŠ¼ì„ ì°¾ê³  ì—°ê²°í•©ë‹ˆë‹¤.
+        if (scene.name == "MainMenuScene") // <-- ì‹¤ì œ ë©”ì¸ ë©”ë‰´ ì”¬ ì´ë¦„
+        {
+            MainMenuUI mainMenuUI = FindObjectOfType<MainMenuUI>();
+            if (mainMenuUI != null && mainMenuUI.playLevelButton != null) // PlayLevelButtonì´ ë©”ì¸ ë©”ë‰´ ì§„ì… ë²„íŠ¼ì´ë¼ê³  ê°€ì •
+            {
+                // ì´ì „ ë¦¬ìŠ¤ë„ˆê°€ ìˆë‹¤ë©´ ì œê±° (ì¤‘ë³µ ì—°ê²° ë°©ì§€)
+                mainMenuUI.playLevelButton.onClick.RemoveAllListeners(); // ê¸°ì¡´ ë¦¬ìŠ¤ë„ˆ ëª¨ë‘ ì œê±°
+                // ìƒˆë¡œìš´ ë¦¬ìŠ¤ë„ˆ ì—°ê²° (FadeManagerì˜ TransitionToSceneì„ í˜¸ì¶œ)
+                mainMenuUI.playLevelButton.onClick.AddListener(() => TransitionToScene("GameScene")); // <-- "GameScene"ì€ ì‹¤ì œ ê²Œì„ ì”¬ ì´ë¦„
+            }
+        }
+    }
     void Awake()
     {
-        // ½Ì±ÛÅæ ÆĞÅÏ ±¸Çö
+        // ì‹±ê¸€í†¤ íŒ¨í„´ êµ¬í˜„
         if (Instance == null)
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // ¾À ÀüÈ¯ ½Ã ÆÄ±«µÇÁö ¾Êµµ·Ï
+            DontDestroyOnLoad(gameObject); // ì”¬ ì „í™˜ ì‹œ íŒŒê´´ë˜ì§€ ì•Šë„ë¡
         }
         else
         {
-            Destroy(gameObject); // ÀÎ½ºÅÏ½º ÀÖÀ¸¸é ÀÚ±âÀÚ½ÅÀ» ÆÄ±«
+            Destroy(gameObject); // ì¸ìŠ¤í„´ìŠ¤ ìˆìœ¼ë©´ ìê¸°ìì‹ ì„ íŒŒê´´
             return;
         }
 
-        // ¿À·ù °Ë»ç
+        // ì˜¤ë¥˜ ê²€ì‚¬
         if (fadePanel == null)
         {
-            Debug.LogError("fadePanelÀÌ ¿¬°áµÇÁö ¾ÊÀ½");
+            Debug.LogError("fadePanelì´ ì—°ê²°ë˜ì§€ ì•ŠìŒ");
             enabled = false;
             return;
         }
 
-        if(gameOverText == null) // gameOverText°¡ nullÀÎÁö º°µµ·Î È®ÀÎ
+        if(gameOverText == null) // gameOverTextê°€ nullì¸ì§€ ë³„ë„ë¡œ í™•ì¸
         {
-            Debug.LogError("FadeManager: Game Over Text°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù. ÀÎ½ºÆåÅÍ¿¡¼­ ¿¬°áÇØÁÖ¼¼¿ä.");
-            enabled = false; // ½ºÅ©¸³Æ® ºñÈ°¼ºÈ­
+            Debug.LogError("FadeManager: Game Over Textê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. ì¸ìŠ¤í™í„°ì—ì„œ ì—°ê²°í•´ì£¼ì„¸ìš”.");
+            enabled = false; // ìŠ¤í¬ë¦½íŠ¸ ë¹„í™œì„±í™”
             return;
         }
 
         if(gameOverButtonContainer == null)
         {
-            Debug.LogError("GameOverButtonContainer°¡ ¿¬°áµÇÁö ¾ÊÀ½");
-            enabled = false;
-            return;
-        }
-
-        if(restartButton == null)
-        {
-            Debug.LogError("restartButtonÀÌ ¿¬°áµÇÁö ¾ÊÀ½");
+            Debug.LogError("GameOverButtonContainerê°€ ì—°ê²°ë˜ì§€ ì•ŠìŒ");
             enabled = false;
             return;
         }
 
         if (mainMenuButton == null)
         {
-            Debug.LogError("MainMenuButtonÀÌ ¿¬°áµÇÁö ¾ÊÀ½");
+            Debug.LogError("MainMenuButtonì´ ì—°ê²°ë˜ì§€ ì•ŠìŒ");
             enabled = false;
             return;
         }
@@ -78,29 +93,34 @@ public class FadeManager : MonoBehaviour
         fadeCanvas = fadePanel.GetComponentInParent<Canvas>();
         if (fadeCanvas == null)
         {
-            Debug.LogError("Fade PanelÀÌ Canvas ³»ºÎ¿¡ ¾øÀ½");
+            Debug.LogError("Fade Panelì´ Canvas ë‚´ë¶€ì— ì—†ìŒ");
             enabled = false;
             return;
         }
 
-        // ÃÊ±â¿¡´Â ÆäÀÌµå ÆĞ³Î Åõ¸íÇÏ°Ô ÇÏ±â
-        fadePanel.gameObject.SetActive(true); // È°¼ºÈ­´Â ÇÏÁö¸¸ Åõ¸íÇÑ°ÅÀÓ
+        // ì´ˆê¸°ì—ëŠ” í˜ì´ë“œ íŒ¨ë„ íˆ¬ëª…í•˜ê²Œ í•˜ê¸°
+        fadePanel.gameObject.SetActive(true); // í™œì„±í™”ëŠ” í•˜ì§€ë§Œ íˆ¬ëª…í•œê±°ì„
         Color panelColor = fadePanel.color;
         panelColor.a = 0f;
         fadePanel.color = panelColor;
 
-        gameOverText.gameObject.SetActive(false); // °ÔÀÓ¿À¹ö ÅØ½ºÆ®´Â ºñÈ°¼ºÈ­
-        gameOverButtonContainer.SetActive(false); // °ÔÀÓ¿À¹ö ¹öÆ°µµ ºñÈ°¼ºÈ­
+        gameOverText.gameObject.SetActive(false); // ê²Œì„ì˜¤ë²„ í…ìŠ¤íŠ¸ëŠ” ë¹„í™œì„±í™”
+        gameOverButtonContainer.SetActive(false); // ê²Œì„ì˜¤ë²„ ë²„íŠ¼ë„ ë¹„í™œì„±í™”
 
-        SetInputBlocking(false); // ÃÊ±â¿¡´Â ÀÔ·Â Çã¿ë
+        SetInputBlocking(false); // ì´ˆê¸°ì—ëŠ” ì…ë ¥ í—ˆìš©
         isFading = false;
 
-        // °ÔÀÓ¿À¹ö ¹öÆ° ¿¬°á
-        restartButton.onClick.AddListener(RestartGame);
-        mainMenuButton.onClick.AddListener(GoToMainMenu);
+        if (mainMenuButton != null) 
+        {
+            mainMenuButton.onClick.AddListener(GoToMainMenu);
+        }
+        else
+        {
+            Debug.LogError("FadeManager: mainMenuButtonì´ Inspectorì— í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. OnClick ì´ë²¤íŠ¸ ì—°ê²° ë¶ˆê°€.");
+        }
     }
 
-    // ¾À ÀüÈ¯ ÆäÀÌµå (ÆäÀÌµå ¾Æ¿ô -> »õ ¾À ·Îµå -> »õ ¾À ÆäÀÌµåÀÎ)
+    // ì”¬ ì „í™˜ í˜ì´ë“œ (í˜ì´ë“œ ì•„ì›ƒ -> ìƒˆ ì”¬ ë¡œë“œ -> ìƒˆ ì”¬ í˜ì´ë“œì¸)
     public void TransitionToScene(string sceneName)
     {
         if (isFading) return;
@@ -110,16 +130,16 @@ public class FadeManager : MonoBehaviour
     private IEnumerator SceneTransitionCoroutine(string sceneName)
     {
         isFading = true;
-        SetInputBlocking(true); // ¾À ÀüÈ¯ ½Ã ÀÔ·Â Â÷´Ü
+        SetInputBlocking(true); // ì”¬ ì „í™˜ ì‹œ ì…ë ¥ ì°¨ë‹¨
 
-        // 1. ÆäÀÌµå ¾Æ¿ô
+        // 1. í˜ì´ë“œ ì•„ì›ƒ
         yield return StartCoroutine(Fade(1f, sceneTransitionFadeDuration));
 
-        // 2. °ËÀº È­¸é À¯Áö
+        // 2. ê²€ì€ í™”ë©´ ìœ ì§€
         yield return new WaitForSeconds(blackScreenHoldDuration);
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-        asyncLoad.allowSceneActivation = false; // »õ·Î¿î ¾ÀÀÇ °ÔÀÓ ½ÃÀÛÀ» ÀÏ½Ã Á¤Áö
+        asyncLoad.allowSceneActivation = false; // ìƒˆë¡œìš´ ì”¬ì˜ ê²Œì„ ì‹œì‘ì„ ì¼ì‹œ ì •ì§€
 
         while (!asyncLoad.isDone)
         {
@@ -136,7 +156,7 @@ public class FadeManager : MonoBehaviour
         isFading = false;
     }
 
-    // °ÔÀÓ ¿À¹ö ÆäÀÌµå
+    // ê²Œì„ ì˜¤ë²„ í˜ì´ë“œ
     public void GameOver()
     {
         if (isFading) return;
@@ -148,29 +168,22 @@ public class FadeManager : MonoBehaviour
         isFading = true;
         SetInputBlocking(true);
 
-        // 1. ÆäÀÌµå ¾Æ¿ô
+        // 1. í˜ì´ë“œ ì•„ì›ƒ
         yield return StartCoroutine(Fade(1f, gameOverFadeDuration));
 
-        // 2. GameOver ÅØ½ºÆ® Ç¥½Ã
+        // 2. GameOver í…ìŠ¤íŠ¸ í‘œì‹œ
         gameOverText.gameObject.SetActive(true);
         gameOverButtonContainer.SetActive(true);
 
-        SetInputBlocking(false); // ¹öÆ° Å¬¸¯ °¡´ÉÇÏµµ·Ï
-        isFading = false; // ´ÙÀ½ µ¿ÀÛÀº ¹öÆ° Å¬¸¯À¸·Î ½ÃÀÛ
-    }
-
-    private void RestartGame()
-    {
-        if (isFading) return; // ÀÌ¹Ì ÆäÀÌµå ÁßÀÌ¸é ¹«½Ã
-        Debug.Log("°ÔÀÓÀ» Ã³À½ºÎÅÍ ´Ù½Ã ½ÃÀÛÇÕ´Ï´Ù.");
-        HideGameOverUI();
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SetInputBlocking(false); // ë²„íŠ¼ í´ë¦­ ê°€ëŠ¥í•˜ë„ë¡
+        isFading = false; // ë‹¤ìŒ ë™ì‘ì€ ë²„íŠ¼ í´ë¦­ìœ¼ë¡œ ì‹œì‘
     }
 
     private void GoToMainMenu()
     {
-        Debug.Log("¸ŞÀÎ¸Ş´º·Î ÀÌµ¿ÇÕ´Ï´Ù.");
+        Debug.Log("ë©”ì¸ë©”ë‰´ë¡œ ì´ë™í•©ë‹ˆë‹¤.");
         HideGameOverUI();
+        Time.timeScale = 1f;
         TransitionToScene("MainMenuScene");
     }
 
@@ -188,21 +201,21 @@ public class FadeManager : MonoBehaviour
 
         while (timer < duration)
         {
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
             float progress = timer / duration;
             currentColor.a = Mathf.Lerp(startAlpha, targetAlpha, progress);
             fadePanel.color = currentColor;
-            yield return null; // ´ÙÀ½ ÇÁ·¹ÀÓ±îÁö ´ë±â
+            yield return null; // ë‹¤ìŒ í”„ë ˆì„ê¹Œì§€ ëŒ€ê¸°
         }
         currentColor.a = targetAlpha;
         fadePanel.color = currentColor;
     }
-    // ÀÔ·Â Â÷´Ü / Çã¿ë
+    // ì…ë ¥ ì°¨ë‹¨ / í—ˆìš©
     private void SetInputBlocking(bool block)
     {
         if (fadePanel != null)
         {
-            // ÆäÀÌµå ÆĞ³ÎÀÌ Å¬¸¯ ÀÌº¥Æ® °¡Á®°¨
+            // í˜ì´ë“œ íŒ¨ë„ì´ í´ë¦­ ì´ë²¤íŠ¸ ê°€ì ¸ê°
             fadePanel.raycastTarget = block;
         }
     }

@@ -12,7 +12,6 @@ public class SpawnManager : MonoBehaviour
     public MapManage mapManage; // MapManage ��ũ��Ʈ ���۷���
 
     [Header("UI")]
-    [SerializeField] private GameObject gameOverUI;
     [SerializeField] private TMP_Text waveText;
 
     [Header("���̺� ����")]
@@ -45,7 +44,6 @@ public class SpawnManager : MonoBehaviour
             return;
         }
         
-        gameOverUI.SetActive(false);
         waveText.text = "0 wave";
 
         EnemyMovement.OnReachEndPoint += HandleReachedEndEnemy;
@@ -135,7 +133,6 @@ public class SpawnManager : MonoBehaviour
     {
         // 게임 끝나는 기준이 없음. 적 5명 지나가면 끝나는걸로 설정
         StopCoroutine(_spawnCoroutine);
-        gameOverUI.SetActive(true);
     }
 
     private void HandleReachedEndEnemy()
