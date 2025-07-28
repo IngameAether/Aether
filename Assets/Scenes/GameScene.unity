@@ -693,10 +693,10 @@ MonoBehaviour:
   mapTile_RightTop: {fileID: 4108538401709629752, guid: b5484284f407e8947980e5878c424f3e, type: 3}
   mapTile_Top: {fileID: 5030619349875335852, guid: 9fa0810610b85dc4fa4c743b8fc40f0d, type: 3}
   elementPrefabs:
-  - {fileID: 5056616401189597618, guid: e2680e229abfaf242905543270b2af42, type: 3}
-  - {fileID: 6263843287393816421, guid: ccc517438489af940935c59e61c9742f, type: 3}
-  - {fileID: 6829641324287958009, guid: f18f98af5cbdb1243998b9f9fd1830c1, type: 3}
-  - {fileID: 4957179996845745435, guid: 87b7deb4a70815f46913bb3d90e19000, type: 3}
+  - {fileID: 2162190162697229114, guid: ecfabc2675fdf834aa53a2fc13911485, type: 3}
+  - {fileID: 2162190162697229114, guid: c134506b61596cf408a234025fa8ee0f, type: 3}
+  - {fileID: 2162190162697229114, guid: da823f21c42e46845953c81037d6648d, type: 3}
+  - {fileID: 2162190162697229114, guid: c661fdca16a15824db821dd9b2e7b6cf, type: 3}
   parent: {fileID: 0}
 --- !u!114 &134308587
 MonoBehaviour:
@@ -2725,7 +2725,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d26f27856ee105439031e9936ad39f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 5417002623811271532, guid: b33a8bbd5b62d0e498d1a82dc8f8f8f9, type: 3}
+  enemyPrefabs:
+  - {fileID: 5417002623811271532, guid: b33a8bbd5b62d0e498d1a82dc8f8f8f9, type: 3}
+  - {fileID: 5417002623811271532, guid: 577f837b52c252d49ba0a5f379d7bae7, type: 3}
+  - {fileID: 5417002623811271532, guid: 5249caae0f3ac8e4e93a066912dbc1d9, type: 3}
+  - {fileID: 5417002623811271532, guid: c2a15d76c6442fd4da2fe3a036e8a78c, type: 3}
   mapManage: {fileID: 98405527}
   waveText: {fileID: 553837775}
   waves:
