@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Towers.Core;
 
 public class Tile : MonoBehaviour
 {
@@ -12,7 +13,27 @@ public class Tile : MonoBehaviour
 
     private SpriteRenderer spriteRenderer;
     public Color originColor;
-    static Tile currentTile = null;    // 현재 선택된 타일
+    public Color highlightColor = Color.black; // 타일 선택시 강조될 색상
+
+    public ElementType CurrentLogicalElementType
+    {
+        get
+        {
+            if(tower != null) // 타워 > 원소 > 빈 타일 순으로 우선시
+            {
+                return ElementType.Tower;
+            }
+            else if(element != null) 
+            {
+                ElementController ec = element.GetComponent<ElementController>();
+                if (ec != null)
+                {
+                    return ec.type;
+                }
+            }
+            return ElementType.None;
+        }
+    }
 
     // 초기화
     public void Initialize(int x, int y, bool isBuild)
@@ -29,6 +50,7 @@ public class Tile : MonoBehaviour
         {
             originColor = spriteRenderer.color;
         }
+        ApplyHighlight(false); // 초기 상태는 하이라이트 안함
     }
 
     void GetTileObject()
@@ -36,13 +58,12 @@ public class Tile : MonoBehaviour
         Debug.Log(element, tower);
     }
 
-    public void ChangeCurrentTileColor()
+    public void ApplyHighlight(bool isSelected)
     {
-        if (currentTile != null && currentTile != this)   // 다른 타일 선택하면 이전 타일 색 원래대로 되돌림
-            currentTile.spriteRenderer.color = originColor;
-
-        currentTile = this;
-        spriteRenderer.color = originColor * 1.5f;
+        if(spriteRenderer != null)
+        {
+            spriteRenderer.color = isSelected ? highlightColor : originColor;
+        }
     }
 
     public void PrintTileInfo()

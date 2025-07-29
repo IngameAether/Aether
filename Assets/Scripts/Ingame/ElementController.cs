@@ -6,68 +6,37 @@ using UnityEngine;
 
 public class ElementController : MonoBehaviour
 {
-    private bool isDrag = false;
-    private Vector3 offset;
-    private Vector3 initialPosition;
-    public TileInteraction tileInteraction;
+    public Tile parentTile;
     public ElementType type;
     public bool isClick = false;
-    public Tile selectTile;
 
     void Start() { }
 
-    public void Initialize(TileInteraction tileInteraction, ElementType elementType)
+    public void Initialize(Tile parentTile, ElementType elementType)
     {
         this.type = elementType;
-        this.tileInteraction = tileInteraction;
+        this.parentTile = parentTile;
     }
 
     void OnMouseDown()
     {
-        isDrag = true;
-        initialPosition = transform.position;
-
-        Vector3 mousePosition = GetMouseWorldPosition();
-        offset = transform.position - mousePosition;
-
-        if (isClick)
-        {
-            Debug.LogError("isClick True인데???????");
-            return;
-        }
-        isClick = true;
-        Debug.LogWarning("원소 클릭함");
+        
+        Debug.LogWarning("원소 클릭함: TowerCombiner로 전달");
         TowerCombiner.Instance.SelectElement(this);
+       
     }
 
-    void OnMouseDrag()
+    // TowerCombiner가 원소를 선택/ 선택 해제 할 때 호출하는 메소드
+    public void SetSelected(bool selected)
     {
-        if (isDrag)
+        isClick = selected;
+        if(parentTile != null)
         {
-            Vector3 mousePosition = GetMouseWorldPosition();
-            transform.position = mousePosition + offset;
+            parentTile.ApplyHighlight(selected);
         }
     }
-
-    void OnMouseUp()
-    {
-        if (isDrag)
-        {
-            transform.position = initialPosition;
-        }
-        isDrag = false;
-    }
-
-    Vector3 GetMouseWorldPosition()
-    {
-        Vector3 mousePosition = Input.mousePosition;
-        mousePosition.z = -Camera.main.transform.position.z; ;
-        mousePosition = Camera.main.ScreenToWorldPoint(mousePosition);
-        return mousePosition;
-    }
-
     public void DeselectElement()
     {
-        isClick = false;
+        SetSelected(false); // isClick을 false로 설정하고 하이라이트 해제
     }
 }

@@ -218,7 +218,6 @@ public class MainMenuUI : MonoBehaviour
     // 설정 적용 버튼 클릭 시
     public void OnApplySettingsButtonClick()
     {
-        Debug.Log("설정 적용됨");
         // AudioManager를 통해 현재 UI 값들을 PlayerPrefs에 저장
         if (AudioManager.Instance != null)
         {
