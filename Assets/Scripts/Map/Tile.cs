@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using Towers.Core;
 
 public class Tile : MonoBehaviour
 {
@@ -23,7 +20,7 @@ public class Tile : MonoBehaviour
             {
                 return ElementType.Tower;
             }
-            else if(element != null) 
+            else if(element != null)
             {
                 ElementController ec = element.GetComponent<ElementController>();
                 if (ec != null)
