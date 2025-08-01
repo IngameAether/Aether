@@ -18,10 +18,10 @@ public class SpawnManager : MonoBehaviour
     public List<Wave> waves;
     public float initialDelay = 1f; // ù ���̺� ���� �� ��� �ð�
     public float waveBreakTime = 10f; // ���̺� �� ��� �ð�
-    
+
     // ������ ���� ���� ������ Ȯ���ϴ� �÷���
     private bool isSpawning = false;
-    private static int currentWaveLevel = 0;
+    public static int currentWaveLevel = 0;
     private float _currentEndTime;
     private int _reachedEndEnemyCount = 0;
     private Coroutine _spawnCoroutine;
@@ -44,11 +44,11 @@ public class SpawnManager : MonoBehaviour
             Debug.LogError("SpawnManager: ���̺� ������ ����ֽ��ϴ�!");
             return;
         }
-        
+
         waveText.text = "0 wave";
 
         EnemyMovement.OnReachEndPoint += HandleReachedEndEnemy;
-        
+
         Debug.Log("SpawnManager �ʱ�ȭ �Ϸ�. Start ��ư Ŭ�� ��� ��.");
         _spawnCoroutine = StartCoroutine(SpawnEnmiesRoutine());
     }
@@ -80,12 +80,12 @@ public class SpawnManager : MonoBehaviour
         {
             currentWaveLevel = waveIndex;
             waveText.text = $"{waveIndex + 1} wave";
-            
+
             yield return new WaitForSeconds(waves[waveIndex].startTime);
-            
+
             Wave currentWave = waves[waveIndex];
             Debug.Log($"--- ���̺� {waveIndex + 1} ����!---");
-            
+
             _currentEndTime = Time.time + waves[waveIndex].endTime;
 
             while (Time.time <= _currentEndTime)
@@ -155,7 +155,7 @@ public class SpawnManager : MonoBehaviour
     }
 }
 
-[System.Serializable] 
+[System.Serializable]
 public class Wave
 {
     public float spawnInterval;
