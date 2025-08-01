@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Towers.Core;
 using UnityEngine;
 
 public class TileInteraction : MonoBehaviour
