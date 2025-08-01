@@ -70,6 +70,11 @@ public class PopUpManager : MonoBehaviour
         {
             _currentPopUpUICanvas = Instantiate(_popUpUICanvasPrefab);
             DontDestroyOnLoad(_currentPopUpUICanvas); // 캔버스도 파괴되지 않도록 설정
+            Canvas popUpCanvas = _currentPopUpUICanvas.GetComponent<Canvas>();
+            if (popUpCanvas != null)
+            {
+                popUpCanvas.sortingOrder = 999; // 확실하게 다른 UI보다 높도록
+            }
             _backgroundOverlayRect = _currentPopUpUICanvas.transform.Find("BackgroundOverlay")?.GetComponent<RectTransform>();
             _backgroundOverlayButton = _backgroundOverlayRect?.GetComponent<Button>();
 
@@ -108,17 +113,33 @@ public class PopUpManager : MonoBehaviour
         if (_currentPopUpUICanvas != null)
         {
             _currentPopUpUICanvas.SetActive(true);
+            //  BackgroundOverlay를 명시적으로 활성화합니다.
+            if (_backgroundOverlayRect != null && !_backgroundOverlayRect.gameObject.activeSelf)
+            {
+                _backgroundOverlayRect.gameObject.SetActive(true);
+            }
         }
         // 새 팝업 인스턴스 생성 및 준비
-        _currentActivePopUpGameObject = Instantiate(_popUpPrefabs[popUpType], _backgroundOverlayRect);
+        _currentActivePopUpGameObject = Instantiate(_popUpPrefabs[popUpType], _backgroundOverlayRect, false);
         _currentActivePopUpGameObject.name = popUpType;
-        _currentActivePopUpCanvasGroup = _currentActivePopUpGameObject.GetComponent<CanvasGroup>();
-        if(_currentActivePopUpCanvasGroup == null)
+
+        CanvasGroup canvasGroup = _currentActivePopUpGameObject.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
         {
-            Debug.LogError($"팝업 '{popUpType}'에 CanvasGroup 컴포넌트가 없습니다. 애니메이션을 위해 추가해주세요.");
+            Debug.LogError($"팝업 '{popUpType}'에 CanvasGroup 컴포넌트가 없습니다.");
             CloseCurrentPopUp();
             return;
         }
+
+        RectTransform rectTransform = _currentActivePopUpGameObject.GetComponent<RectTransform>();
+        if(rectTransform != null)
+        {
+            rectTransform.sizeDelta = new Vector2(900, 1300); // 원하는 설정창 크기 조절
+            rectTransform.anchoredPosition = Vector2.zero; // 위치를 (0,0)으로 초기화
+            rectTransform.localScale = Vector3.one; // 스케일을 (1,1,1)로 초기화
+            rectTransform.localRotation = Quaternion.identity; // 회전 초기화
+        }
+        _currentActivePopUpCanvasGroup = canvasGroup;
 
         // 초기 상태 설정: 투명하고 매우 작게 시작 (점점 커지면서 나타남)
         _currentActivePopUpCanvasGroup.alpha = 0f;

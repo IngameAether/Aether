@@ -29,7 +29,7 @@ public class MainMenuUI : MonoBehaviour
     // 인스펙터에서 연결할 UI 패널들
     public GameObject levelSelectPanel;
     public GameObject loadSavePanel; // 새로 추가
-    public GameObject settingsPanel;
+    // public GameObject settingsPanel;
 
     // 블러처리된 배경 이미지
     public GameObject blurBackgroundImage;
@@ -92,7 +92,7 @@ public class MainMenuUI : MonoBehaviour
         // 모든 패널 비활성화
         levelSelectPanel.SetActive(false);
         loadSavePanel.SetActive(false);
-        settingsPanel.SetActive(false);
+        // settingsPanel.SetActive(false);
 
         // 블러 배경 이미지 활성화/비활성화
         bool needsBlurBackground = (targetPanel == UIPanelState.Settings || targetPanel == UIPanelState.LoadSave || targetPanel == UIPanelState.LevelSelect);
@@ -111,9 +111,9 @@ public class MainMenuUI : MonoBehaviour
             case UIPanelState.LoadSave:
                 loadSavePanel.SetActive(true);
                 break;
-            case UIPanelState.Settings:
+            /*case UIPanelState.Settings:
                 settingsPanel.SetActive(true);
-                break;
+                break; */
         }
         // 현재 상태 업데이트 (설정 창은 예외적으로 처리)
         currentPanelState = targetPanel;
