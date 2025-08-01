@@ -66,15 +66,20 @@ public class EnemyMovement : MonoBehaviour
             float step = currentMoveSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
 
+            bool isLastWayPoint = currentWaypointIndex == waypoints.Count - 1;
+            // 다음 목표와 얼만큼 도달했는지 체크하는 거리 조정
+            float distWayPoint = isLastWayPoint ? 0.5f : 0.05f;
+
             // 목표 위치에 거의 도달했는지 확인 (충분히 가까워지면 다음 웨이포인트로 이동)
-            if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
+            if (Vector3.Distance(transform.position, targetPosition) < distWayPoint)
             {
                 currentWaypointIndex++; // 다음 웨이포인트로 이동 목표 변경
             }
         }
-        else // 모든 웨이포인트를 이동 완료했다면
+        else 
         {
-            ReachedEndOfPath(); // 경로 끝에 도달했음을 알리는 함수 호출
+            // 적이 마지막 타일 바깥을 빠져나가 없어지게 함
+            if (Vector3.Distance(transform.position, waypoints[^1]) < 0.5f) ReachedEndOfPath();
         }
     }
 

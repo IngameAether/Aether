@@ -2,9 +2,6 @@
 using UnityEngine.UI;
 using TMPro;
 
-namespace Towers.Core
-{
-
     /// <summary>
     /// 타워 정보와 사거리를 표시하는 UI 매니저
     /// </summary>
@@ -214,4 +211,3 @@ namespace Towers.Core
             currentSelectedTower = null;
         }
     }
-}
