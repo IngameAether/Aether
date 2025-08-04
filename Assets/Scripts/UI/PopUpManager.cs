@@ -37,7 +37,7 @@ public class PopUpManager : MonoBehaviour
     private void Awake()
     {
         // 인스턴스 중복 생성 방지
-        if(Instance != null && Instance != this)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
@@ -70,10 +70,11 @@ public class PopUpManager : MonoBehaviour
         {
             _currentPopUpUICanvas = Instantiate(_popUpUICanvasPrefab);
             DontDestroyOnLoad(_currentPopUpUICanvas); // 캔버스도 파괴되지 않도록 설정
+
             Canvas popUpCanvas = _currentPopUpUICanvas.GetComponent<Canvas>();
             if (popUpCanvas != null)
             {
-                popUpCanvas.sortingOrder = 999; // 확실하게 다른 UI보다 높도록
+                popUpCanvas.sortingOrder = 100;
             }
             _backgroundOverlayRect = _currentPopUpUICanvas.transform.Find("BackgroundOverlay")?.GetComponent<RectTransform>();
             _backgroundOverlayButton = _backgroundOverlayRect?.GetComponent<Button>();
@@ -89,7 +90,7 @@ public class PopUpManager : MonoBehaviour
             _currentPopUpUICanvas.SetActive(false);
             Debug.Log("PopUpManager의 UI 시스템 설정이 완료되었습니다.");
         }
-        else if(_popUpUICanvasPrefab == null)
+        else if (_popUpUICanvasPrefab == null)
         {
             Debug.LogError("PopUpUICanvas 프리팹이 PopUpManager에 할당되지 않았습니다. 인스펙터에서 할당해주세요.");
         }
@@ -132,9 +133,9 @@ public class PopUpManager : MonoBehaviour
         }
 
         RectTransform rectTransform = _currentActivePopUpGameObject.GetComponent<RectTransform>();
-        if(rectTransform != null)
+        if (rectTransform != null)
         {
-            rectTransform.sizeDelta = new Vector2(900, 1300); // 원하는 설정창 크기 조절
+            rectTransform.sizeDelta = new Vector2(900, 1100); // 원하는 설정창 크기 조절
             rectTransform.anchoredPosition = Vector2.zero; // 위치를 (0,0)으로 초기화
             rectTransform.localScale = Vector3.one; // 스케일을 (1,1,1)로 초기화
             rectTransform.localRotation = Quaternion.identity; // 회전 초기화
@@ -156,7 +157,7 @@ public class PopUpManager : MonoBehaviour
 
     public void CloseCurrentPopUp()
     {
-        if(_currentActivePopUpGameObject == null)
+        if (_currentActivePopUpGameObject == null)
         {
             return;
         }
@@ -167,7 +168,7 @@ public class PopUpManager : MonoBehaviour
         _currentActivePopUpGameObject = null;
         _currentActivePopUpCanvasGroup = null;
 
-        if(_currentPopUpUICanvas != null)
+        if (_currentPopUpUICanvas != null)
         {
             _currentPopUpUICanvas.SetActive(false);
         }
@@ -205,5 +206,23 @@ public class PopUpManager : MonoBehaviour
         canvasGroup.interactable = true;
 
         Debug.Log("팝업 열기 애니메이션 완료.");
+    }
+
+    public void OnBackgroundOverlayClick()
+    {
+        if (_currentActivePopUpGameObject == null) return;
+
+        Vector2 screenPoint = Input.mousePosition;
+        RectTransform popUpRectTransform = _currentActivePopUpGameObject.GetComponent<RectTransform>();
+
+        if (!RectTransformUtility.RectangleContainsScreenPoint(popUpRectTransform, screenPoint, null))
+        {
+            CloseCurrentPopUp();
+            Debug.Log("팝업 바깥 영역 클릭: 팝업 닫음.");
+        }
+        else
+        {
+            Debug.Log("팝업 내부 영역 클릭: 팝업 유지.");
+        }
     }
 }

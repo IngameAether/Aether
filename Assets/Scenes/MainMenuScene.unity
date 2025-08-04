@@ -1859,7 +1859,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a11319a7371d6c14ca6bef05498ef54f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  blinkInterval: 0.5
+  fadeDuration: 1.5
+  stayHiddenDuration: 0.5
+  stayVisibleDuration: 0.5
 --- !u!114 &1084425924
 MonoBehaviour:
   m_ObjectHideFlags: 0
