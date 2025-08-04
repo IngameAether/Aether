@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using Towers.Core;
 using UnityEngine;
 
 public class ElementController : MonoBehaviour

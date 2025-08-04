@@ -8,7 +8,7 @@ public class SpawnManager : MonoBehaviour
 {
     [Header("�� ���� ����")]
     // ������ �� ������
-    public GameObject enemyPrefab;
+    public GameObject[] enemyPrefabs;
     public MapManage mapManage; // MapManage ��ũ��Ʈ ���۷���
 
     [Header("UI")]
@@ -21,6 +21,7 @@ public class SpawnManager : MonoBehaviour
     
     // ������ ���� ���� ������ Ȯ���ϴ� �÷���
     private bool isSpawning = false;
+    private static int currentWaveLevel = 0;
     private float _currentEndTime;
     private int _reachedEndEnemyCount = 0;
     private Coroutine _spawnCoroutine;
@@ -28,7 +29,7 @@ public class SpawnManager : MonoBehaviour
     private void Start()
     {
         // Inspector���� �����հ� MapManage ���۷����� ����Ǿ����� Ȯ��
-        if (enemyPrefab == null)
+        if (enemyPrefabs == null)
         {
             Debug.LogError("SpawnManager: ������ �� �������� �������� �ʾҽ��ϴ�!");
             return;
@@ -64,11 +65,20 @@ public class SpawnManager : MonoBehaviour
             isSpawning = false;
             yield break; // ��ΰ� ������ �ڷ�ƾ ����
         }
+
+        // 적이 마지막 칸을 나가서 중앙에 오면 없어지도록 마지막 방향으로 타일 하나 추가
+        if (path.Count >= 2)
+        {
+            Vector3 dir = (path[^1] - path[^2]).normalized;
+            path.Add(path[^1] + dir);
+        }
+
         // ���� ���� �ð� ���
         yield return new WaitForSeconds(initialDelay);
 
         for (int waveIndex = 0; waveIndex < waves.Count; waveIndex++)
         {
+            currentWaveLevel = waveIndex;
             waveText.text = $"{waveIndex + 1} wave";
             
             yield return new WaitForSeconds(waves[waveIndex].startTime);
@@ -109,13 +119,13 @@ public class SpawnManager : MonoBehaviour
 
     void SpawnSingleEnemy(Vector3 initialSpawnPosition, List<Vector3> path)
     {
-        if (enemyPrefab == null)
+        if (enemyPrefabs == null)
         {
             Debug.LogError("������ �� �������� �����ؾ���");
             return;
         }
 
-        GameObject newEnemy = Instantiate(enemyPrefab, initialSpawnPosition, Quaternion.identity);
+        GameObject newEnemy = Instantiate(enemyPrefabs[currentWaveLevel], initialSpawnPosition, Quaternion.identity);
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
         if (enemyMovement != null)

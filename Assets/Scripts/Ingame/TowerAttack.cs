@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using Towers.Core;
 using UnityEngine;
 
 public class TowerAttack : MonoBehaviour
@@ -13,20 +10,20 @@ public class TowerAttack : MonoBehaviour
     {
         this.damage = damage;
         this.currentTarget = currentTarget;
-        GetComponent<Rigidbody2D>().AddForce(direction * projectileSpeed);  // Åõ»çÃ¼¿¡ ÈûÀ» Áà Àû¿¡°Ô ³¯¾Æ°¡µµ·Ï ÇÔ
+        GetComponent<Rigidbody2D>().AddForce(direction * projectileSpeed);  // ï¿½ï¿½ï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Æ°ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!collision.CompareTag("Enemy")) return;  // ÀûÀÌ ¾Æ´Ñ ´ë»ó°ú Ãæµ¹ÇÏ´Â °æ¿ì
-        if (collision.transform != currentTarget) return;   // ÇöÀç targetÀÌ ¾Æ´Ñ °æ¿ì
+        if (!collision.CompareTag("Enemy")) return;  // ï¿½ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½æµ¹ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½
+        if (collision.transform != currentTarget) return;   // ï¿½ï¿½ï¿½ï¿½ targetï¿½ï¿½ ï¿½Æ´ï¿½ ï¿½ï¿½ï¿½
 
-        Debug.Log("Åõ»çÃ¼ ¸ÂÀ½");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½Ã¼ ï¿½ï¿½ï¿½ï¿½");
         damageable = currentTarget.GetComponent<IDamageable>();
         if (damageable != null)
         {
             damageable.TakeDamage(damage);
-            Debug.Log($"{gameObject.name}ÀÌ {currentTarget.name}¿¡°Ô {damage}ÀÇ ÇÇÇØ¸¦ ÀÔÇû½À´Ï´Ù");
+            Debug.Log($"{gameObject.name}ï¿½ï¿½ {currentTarget.name}ï¿½ï¿½ï¿½ï¿½ {damage}ï¿½ï¿½ ï¿½ï¿½ï¿½Ø¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½");
         }
         Destroy(gameObject);
     }
