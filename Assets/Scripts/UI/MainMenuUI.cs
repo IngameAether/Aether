@@ -65,7 +65,7 @@ public class MainMenuUI : MonoBehaviour
         if (rightArrowButton != null)
             rightArrowButton.onClick.AddListener(OnRightArrowButtonClick);
         if (playLevelButton != null)
-            playLevelButton.onClick.AddListener(OnPlayLevelButtonClick); // 새 버튼 이벤트 연결
+            playLevelButton.onClick.AddListener(OnPlayLevelButtonClick);
 
         // 사운드 설정 UI 
         if (bgmSlider != null)
@@ -134,6 +134,11 @@ public class MainMenuUI : MonoBehaviour
         ShowPanel(UIPanelState.Settings);
     }
 
+    public void OnPlayLevelButtonClick()
+    {
+        ShowPanel(UIPanelState.LoadSave);
+    }
+
     // 왼쪽 화살표 버튼 클릭 시 (레벨 선택)
     public void OnLeftArrowButtonClick()
     {
@@ -153,19 +158,6 @@ public class MainMenuUI : MonoBehaviour
             currentSelectedWaveIndex = 0; // 첫 번째 레벨로 순환
         }
         UpdateLevelDisplay();
-    }
-    // 선택된 레벨을 플레이/확정 버튼 클릭 시
-    public void OnPlayLevelButtonClick()
-    {
-        if (currentSelectedWaveIndex != -1) // -1은 초기값으로, 여기서는 0부터 시작하므로 항상 유효
-        {
-            ShowPanel(UIPanelState.LoadSave); // 로드/세이브 선택 창 표시
-        }
-        else
-        {
-            Debug.LogError("레벨이 선택되지 않았습니다!");
-            ShowPanel(UIPanelState.MainMenu);
-        }
     }
 
     // 로드/세이브 창에서 '새 게임 시작' 버튼 클릭 시
@@ -206,12 +198,20 @@ public class MainMenuUI : MonoBehaviour
 
         if (!string.IsNullOrEmpty(sceneToLoad))
         {
-            SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
-            Debug.Log($"씬 로드 시작: {sceneToLoad}");
+            if(FadeManager.Instance != null)
+            {
+                FadeManager.Instance.TransitionToScene(sceneToLoad);
+                Debug.Log($"FadeManager를 통해 씬 로드 요청: {sceneToLoad}");
+            }
+            else
+            {
+                Debug.LogError("FadeManager 인스턴스를 찾을 수 없습니다. 직접 씬을 로드합니다.");
+                SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
+            }
         }
         else
         {
-            Debug.LogError($"Wave {waveIndex + 1}에 대한 씬 이름이 설정되지 않았습니다!");
+            Debug.LogError($"Wave {waveIndex + 1}에 대한 씬 이름이 설정되지 않았습니다.");
         }
     }
 
