@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
@@ -11,7 +12,7 @@ public class TowerSetting
     [field: SerializeField] public string description { get; private set; }
     [field: SerializeField] public int rank { get; private set; }
     [field: SerializeField] public float damage { get; private set; }
-    [field: SerializeField] public float attackDelay { get; private set; }
+    [field: SerializeField] public float attackSpeed { get; private set; }
     [field: SerializeField] public float range { get; private set; }
     [field: SerializeField] public float criticalHit { get; private set; }
 }
@@ -159,7 +160,13 @@ public abstract class Tower : MonoBehaviour
     /// </summary>
     protected virtual bool CanAttack()
     {
-        var isDelayOver = Time.time >= lastAttackTime + towerSetting.attackDelay;
+        if (towerSetting.attackSpeed <= 0f)
+        {
+            Debug.Log("AttackSpeed가 0 이하입니다.");
+            return false;
+        }
+        float attackInterval = 1f / towerSetting.attackSpeed;
+        var isDelayOver = Time.time >= lastAttackTime + attackInterval;
         var isAlive = isTargetAlive(currentTarget);
         return isDelayOver && isAlive;
     }

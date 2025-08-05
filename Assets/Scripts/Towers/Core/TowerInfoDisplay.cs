@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
@@ -157,7 +157,7 @@ using TMPro;
             towerStatsText.text = $"Rank: {towerSetting.rank}\n" +
                                   $"Attack: {towerSetting.damage}\n" +
                                   $"Atk Range: {towerSetting.range}" +
-                                  $"Atk Delay: {towerSetting.attackDelay}sec\n" +
+                                  $"Atk Speed: {towerSetting.attackSpeed}\n" +
                                   $"Critical Hit: {towerSetting.criticalHit}";
 
             infoPanelUI.SetActive(true);

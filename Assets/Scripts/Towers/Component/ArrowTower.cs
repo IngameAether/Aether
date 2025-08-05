@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// 테스트용 타워
@@ -12,8 +12,6 @@ public class ArrowTower : Tower
     {
         if (!currentTarget) return;
 
-        SpawnProjectile();
-
         Animator mouthAnimator = transform.Find("Mouth")?.GetComponent<Animator>();
         Animator scaleAnimator = GetComponent<Animator>();
         if (mouthAnimator != null && scaleAnimator != null)
@@ -22,6 +20,14 @@ public class ArrowTower : Tower
             scaleAnimator.SetTrigger("CanAttack");
             Debug.Log("Animation 실행");
         }
+
+        //SpawnProjectile();
+    }
+
+    public void ThrowProjcetile()
+    {
+        if (!currentTarget) return;
+        SpawnProjectile();
     }
 
     // 투사체 생성 및 발사
