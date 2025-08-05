@@ -38,13 +38,6 @@ public class FadeManager : MonoBehaviour
         if (scene.name == "MainMenuScene") // <-- 실제 메인 메뉴 씬 이름
         {
             MainMenuUI mainMenuUI = FindObjectOfType<MainMenuUI>();
-            if (mainMenuUI != null && mainMenuUI.playLevelButton != null) // PlayLevelButton이 메인 메뉴 진입 버튼이라고 가정
-            {
-                // 이전 리스너가 있다면 제거 (중복 연결 방지)
-                mainMenuUI.playLevelButton.onClick.RemoveAllListeners(); // 기존 리스너 모두 제거
-                // 새로운 리스너 연결 (FadeManager의 TransitionToScene을 호출)
-                mainMenuUI.playLevelButton.onClick.AddListener(() => TransitionToScene("GameScene")); // <-- "GameScene"은 실제 게임 씬 이름
-            }
         }
     }
     void Awake()

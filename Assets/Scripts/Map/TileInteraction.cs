@@ -4,7 +4,7 @@ public class TileInteraction : MonoBehaviour
 {
     public Tile tile;
     public static GameObject[] staticElementPrefabs;  // 전역 변수로 선언(모든 tile이 공유할 내용이므로)
-    public static bool isTowerJustCreated = false;  // Ÿ���� Ŭ���� Ÿ���� ��ġ�� ������ Ÿ���� Ŭ���� ������ �����ϱ� ����
+    public static bool isTowerJustCreated = false;  // 타워 생성 플래그
 
     private BoxCollider2D _boxCollider2D;
 
@@ -18,10 +18,15 @@ public class TileInteraction : MonoBehaviour
     {
         if (Time.timeScale == 0f) return;   // 게임이 멈추면 클릭 등 상호작용 무시
 
-        tile.ChangeCurrentTileColor();
-        tile.PrintTileInfo();
-
-        if (!tile.isBuild || !tile.isElementBuild) return;
+        if(tile.element != null) // 빈 타일 클릭시에만 로직 수행
+        {
+            return;
+        }
+        if (!tile.isBuild || !tile.isElementBuild)
+        {
+            tile.PrintTileInfo();
+            return;
+        }
 
         ElementType assignedElementType = ElementType.None;
 
@@ -43,8 +48,7 @@ public class TileInteraction : MonoBehaviour
         ElementController ec = elementObj.GetComponent<ElementController>();
         if (ec != null)
         {
-            ec.Initialize(this, assignedElementType);
-            ec.selectTile = tile;
+            ec.Initialize(tile, assignedElementType);
         }
         else
         {
@@ -55,25 +59,37 @@ public class TileInteraction : MonoBehaviour
         _boxCollider2D.enabled = false;
         tile.isElementBuild = false;
         tile.element = elementObj;
+        tile.PrintTileInfo();
     }
 
-    public GameObject PlacedTower(GameObject prefab)
+    public GameObject PlacedTower(GameObject prefab, Tile targetTile)
     {
-        var towerObj = Instantiate(prefab, tile.transform.position, Quaternion.identity);
-        tile.isElementBuild = false;
-        tile.tower = towerObj;
+        var towerObj = Instantiate(prefab, targetTile.transform.position, Quaternion.identity);
+        targetTile.isElementBuild = false;
+        targetTile.tower = towerObj;
 
         TowerDragSale tds = towerObj.GetComponent<TowerDragSale>();
-        tds.selectTile = tile;
 
+        if(tds != null)
+        {
+            tds.selectTile = targetTile;
+        }
         return towerObj;
     }
 
-    public void TileReset()
+    public void TileReset(Tile targetTile)
     {
-        tile.isElementBuild = true;
-        Destroy(tile.element.gameObject);
-        tile.element = null;
-        _boxCollider2D.enabled = true;
+        targetTile.isElementBuild = true;
+        if(targetTile.element != null)
+        {
+            Destroy(targetTile.element.gameObject);
+            targetTile.element = null;
+        }
+
+        BoxCollider2D targetCollider = targetTile.GetComponent<BoxCollider2D>();
+        if(targetCollider != null)
+        {
+            targetCollider.enabled = true;
+        }
     }
 }

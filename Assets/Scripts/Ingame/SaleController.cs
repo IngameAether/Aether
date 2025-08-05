@@ -12,32 +12,68 @@ public class SaleController : MonoBehaviour
     public static int coin = 0;
     public TextMeshProUGUI coinTxt;
     public GameObject saleUIPanel;
-    public RectTransform RectTransform => GetComponent<RectTransform>();
+    public GameObject saleTextObject;
+    private Image highlightImage;
+    public RectTransform SalePanelRectTransform => saleUIPanel != null ? saleUIPanel.GetComponent<RectTransform>() : null;
 
     void Awake()
     {
-        image = GetComponent<Image>();
+        highlightImage = GetComponent<Image>();
+        if(highlightImage == null)
+        {
+            Debug.LogError("SaleController가 붙어있는 GameObject에 Image 컴포넌트가 없습니다! 하이라이트 색상 변경 불가.");
+        }
+
+        if (saleUIPanel != null)
+        {
+            saleUIPanel.SetActive(false);
+        }
+        if (saleTextObject != null)
+        {
+            saleTextObject.SetActive(false);
+        }
     }
 
     void Update()
     {
-        coinTxt.text = coin.ToString();
+        if(coinTxt != null)
+        {
+            coinTxt.text = coin.ToString();
+        }
     }
 
     public void SetHighlightColor(bool isHighlight)
     {
-        image.color = isHighlight ? highlightColor : normalColor;
+        if (highlightImage != null)
+        {
+            highlightImage.color = isHighlight ? highlightColor : normalColor;
+        }
+        else
+        {
+            Debug.LogWarning("SaleController: highlightImage (SaleController가 붙은 Image)가 null이라 하이라이트 색상 변경 불가.");
+        }
     }
 
     public void ShowSaleUI(bool show)
     {
+        // saleUIPanel 활성화 / 비활성화
         if (saleUIPanel != null)
         {
             saleUIPanel.SetActive(show);
         }
         else
         {
-            Debug.LogWarning("SaleController: saleUIPanel�� �Ҵ���� �ʾҽ��ϴ�. Inspector�� Ȯ���ϼ���.");
+            Debug.LogWarning("SaleController: saleUIPanel이 할당되지 않았습니다. Inspector를 확인하세요.");
+        }
+
+        // saleTextObject 활성화 / 비활성화
+        if(saleTextObject != null)
+        {
+            saleTextObject.SetActive(show);
+        }
+        else
+        {
+            Debug.LogWarning("SaleController: saleTextObject가 할당되지 않았습니다. Inspector를 확인하세요.");
         }
     }
 }

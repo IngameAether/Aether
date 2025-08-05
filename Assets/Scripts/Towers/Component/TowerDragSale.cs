@@ -54,10 +54,10 @@ public class TowerDragSale : MonoBehaviour
             Vector3 mousePosition = GetMouseWorldPosition();
             transform.position = mousePosition + offset;
 
-            if (saleZone != null && saleZone.RectTransform != null)
+            if (saleZone != null && saleZone.SalePanelRectTransform != null)
             {
                 Vector2 screenPos = Camera.main.WorldToScreenPoint(transform.position);
-                isOverSaleZone = RectTransformUtility.RectangleContainsScreenPoint(saleZone.RectTransform, screenPos, null);
+                isOverSaleZone = RectTransformUtility.RectangleContainsScreenPoint(saleZone.SalePanelRectTransform, screenPos, null);
                 saleZone.SetHighlightColor(isOverSaleZone);
             }
             else
@@ -72,6 +72,12 @@ public class TowerDragSale : MonoBehaviour
     {
         if (isDrag)
         {
+            if(saleZone != null)
+            {
+                saleZone.SetHighlightColor(false); // 드래그 끝나면 하이라이트 해제
+                saleZone.ShowSaleUI(false); // 판매창 및 sale 글씨 비활성화
+            }
+
             if (isOverSaleZone) // 판매 확정시
             {
                 // 타일에서 타워정보 제거
@@ -83,21 +89,13 @@ public class TowerDragSale : MonoBehaviour
                     selectTile.isElementBuild = true;
                 }
                 Debug.Log($"{gameObject.name} 판매됨");
-
-                Destroy(gameObject);
                 SaleController.coin += 20;
+                Destroy(gameObject);
             }
             else // 판매 취소 시
             {
                 transform.position = initialPosition; // 초기 위치로 이동
             }
-        }
-
-        // 드래그 멈추면 판매창 숨김
-        if (saleZone != null)
-        {
-            saleZone.SetHighlightColor(false);
-            saleZone.ShowSaleUI(false);
         }
         isDrag = false;
     }

@@ -1,77 +1,113 @@
 using UnityEngine;
-using UnityEngine.Audio; // AudioMixer¸¦ »ç¿ëÇÏ±â À§ÇØ ÇÊ¿ä
-using System.Collections.Generic; // Dictionary¸¦ »ç¿ëÇÏ±â À§ÇØ ÇÊ¿ä
+using UnityEngine.Audio; // AudioMixerë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•´ í•„ìš”
+using System.Collections.Generic; // Dictionaryë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•´ í•„ìš”
 
 public class AudioManager : MonoBehaviour
 {
-    // ½Ì±ÛÅÏ ÀÎ½ºÅÏ½º (¾îµğ¼­µç AudioManager.Instance·Î Á¢±Ù °¡´É)
+    // ì‹±ê¸€í„´ ì¸ìŠ¤í„´ìŠ¤ (ì–´ë””ì„œë“  AudioManager.Instanceë¡œ ì ‘ê·¼ ê°€ëŠ¥)
     public static AudioManager Instance { get; private set; }
 
-    [Header("¿Àµğ¿À ¹Í¼­")]
-    public AudioMixer masterMixer; // Unity ¿¡µğÅÍ¿¡¼­ Main Audio Mixer ¿¡¼ÂÀ» ¿¬°á
+    [Header("ì˜¤ë””ì˜¤ ë¯¹ì„œ")]
+    public AudioMixer masterMixer; // Unity ì—ë””í„°ì—ì„œ Main Audio Mixer ì—ì…‹ì„ ì—°ê²°
+
+    [Header("Audio Sources")]
+    [SerializeField] private AudioSource bgmAudioSource; // BGM ì¬ìƒìš© AudioSource (ì¸ìŠ¤í™í„°ì—ì„œ ì—°ê²°)
+    [SerializeField] private AudioSource sfxAudioSource; // SFX ì¬ìƒìš© AudioSource (ì¸ìŠ¤í™í„°ì—ì„œ ì—°ê²°)
+
+    [Header("Audio Mixer Snapshots")]
+    public AudioMixerSnapshot normalSnapshot; // ê¸°ë³¸ ìƒíƒœ ìŠ¤ëƒ…ìƒ· (ì¸ìŠ¤í™í„°ì—ì„œ ì—°ê²°)
+    public AudioMixerSnapshot pausedSnapshot; // ì¼ì‹œ ì •ì§€ ìƒíƒœ ìŠ¤ëƒ…ìƒ· (ì¸ìŠ¤í™í„°ì—ì„œ ì—°ê²°)
+    public AudioMixerSnapshot mutedSnapshot;  // ìŒì†Œê±° ìƒíƒœ ìŠ¤ëƒ…ìƒ· (ì¸ìŠ¤í™í„°ì—ì„œ ì—°ê²°)
+
+    [Header("ì˜¤ë””ì˜¤ í´ë¦½")]
+    // BGM í´ë¦½ì„ ìœ„í•œ Dictionary ë˜ëŠ” List (ì¶”í›„ í™•ì¥ ê°€ëŠ¥ì„±ì„ ê³ ë ¤)
+    public AudioClip[] bgmClips;
+    public AudioClip[] sfxClips;
+
+    private Dictionary<string, AudioClip> bgmClipDictionary = new Dictionary<string, AudioClip>();
+    private Dictionary<string, AudioClip> sfxClipDictionary = new Dictionary<string, AudioClip>();
 
     private void Awake()
     {
-        // ½Ì±ÛÅÏ ÆĞÅÏ ±¸Çö
+        // ì‹±ê¸€í„´ íŒ¨í„´ êµ¬í˜„
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject); // ÀÌ¹Ì ÀÎ½ºÅÏ½º°¡ ÀÖÀ¸¸é ÀÚ½ÅÀ» ÆÄ±«
+            Destroy(gameObject); // ì´ë¯¸ ì¸ìŠ¤í„´ìŠ¤ê°€ ìˆìœ¼ë©´ ìì‹ ì„ íŒŒê´´
         }
         else
         {
             Instance = this;
-            DontDestroyOnLoad(gameObject); // ¾À ÀüÈ¯ ½Ã ÆÄ±«µÇÁö ¾Êµµ·Ï ¼³Á¤
+            DontDestroyOnLoad(gameObject); // ì”¬ ì „í™˜ ì‹œ íŒŒê´´ë˜ì§€ ì•Šë„ë¡ ì„¤ì •
         }
-        // °ÔÀÓ ½ÃÀÛ ½Ã ÀúÀåµÈ »ç¿îµå ¼³Á¤À» ·ÎµåÇÏ¿© Àû¿ë
+        if (bgmAudioSource == null) Debug.LogError("BGM AudioSourceê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+        if (sfxAudioSource == null) Debug.LogError("SFX AudioSourceê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+
+        // BGM í´ë¦½
+        foreach (AudioClip clip in bgmClips)
+        {
+            if (clip != null && !bgmClipDictionary.ContainsKey(clip.name))
+            {
+                bgmClipDictionary.Add(clip.name, clip);
+            }
+        }
+        // SFX í´ë¦½
+        foreach (AudioClip clip in sfxClips)
+        {
+            if (clip != null && !sfxClipDictionary.ContainsKey(clip.name))
+            {
+                sfxClipDictionary.Add(clip.name, clip);
+            }
+        }
+        // ê²Œì„ ì‹œì‘ ì‹œ ì €ì¥ëœ ì‚¬ìš´ë“œ ì„¤ì •ì„ ë¡œë“œí•˜ì—¬ ì ìš©
         LoadSoundSettingsToMixer();
     }
 
-    // --- »ç¿îµå Á¦¾î ¸Ş¼­µå (MainMenuUI¿¡¼­ È£Ãâ) ---
+    // --- ì‚¬ìš´ë“œ ì œì–´ ë©”ì„œë“œ (MainMenuUIì—ì„œ í˜¸ì¶œ) ---
 
-    // Æ¯Á¤ ±×·ì º¼·ı ¼³Á¤ (0~10 ½ºÄÉÀÏÀ» dB ½ºÄÉÀÏ·Î º¯È¯)
+    // íŠ¹ì • ê·¸ë£¹ ë³¼ë¥¨ ì„¤ì • (0~10 ìŠ¤ì¼€ì¼ì„ dB ìŠ¤ì¼€ì¼ë¡œ ë³€í™˜)
     public void SetGroupVolume(string parameterName, float volume)
     {
         if (masterMixer == null)
         {
-            Debug.LogWarning("Audio Mixer°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù. »ç¿îµå º¼·ıÀ» Á¶ÀıÇÒ ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("Audio Mixerê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. ì‚¬ìš´ë“œ ë³¼ë¥¨ì„ ì¡°ì ˆí•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
         if (volume == 0)
         {
-            masterMixer.SetFloat(parameterName, -80f); // º¼·ıÀÌ 0ÀÏ ¶§´Â -80dB (¿ÏÀü ¼Ò°Å)
+            masterMixer.SetFloat(parameterName, -80f); // ë³¼ë¥¨ì´ 0ì¼ ë•ŒëŠ” -80dB (ì™„ì „ ì†Œê±°)
         }
         else
         {
-            masterMixer.SetFloat(parameterName, Mathf.Log10(volume / 10f) * 20f); // 0~10 -> ·Î±× ½ºÄÉÀÏ dB
+            masterMixer.SetFloat(parameterName, Mathf.Log10(volume / 10f) * 20f); // 0~10 -> ë¡œê·¸ ìŠ¤ì¼€ì¼ dB
         }
     }
 
-    // Æ¯Á¤ ±×·ì À½¼Ò°Å ¼³Á¤ (º¼·ı ÆÄ¶ó¹ÌÅÍ·Î À½¼Ò°Å ±¸Çö)
+    // íŠ¹ì • ê·¸ë£¹ ìŒì†Œê±° ì„¤ì • (ë³¼ë¥¨ íŒŒë¼ë¯¸í„°ë¡œ ìŒì†Œê±° êµ¬í˜„)
     public void SetGroupMute(string parameterName, bool isMuted)
     {
         if (masterMixer == null)
         {
-            Debug.LogWarning("Audio Mixer°¡ ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù. »ç¿îµå À½¼Ò°Å¸¦ Á¶ÀıÇÒ ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("Audio Mixerê°€ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤. ì‚¬ìš´ë“œ ìŒì†Œê±°ë¥¼ ì¡°ì ˆí•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             return;
         }
 
-        // parameterNameÀº "BGMMute" ¶Ç´Â "SFXMute" ÇüÅÂ
-        string volumeParameterName = parameterName.Replace("Mute", "Volume"); // "BGMVolume" ¶Ç´Â "SFXVolume"
+        // parameterNameì€ "BGMMute" ë˜ëŠ” "SFXMute" í˜•íƒœ
+        string volumeParameterName = parameterName.Replace("Mute", "Volume"); // "BGMVolume" ë˜ëŠ” "SFXVolume"
 
         if (isMuted)
         {
-            masterMixer.SetFloat(volumeParameterName, -80f); // À½¼Ò°Å ½Ã -80dB·Î ¼³Á¤
+            masterMixer.SetFloat(volumeParameterName, -80f); // ìŒì†Œê±° ì‹œ -80dBë¡œ ì„¤ì •
         }
         else
         {
-            // À½¼Ò°Å ÇØÁ¦ ½Ã PlayerPrefs¿¡ ÀúÀåµÈ º¼·ı °ªÀ¸·Î º¹±¸
-            float savedVolume = PlayerPrefs.GetFloat(volumeParameterName, 5f); // ±âº»°ª 5
-            SetGroupVolume(volumeParameterName, savedVolume); // SetGroupVolumeÀ» ÀçÈ°¿ëÇÏ¿© dB º¯È¯ Àû¿ë
+            // ìŒì†Œê±° í•´ì œ ì‹œ PlayerPrefsì— ì €ì¥ëœ ë³¼ë¥¨ ê°’ìœ¼ë¡œ ë³µêµ¬
+            float savedVolume = PlayerPrefs.GetFloat(volumeParameterName, 5f); // ê¸°ë³¸ê°’ 5
+            SetGroupVolume(volumeParameterName, savedVolume); // SetGroupVolumeì„ ì¬í™œìš©í•˜ì—¬ dB ë³€í™˜ ì ìš©
         }
     }
 
-    // PlayerPrefs¿¡¼­ »ç¿îµå ¼³Á¤À» ·ÎµåÇÏ¿© Audio Mixer¿¡ Àû¿ë
+    // PlayerPrefsì—ì„œ ì‚¬ìš´ë“œ ì„¤ì •ì„ ë¡œë“œí•˜ì—¬ Audio Mixerì— ì ìš©
     public void LoadSoundSettingsToMixer()
     {
         float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 5f);
@@ -86,10 +122,10 @@ public class AudioManager : MonoBehaviour
         SetGroupVolume("SFXVolume", sfxVolume);
         SetGroupMute("SFXMute", sfxMute);
 
-        Debug.Log("»ç¿îµå ¼³Á¤ ·Îµå ¹× ¹Í¼­ Àû¿ë ¿Ï·á.");
+        Debug.Log("ì‚¬ìš´ë“œ ì„¤ì • ë¡œë“œ ë° ë¯¹ì„œ ì ìš© ì™„ë£Œ.");
     }
 
-    // ÇöÀç UI °ªµéÀ» PlayerPrefs¿¡ ÀúÀå
+    // í˜„ì¬ UI ê°’ë“¤ì„ PlayerPrefsì— ì €ì¥
     public void SaveSoundSettings(float bgmVal, bool bgmMuteVal, float sfxVal, bool sfxMuteVal)
     {
         PlayerPrefs.SetFloat("BGMVolume", bgmVal);
@@ -97,7 +133,119 @@ public class AudioManager : MonoBehaviour
         PlayerPrefs.SetFloat("SFXVolume", sfxVal);
         PlayerPrefs.SetInt("SFXMute", sfxMuteVal ? 1 : 0);
 
-        PlayerPrefs.Save(); // º¯°æ»çÇ× Áï½Ã ÀúÀå
-        Debug.Log("»ç¿îµå ¼³Á¤ PlayerPrefs¿¡ ÀúÀå ¿Ï·á.");
+        PlayerPrefs.Save(); // ë³€ê²½ì‚¬í•­ ì¦‰ì‹œ ì €ì¥
+        Debug.Log("ì‚¬ìš´ë“œ ì„¤ì • PlayerPrefsì— ì €ì¥ ì™„ë£Œ.");
+    }
+
+    // BGM ì‹œì‘
+    public void PlayBGM(string bgmName, bool loop = true)
+    {
+        if(bgmAudioSource == null)
+        {
+            Debug.LogWarning("BGM AudioSourceê°€ í• ë‹¹ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤.");
+            return;
+        }
+
+        if (!bgmClipDictionary.ContainsKey(bgmName))
+        {
+            Debug.LogWarning($"BGM í´ë¦½ '{bgmName}'ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+            return;
+        }
+
+        bgmAudioSource.clip = bgmClipDictionary[bgmName];
+        bgmAudioSource.loop = loop; // ë£¨í”„ ì—¬ë¶€ ì„¤ì •
+        bgmAudioSource.Play();
+        Debug.Log($"BGM '{bgmName}' ì¬ìƒ ì‹œì‘. (Loop: {loop})");
+    }
+
+    // BGM ì •ì§€
+    public void StopBGM()
+    {
+        if(bgmAudioSource != null && bgmAudioSource.isPlaying)
+        {
+            bgmAudioSource.Stop();
+            Debug.Log("BGM ì •ì§€");
+        }
+    }
+    // ì „ì²´ ìŒì†Œê±° (ì‚¬ìš©ì ì„¤ì •ì—ì„œ)
+    public void OnGameMuted()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.TransitionToSnapshot(AudioManager.Instance.mutedSnapshot, 0.1f);
+        }
+    }
+
+    // BGM ì¼ì‹œ ì •ì§€
+    public void PauseBGM()
+    {
+        if(bgmAudioSource != null && bgmAudioSource.isPlaying)
+        {
+            bgmAudioSource.Pause();
+            Debug.Log("BGM ì¼ì‹œ ì •ì§€");
+        }
+    }
+    // ê²Œì„ ì¼ì‹œ ì •ì§€ ì‹œ
+    public void OnGamePaused()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.TransitionToSnapshot(AudioManager.Instance.pausedSnapshot, 0.5f); // 0.5ì´ˆì— ê±¸ì³ ì „í™˜
+        }
+    }
+
+    // BGM ì¬ìƒ
+    public void UnPauseBGM()
+    {
+        // time != 0ì€ ì‹œì‘ì ì´ ì•„ë‹˜ì„ ì˜ë¯¸
+        if (bgmAudioSource != null && bgmAudioSource.time != 0 && !bgmAudioSource.isPlaying)
+        {
+            bgmAudioSource.UnPause();
+            Debug.Log("BGM ë‹¤ì‹œ ì¬ìƒ");
+        }
+        else if(bgmAudioSource != null && !bgmAudioSource.isPlaying && bgmAudioSource.clip != null)
+        {
+            // clipì´ ìˆê³  ì¬ìƒ ì¤‘ì´ ì•„ë‹ˆë¼ë©´ ìƒˆë¡œ ì¬ìƒ
+            bgmAudioSource.Play();
+            Debug.Log("BGM ì¬ì‹œì‘ (ìƒˆë¡œ ì¬ìƒ)");
+        }
+    }
+    // ê²Œì„ ì¬ê°œ ì‹œ
+    public void OnGameResumed()
+    {
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.TransitionToSnapshot(AudioManager.Instance.normalSnapshot, 0.5f);
+        }
+    }
+
+    public void PlaySFX(string sfxName)
+    {
+        if(sfxAudioSource == null)
+        {
+            Debug.LogWarning("SFX AudioSourceê°€ í• ë‹¹ë˜ì§€ ì•ŠìŠµë‹ˆë‹¤.");
+            return;
+        }
+
+        if (!sfxClipDictionary.ContainsKey(sfxName))
+        {
+            Debug.LogWarning($"SFX í´ë¦½ '{sfxName}'ì„ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
+            return;
+        }
+        // PlayOneShotì€ í˜„ì¬ AudioSourceì˜ ì„¤ì •ì„ ìœ ì§€í•œ ì±„ AudioClipì„ í•œ ë²ˆ ì¬ìƒí•¨
+        // ì—¬ëŸ¬ SFXê°€ ë™ì‹œì— ë°œìƒí•´ë„ ì„œë¡œ ë®ì–´ì“°ì§€ ì•Šê³  ê²¹ì³ì„œ ì¬ìƒ
+        sfxAudioSource.PlayOneShot(sfxClipDictionary[sfxName]);
+        Debug.Log($"SFX '{sfxName}' ì¬ìƒ");
+    }
+
+    public void TransitionToSnapshot(AudioMixerSnapshot snapshot, float timeToReach)
+    {
+        if (snapshot == null)
+        {
+            Debug.LogWarning("ì „í™˜í•˜ë ¤ëŠ” AudioMixer Snapshotì´ nullì…ë‹ˆë‹¤.");
+            return;
+        }
+        snapshot.TransitionTo(timeToReach);
+        Debug.Log($"Audio Mixerë¥¼ ìŠ¤ëƒ…ìƒ· '{snapshot.name}'ìœ¼ë¡œ ì „í™˜ (ì‹œê°„: {timeToReach}s).");
     }
 }
