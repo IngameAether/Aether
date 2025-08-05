@@ -20,7 +20,7 @@ public class GameManager : MonoBehaviour
     public bool IsGameOver { get; private set; }
 
     [Header("플레이어 목숨")]
-    [SerializeField] private int initialLives = 5; // 기본 목숨은 5로 설정. 인스펙터에서 수정가능
+    [SerializeField] private int initialLives = 3; // 기본 목숨은 5로 설정. 인스펙터에서 수정가능
 
     public int currentLives { get; private set; } // 남아있는 목숨
 
