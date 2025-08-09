@@ -22,13 +22,18 @@ public abstract class Tower : MonoBehaviour
     [Header("Tower Configuration")] [SerializeField]
     protected TowerSetting towerSetting;
 
+    [Header("Tower Level")] 
+    [SerializeField] private int level = 1;
+    [SerializeField] private int reinforce = 0;
+    protected TowerSpriteController towerSpriteController;
+
     protected SpriteRenderer spriteRenderer;
     protected SpriteRenderer magicCircleRenderer;
 
     protected float lastAttackTime;
     protected bool isFacingRight = true;
     protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
-    public Vector3 direction; // 적 방향
+    protected Vector3 direction; // 적 방향
 
     public static event Action<Tower> OnTowerClicked;
 
@@ -65,6 +70,7 @@ public abstract class Tower : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
+        towerSpriteController = GetComponent<TowerSpriteController>();
     }
 
     /// <summary>
@@ -184,5 +190,24 @@ public abstract class Tower : MonoBehaviour
     public void HandleTowerClicked()
     {
         OnTowerClicked?.Invoke(this);
+    }
+
+    // 타워 레벨 상승
+    public virtual void TowerLevelUpgrade()
+    {
+        level++;
+        if (towerSpriteController != null) towerSpriteController.SetSpritesByLevel(level);
+    }
+
+    // 타워 강화
+    public virtual void TowerReinforceUpgrade()
+    {
+        reinforce++;
+
+        // 강화 레벨이 5,10,15,20이 되면 마법진 변화
+        if (reinforce % 5 == 0)
+        {
+            if (towerSpriteController != null) towerSpriteController.SetSpriteByReinForce(reinforce);
+        }
     }
 }

@@ -11,8 +11,6 @@ using TMPro;
         private Canvas mainCanvas;
 
         [SerializeField] private GameObject infoPanelUI;
-        [SerializeField] private TMP_Text towerNameText;
-        [SerializeField] private TMP_Text towerDescriptionText;
         [SerializeField] private TMP_Text towerStatsText;
         [SerializeField] private Button flipButton;
         [SerializeField] private Button sellButton; // (나중에 추가)
@@ -151,12 +149,9 @@ using TMPro;
         {
             var towerSetting = tower.GetTowerSetting();
 
-            towerNameText.text = towerSetting.name;
-            //towerDescriptionText.text = towerSetting.description;
-
             towerStatsText.text = $"Rank: {towerSetting.rank}\n" +
                                   $"Attack: {towerSetting.damage}\n" +
-                                  $"Atk Range: {towerSetting.range}" +
+                                  $"Atk Range: {towerSetting.range}\n" +
                                   $"Atk Speed: {towerSetting.attackSpeed}\n" +
                                   $"Critical Hit: {towerSetting.criticalHit}";
 
