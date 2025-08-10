@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7465735765992540103}
   - component: {fileID: 7850274060307949558}
   - component: {fileID: 3486002921567557265}
+  - component: {fileID: 8602095056099424060}
   m_Layer: 0
   m_Name: WaterTower
   m_TagString: Untagged
@@ -160,6 +161,18 @@ MonoBehaviour:
   - {fileID: 6903431820367259015, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
   - {fileID: 5304421901645159822, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
   - {fileID: 7231015256633251017, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
+--- !u!114 &8602095056099424060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2255666967045128489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02f8366314489114692c190c850cb9ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3354781947211632409
 GameObject:
   m_ObjectHideFlags: 0

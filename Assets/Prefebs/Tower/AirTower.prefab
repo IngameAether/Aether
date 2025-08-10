@@ -98,6 +98,7 @@ GameObject:
   - component: {fileID: 7765792416274081306}
   - component: {fileID: 5885064252331485226}
   - component: {fileID: 4096340549744054134}
+  - component: {fileID: -6281842738988306443}
   m_Layer: 0
   m_Name: AirTower
   m_TagString: Untagged
@@ -244,6 +245,18 @@ MonoBehaviour:
   - {fileID: 6903431820367259015, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
   - {fileID: 5304421901645159822, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
   - {fileID: 7231015256633251017, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
+--- !u!114 &-6281842738988306443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2156860131253734831}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02f8366314489114692c190c850cb9ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3810173595613539892
 GameObject:
   m_ObjectHideFlags: 0

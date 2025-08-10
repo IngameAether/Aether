@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
 
 /// <summary>
 /// 타워 정보와 사거리를 표시하는 UI 매니저
@@ -35,6 +36,8 @@ public class TowerInfoDisplay : MonoBehaviour
     private Tower currentSelectedTower;
     private Camera _camera;
     private RectTransform _infoPanelRect;
+    private string type;
+    private Color reinforceBtnColor;
 
     private void Start()
     {
@@ -47,8 +50,11 @@ public class TowerInfoDisplay : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        // 마우스 왼쪽 버튼 클릭했을 때
+        // 마우스 왼쪽 버튼이 아닌 입력 받았을 경우
         if (!Input.GetMouseButtonDown(0)) return;
+
+        // UI 클릭한 경우
+        if (EventSystem.current.IsPointerOverGameObject()) return;
 
         Vector2 mousePos = _camera.ScreenToWorldPoint(Input.mousePosition);
         RaycastHit2D hit = Physics2D.Raycast(mousePos, Vector2.zero);
@@ -209,38 +215,46 @@ public class TowerInfoDisplay : MonoBehaviour
     // 빛 강화 선택
     private void LightReinforce()
     {
+        Debug.Log("빛 강화 선택");
         if (currentSelectedTower != null)
         {
             var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
             towerReinforce.AssignReinforceType(TowerReinforce.ReinforceType.Light);
             towerReinforce.ReinforceTower();
 
-            int reinforce = towerReinforce.GetReinforceLevel();
-            SwitchReinforceButton("빛", reinforce);
+            reinforceBtnColor = lightButton.colors.normalColor;
+            SwitchReinforceButton("빛", 1);
         }
     }
 
     // 어둠 강화 선택
     private void DarkReinforce()
     {
+        Debug.Log("어둠 강화 선택");
         if (currentSelectedTower != null)
         {
             var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
             towerReinforce.AssignReinforceType(TowerReinforce.ReinforceType.Dark);
             towerReinforce.ReinforceTower();
 
-            int reinforce = towerReinforce.GetReinforceLevel();
-            SwitchReinforceButton("어둠", reinforce);
+            reinforceBtnColor = darkButton.colors.normalColor;
+            SwitchReinforceButton("어둠", 1);
         }
     }
 
     // 선택한 강화 버튼만 표시
     private void SwitchReinforceButton(string type, int reinforce)
     {
+        // 버튼 색 변경
+        ColorBlock cb = reinforceButton.colors;
+        cb.normalColor = reinforceBtnColor;
+        reinforceButton.colors = cb;
+
         lightButton.gameObject.SetActive(false);
         darkButton.gameObject.SetActive(false);
         reinforceButton.gameObject.SetActive(true);
 
+        this.type = type;
         reinforceText.text = $"{type} + {reinforce}";
     }
 
@@ -249,6 +263,9 @@ public class TowerInfoDisplay : MonoBehaviour
     {
         var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
         towerReinforce.ReinforceTower();
+
+        int reinforce = towerReinforce.GetReinforceLevel();
+        reinforceText.text = $"{this.type} + {reinforce}";
     }
 
     /// <summary>

@@ -22,11 +22,6 @@ public abstract class Tower : MonoBehaviour
     [Header("Tower Configuration")] [SerializeField]
     protected TowerSetting towerSetting;
 
-    [Header("Tower Level")] 
-    [SerializeField] private int level = 1;
-    [SerializeField] private int reinforce = 0;
-    protected TowerSpriteController towerSpriteController;
-
     protected SpriteRenderer spriteRenderer;
     protected SpriteRenderer magicCircleRenderer;
 
@@ -70,7 +65,6 @@ public abstract class Tower : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
-        towerSpriteController = GetComponent<TowerSpriteController>();
     }
 
     /// <summary>
@@ -190,24 +184,5 @@ public abstract class Tower : MonoBehaviour
     public void HandleTowerClicked()
     {
         OnTowerClicked?.Invoke(this);
-    }
-
-    // 타워 레벨 상승
-    public virtual void TowerLevelUpgrade()
-    {
-        level++;
-        if (towerSpriteController != null) towerSpriteController.SetSpritesByLevel(level);
-    }
-
-    // 타워 강화
-    public virtual void TowerReinforceUpgrade()
-    {
-        reinforce++;
-
-        // 강화 레벨이 5,10,15,20이 되면 마법진 변화
-        if (reinforce % 5 == 0)
-        {
-            if (towerSpriteController != null) towerSpriteController.SetSpriteByReinForce(reinforce);
-        }
     }
 }

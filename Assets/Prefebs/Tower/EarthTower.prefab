@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: -1036821880616153125}
   - component: {fileID: 2985933146421138848}
   - component: {fileID: 1238584763690841986}
+  - component: {fileID: 603688500823851845}
   m_Layer: 0
   m_Name: EarthTower
   m_TagString: Untagged
@@ -160,6 +161,18 @@ MonoBehaviour:
   - {fileID: 6903431820367259015, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
   - {fileID: 5304421901645159822, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
   - {fileID: 7231015256633251017, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
+--- !u!114 &603688500823851845
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 87051376619690041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02f8366314489114692c190c850cb9ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2125932898377281017
 GameObject:
   m_ObjectHideFlags: 0

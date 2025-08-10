@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TowerReinforce : MonoBehaviour
 {
-    private Tower tower;
+    protected TowerSpriteController towerSpriteController;
     public enum ReinforceType { None, Light, Dark };
 
     [Header("Tower Enhance")]
@@ -12,7 +12,13 @@ public class TowerReinforce : MonoBehaviour
     private int reinforceLevel = 0;
 
     [Header("Tower Level")]
-    private int towerLevel = 1;
+    [SerializeField] private int level = 1;
+    [SerializeField] private int reinforce = 0;
+
+    private void Start()
+    {
+        towerSpriteController = GetComponent<TowerSpriteController>();
+    }
 
     // 타워 강화 타입 지정: 처음 1번만 사용
     public void AssignReinforceType(ReinforceType type)
@@ -24,7 +30,7 @@ public class TowerReinforce : MonoBehaviour
     // 타워 강화
     public void ReinforceTower()
     {
-        if (towerLevel == 4)
+        if (level == 4)
         {
             Debug.Log("Level 4 Tower can't reinforce!");
             return;
@@ -33,7 +39,7 @@ public class TowerReinforce : MonoBehaviour
         if (curReinforceType != ReinforceType.None)
         {
             reinforceLevel++;
-            tower.TowerReinforceUpgrade();
+            TowerReinforceUpgrade();
             CheckLevelUpgrade();
         }
     }
@@ -41,19 +47,40 @@ public class TowerReinforce : MonoBehaviour
     // 타워 레벨업 조건 체크
     private void CheckLevelUpgrade()
     {
-        if (towerLevel == 2 && reinforceLevel == 10)
+        if (level == 2 && reinforceLevel == 10)
         {
-            towerLevel++;
-            tower.TowerLevelUpgrade();
+            level++;
+            TowerLevelUpgrade();
             Debug.Log($"{gameObject.name} lv.3으로 레벨업");
         }
 
-        if (towerLevel == 3 && reinforceLevel == 20)
+        if (level == 3 && reinforceLevel == 20)
         {
             // 추가적인 능력 부여
         }
     }
 
+    // 타워 레벨 상승
+    public virtual void TowerLevelUpgrade()
+    {
+        level++;
+        if (towerSpriteController != null) towerSpriteController.SetSpritesByLevel(level);
+    }
+
+    // 타워 강화
+    public virtual void TowerReinforceUpgrade()
+    {
+        reinforce++;
+
+        // 강화 레벨이 5,10,15,20이 되면 마법진 변화
+        if (reinforce % 5 == 0)
+        {
+            if (towerSpriteController != null) towerSpriteController.SetSpriteByReinForce(reinforce);
+        }
+    }
+
     // 강화 레벨 읽기
     public int GetReinforceLevel() => reinforceLevel;
+    // 강화 타입 읽기
+    public ReinforceType GetReinforceType() => curReinforceType;
 }

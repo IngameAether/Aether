@@ -204,6 +204,7 @@ GameObject:
   - component: {fileID: 912924898313707350}
   - component: {fileID: 4843641144360428122}
   - component: {fileID: 4569328015134976402}
+  - component: {fileID: 1407164335372021098}
   m_Layer: 0
   m_Name: FireTower
   m_TagString: Untagged
@@ -350,6 +351,18 @@ MonoBehaviour:
   - {fileID: 6903431820367259015, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
   - {fileID: 5304421901645159822, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
   - {fileID: 7231015256633251017, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
+--- !u!114 &1407164335372021098
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4710304639692687514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 02f8366314489114692c190c850cb9ed, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6668399005653537629
 GameObject:
   m_ObjectHideFlags: 0
