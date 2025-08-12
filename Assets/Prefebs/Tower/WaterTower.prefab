@@ -52,16 +52,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerSetting:
-    Name: 
-    Description: 
+    Name: Water Tower
+    Description: straight projectile
     Type: 1
-    Rank: 0
-    Damage: 0
-    AttackSpeed: 0
-    Range: 0
+    Rank: 1
+    Damage: 8
+    AttackSpeed: 1.5
+    Range: 2.5
     CriticalHit: 0
   direction: {x: 0, y: 0, z: 0}
   projectilePrefab: {fileID: 4766331063098911513, guid: 14d41416ca05d3a448b9c9394a949701, type: 3}
+  spawnPoint: {fileID: 0}
 --- !u!58 &8841763817496565554
 CircleCollider2D:
   m_ObjectHideFlags: 0

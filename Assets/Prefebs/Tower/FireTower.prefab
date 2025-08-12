@@ -158,15 +158,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerSetting:
-    <name>k__BackingField: Fire Tower
-    <description>k__BackingField: straight projectile
-    <rank>k__BackingField: 1
-    <damage>k__BackingField: 10
-    <attackSpeed>k__BackingField: 2
-    <range>k__BackingField: 2
-    <criticalHit>k__BackingField: 0
+    Name: Fire Tower
+    Description: straight projectile
+    Type: 0
+    Rank: 1
+    Damage: 10
+    AttackSpeed: 2
+    Range: 2
+    CriticalHit: 0
   direction: {x: 0, y: 0, z: 0}
   projectilePrefab: {fileID: 6725626314794571107, guid: a2d621a88b492e24e8d0c1800fbbf719, type: 3}
+  spawnPoint: {fileID: 0}
 --- !u!58 &7306077242942755138
 CircleCollider2D:
   m_ObjectHideFlags: 0

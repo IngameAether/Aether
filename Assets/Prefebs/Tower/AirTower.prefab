@@ -136,16 +136,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerSetting:
-    Name: 
-    Description: 
+    Name: Air Tower
+    Description: straight projectile
     Type: 3
-    Rank: 0
-    Damage: 0
-    AttackSpeed: 0
-    Range: 0
+    Rank: 1
+    Damage: 5
+    AttackSpeed: 3
+    Range: 3
     CriticalHit: 0
   direction: {x: 0, y: 0, z: 0}
   projectilePrefab: {fileID: 4323443502052370822, guid: c247002935a4d0c41a6dfd9c8e656d36, type: 3}
+  spawnPoint: {fileID: 0}
 --- !u!58 &35619176347906518
 CircleCollider2D:
   m_ObjectHideFlags: 0

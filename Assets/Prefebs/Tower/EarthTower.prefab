@@ -52,16 +52,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerSetting:
-    Name: 
-    Description: 
+    Name: Earth Tower
+    Description: straight projectile
     Type: 2
-    Rank: 0
-    Damage: 0
-    AttackSpeed: 0
-    Range: 0
+    Rank: 1
+    Damage: 20
+    AttackSpeed: 1
+    Range: 2.5
     CriticalHit: 0
   direction: {x: 0, y: 0, z: 0}
   projectilePrefab: {fileID: 5458754674072186368, guid: 87be3284f521e3e418640677cd9a39b5, type: 3}
+  spawnPoint: {fileID: 0}
 --- !u!58 &-3339964117942688448
 CircleCollider2D:
   m_ObjectHideFlags: 0
