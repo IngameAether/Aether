@@ -12,8 +12,6 @@ public class BuffChoiceUI : MonoBehaviour
 
     private void Start()
     {
-        _buffChoicePanel.SetActive(false);
-
         for (int i = 0; i < _choiceButtons.Length; i++)
         {
             var index = i;
@@ -33,16 +31,11 @@ public class BuffChoiceUI : MonoBehaviour
             if (i < choices.Length && choices[i] != null)
             {
                 _choiceButtons[i].SetBuffData(choices[i]);
-                _choiceButtons[i].gameObject.SetActive(true);
-            }
-            else
-            {
-                _choiceButtons[i].gameObject.SetActive(false);
             }
         }
 
         _buffChoicePanel.SetActive(true);
-        Time.timeScale = 0f;
+        GameTimer.Instance.StopTimer();
     }
 
     private void SelectBuff(int index)
@@ -60,7 +53,7 @@ public class BuffChoiceUI : MonoBehaviour
             }
 
             _buffChoicePanel.SetActive(false);
-            Time.timeScale = 1f;
+            GameTimer.Instance.StartTimer();
             OnBuffChoiceCompleted?.Invoke();
         }
     }

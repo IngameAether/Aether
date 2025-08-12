@@ -21,6 +21,8 @@ public abstract class Tower : MonoBehaviour
     [Header("Tower Configuration")]
     [SerializeField] protected TowerSetting towerSetting;
 
+    public static event Action<Tower> OnTowerClicked;
+
     protected SpriteRenderer spriteRenderer;
     protected SpriteRenderer magicCircleRenderer;
 
@@ -28,7 +30,9 @@ public abstract class Tower : MonoBehaviour
     protected bool isFacingRight = true;
     protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
     public Vector3 direction; // 적 방향
-    public static event Action<Tower> OnTowerClicked;
+
+    private float _originalDamage;
+    private float _originalAttackSpeed;
 
     public TowerSetting GetTowerSetting()
     {
@@ -65,6 +69,13 @@ public abstract class Tower : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
+
+        _originalDamage = towerSetting.Damage;
+        _originalAttackSpeed = towerSetting.AttackSpeed;
+
+        var data = BuffManager.Instance.GetActiveBuffData(towerSetting.Type);
+        HandleUpdateAttackSpeed(data.AttackSpeed);
+        HandleUpdateElementDamage(towerSetting.Type, data.ElementDamage);
     }
 
     /// <summary>
@@ -190,13 +201,13 @@ public abstract class Tower : MonoBehaviour
 
     private void HandleUpdateAttackSpeed(float percentage)
     {
-        towerSetting.AttackSpeed *= 1f + (percentage / 100f);
+        towerSetting.AttackSpeed = _originalAttackSpeed * (1f + (percentage / 100f));
     }
 
     private void HandleUpdateElementDamage(ElementType element, float percentage)
     {
         if (towerSetting.Type != element) return;
-        towerSetting.Damage *= 1f + (percentage / 100f);
+        towerSetting.Damage = _originalDamage * (1f + (percentage / 100f));
     }
 
     #endregion
