@@ -5,17 +5,21 @@ using TMPro;
 
 public class GameTimer : MonoBehaviour
 {
+    public static GameTimer Instance { get; private set; }
+
     [Header("UI 설정")]
     public TextMeshProUGUI timeDisplayText;
     private float _totalGameTimeInSeconds = 0f; // 누적된 게임 시간
     private bool _isTimeRunning = false; // 시간이 현재 흐르고 있는지 확인
 
-    void Start()
+    private void Awake()
     {
-        StartTimer();
+        if (!Instance)
+        {
+            Instance = this;
+        }
     }
 
-    
     void Update()
     {
         if (!_isTimeRunning)
@@ -41,7 +45,7 @@ public class GameTimer : MonoBehaviour
         }
 
         // 4. 시간을 00:00로 보이도록
-        string formattedTime = string.Format("{0:00}:{1:00}", minutes, seconds);
+        string formattedTime = $"{minutes:00}:{seconds:00}";
 
         // 5. UI 텍스트 컴포넌트에 포맷된 시간을 표시
         if(timeDisplayText != null)
@@ -52,7 +56,6 @@ public class GameTimer : MonoBehaviour
 
     public void StartTimer()
     {
-        _totalGameTimeInSeconds = 0f;
         _isTimeRunning = true;
         Debug.Log("게임 타이머 시작");
     }
