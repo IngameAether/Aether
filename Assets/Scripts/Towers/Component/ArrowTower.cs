@@ -61,7 +61,7 @@ public class ArrowTower : Tower
             Vector3 dir = (currentTarget.position - spawnPos).normalized;
             projectile.transform.right = dir; // 프리팹이 오른쪽을 앞(Forward)으로 본다고 가정
             // Initialize(데미지, 타겟, 방향, 속도) 시그니처가 다르면 맞춰서 호출하세요
-            projectileScript.Initialize(towerSetting.damage, currentTarget, dir, projectileSpeed);
+            projectileScript.Initialize(towerSetting.Damage, currentTarget, dir, projectileSpeed);
         }
     }
 }
