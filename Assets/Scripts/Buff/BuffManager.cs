@@ -26,12 +26,7 @@ public class BuffManager : MonoBehaviour
         if (!Instance)
         {
             Instance = this;
-            DontDestroyOnLoad(this);
             InitializeBuffs();
-        }
-        else
-        {
-            Destroy(gameObject);
         }
     }
 
@@ -52,6 +47,10 @@ public class BuffManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 랜덤 버프 선택권 3개 얻기
+    /// </summary>
+    /// <returns></returns>
     public BuffData[] GetRandomBuffChoices()
     {
         BuffData[] choices = new BuffData[_buffChoiceCount];
@@ -61,27 +60,10 @@ public class BuffManager : MonoBehaviour
         {
             var randomBuffType = allBuffTypes[Random.Range(0, allBuffTypes.Length)];
             var range = Array.Find(_buffRanges, r => r.BuffType == randomBuffType);
-
             choices[i] = CreateRandomBuff(randomBuffType, range);
         }
 
         return choices;
-    }
-
-    // 랜덤 버프 생성 메서드
-    private BuffData CreateRandomBuff(EBuffType buffType, BuffValueRange range)
-    {
-        BuffData buff = GetBuffFromPool();
-
-        buff.BuffType = buffType;
-        buff.Value = Random.Range(range.MinValue, range.MaxValue);
-
-        if (buffType == EBuffType.ElementDamage && range.AvailableElements != null && range.AvailableElements.Length > 0)
-        {
-            buff.ElementType = range.AvailableElements[Random.Range(0, range.AvailableElements.Length)];
-        }
-
-        return buff;
     }
 
     /// <summary>
@@ -113,6 +95,55 @@ public class BuffManager : MonoBehaviour
     }
 
     /// <summary>
+    /// Active Buff 다 가져오기
+    /// </summary>
+    /// <param name="elementType"></param>
+    /// <returns></returns>
+    public BuffDataResult GetActiveBuffData(ElementType elementType)
+    {
+        return new BuffDataResult(
+            _elementDamageBuffs[elementType],
+            _activeBuffs[EBuffType.AllTowerAttackSpeed],
+            _activeBuffs[EBuffType.ElementSoulRate]
+        );
+    }
+
+    /// <summary>
+    /// 모든 버프 초기화
+    /// </summary>
+    public void ResetAllBuffs()
+    {
+        foreach (var key in _activeBuffs.Keys.ToList())
+        {
+            _activeBuffs[key] = 0f;
+        }
+
+        foreach (var key in _elementDamageBuffs.Keys.ToList())
+        {
+            _elementDamageBuffs[key] = 0f;
+        }
+
+        Debug.Log("모든 버프가 초기화되었습니다.");
+    }
+
+    #region
+
+    private BuffData CreateRandomBuff(EBuffType buffType, BuffValueRange range)
+    {
+        BuffData buff = GetBuffFromPool();
+
+        buff.BuffType = buffType;
+        buff.Value = Mathf.RoundToInt(Random.Range(range.MinValue, range.MaxValue));
+
+        if (buffType == EBuffType.ElementDamage && range.AvailableElements != null && range.AvailableElements.Length > 0)
+        {
+            buff.ElementType = range.AvailableElements[Random.Range(0, range.AvailableElements.Length)];
+        }
+
+        return buff;
+    }
+
+    /// <summary>
     /// 오브젝트 풀에서 버프 가져오기
     /// </summary>
     /// <returns></returns>
@@ -135,43 +166,5 @@ public class BuffManager : MonoBehaviour
         _buffPool.Enqueue(buff);
     }
 
-    /// <summary>
-    /// 테스트용
-    /// </summary>
-    /// <returns></returns>
-    public string GetBuffStatusString()
-    {
-        System.Text.StringBuilder sb = new System.Text.StringBuilder();
-        sb.AppendLine("=== 현재 버프 상태 ===");
-        sb.AppendLine($"혼 획득량: +{_activeBuffs[EBuffType.ElementSoulRate]}%");
-        sb.AppendLine($"전체 타워 공격속도: +{_activeBuffs[EBuffType.AllTowerAttackSpeed]}%");
-
-        foreach (var element in _elementDamageBuffs)
-        {
-            if (element.Value > 0)
-            {
-                sb.AppendLine($"{element.Key} 데미지: +{element.Value}%");
-            }
-        }
-
-        return sb.ToString();
-    }
-
-    /// <summary>
-    /// 모든 버프 초기화
-    /// </summary>
-    public void ResetAllBuffs()
-    {
-        foreach (var key in _activeBuffs.Keys.ToList())
-        {
-            _activeBuffs[key] = 0f;
-        }
-
-        foreach (var key in _elementDamageBuffs.Keys.ToList())
-        {
-            _elementDamageBuffs[key] = 0f;
-        }
-
-        Debug.Log("모든 버프가 초기화되었습니다.");
-    }
+    #endregion
 }

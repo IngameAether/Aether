@@ -19,9 +19,9 @@ public class BuffData
     {
         return BuffType switch
         {
-            EBuffType.ElementDamage => $"모든 {GetElementTypeName(ElementType)} 속성 타워의 데미지 {Value}% 증가",
-            EBuffType.AllTowerAttackSpeed => $"모든 타워의 연사 속도 {Value}% 증가",
-            EBuffType.ElementSoulRate => $"적 처치로부터 얻는 원소의 혼의 수급량 {Value}% 증가",
+            EBuffType.ElementDamage => $"{GetElementTypeName(ElementType)} 속성 타워\n데미지 {Value}% 증가",
+            EBuffType.AllTowerAttackSpeed => $"모든 타워\n공격 속도 {Value}% 증가",
+            EBuffType.ElementSoulRate => $"원소의 혼의 수급량\n{Value}% 증가",
             _ => null
         };
     }
@@ -47,4 +47,19 @@ public class BuffValueRange
     public float MaxValue;
     [Tooltip("ElementDamage 타입일 때만 사용")]
     public ElementType[] AvailableElements;
+}
+
+[Serializable]
+public struct BuffDataResult
+{
+    public float ElementDamage;
+    public float AttackSpeed;
+    public float ElementSoulRate;
+
+    public BuffDataResult(float elementDmg, float attackSpd, float soulRate)
+    {
+        ElementDamage = elementDmg;
+        AttackSpeed = attackSpd;
+        ElementSoulRate = soulRate;
+    }
 }

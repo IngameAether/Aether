@@ -83,6 +83,10 @@ public class SpawnManager : MonoBehaviour
             path.Add(path[^1] + dir);
         }
 
+        yield return StartCoroutine(HandleBuffChoice());
+
+        GameTimer.Instance.StartTimer();
+
         // ���� ���� �ð� ���
         yield return new WaitForSeconds(initialDelay);
 
