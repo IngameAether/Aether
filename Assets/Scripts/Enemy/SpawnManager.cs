@@ -10,6 +10,7 @@ public class SpawnManager : MonoBehaviour
     // ������ �� ������
     public GameObject[] enemyPrefabs;
     public MapManage mapManage; // MapManage ��ũ��Ʈ ���۷���
+    public BuffChoiceUI buffChoiceUI;
 
     [Header("UI")]
     [SerializeField] private TMP_Text waveText;
