@@ -135,12 +135,6 @@ public class BuffManager : MonoBehaviour
         _buffPool.Enqueue(buff);
     }
 
-   private ElementType GetRandomElementType()
-    {
-        ElementType[] elements = (ElementType[])Enum.GetValues(typeof(ElementType));
-        return elements[Random.Range(0, elements.Length)];
-    }
-
     /// <summary>
     /// 테스트용
     /// </summary>

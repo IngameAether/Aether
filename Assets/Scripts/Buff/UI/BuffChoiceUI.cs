@@ -6,6 +6,8 @@ public class BuffChoiceUI : MonoBehaviour
     [SerializeField] private GameObject _buffChoicePanel;
     [SerializeField] private BuffChoiceButton[] _choiceButtons;
 
+    public event System.Action OnBuffChoiceCompleted;
+
     private BuffData[] _currentChoices;
 
     private void Start()
@@ -59,6 +61,7 @@ public class BuffChoiceUI : MonoBehaviour
 
             _buffChoicePanel.SetActive(false);
             Time.timeScale = 1f;
+            OnBuffChoiceCompleted?.Invoke();
         }
     }
 }
