@@ -10,7 +10,8 @@ public class TowerSetting
     public string name { get; private set; }
 
     [field: SerializeField] public string description { get; private set; }
-    [field: SerializeField] public int rank { get; private set; }
+    [field: SerializeField] public int rank { get; set; }
+    [field: SerializeField] public int reinforceLevel { get; set; }
     [field: SerializeField] public float damage { get; private set; }
     [field: SerializeField] public float attackSpeed { get; private set; }
     [field: SerializeField] public float range { get; private set; }

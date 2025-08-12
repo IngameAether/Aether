@@ -173,6 +173,8 @@ public class TowerInfoDisplay : MonoBehaviour
                               $"Atk Speed: {towerSetting.attackSpeed}\n" +
                               $"Critical Hit: {towerSetting.criticalHit}";
 
+        reinforceText.text = $"{type} + {towerSetting.reinforceLevel}";
+
         infoPanelUI.SetActive(true);
     }
 
@@ -210,6 +212,18 @@ public class TowerInfoDisplay : MonoBehaviour
         {
             currentSelectedTower.FlipTower();
         }
+    }
+
+    /// <summary>
+    /// UI 숨기기
+    /// </summary>
+    public void HideUI()
+    {
+        infoPanelUI.SetActive(false);
+        //rangeIndicator.SetActive(false);
+        towerIndicateImg.SetActive(false);
+
+        currentSelectedTower = null;
     }
 
     // 빛 강화 선택
@@ -261,22 +275,13 @@ public class TowerInfoDisplay : MonoBehaviour
     // 강화 레벨업
     private void ReinforceLevelUpgrade()
     {
-        var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
-        towerReinforce.ReinforceTower();
+        if (currentSelectedTower != null)
+        {
+            var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
+            towerReinforce.ReinforceTower();
 
-        int reinforce = towerReinforce.GetReinforceLevel();
-        reinforceText.text = $"{this.type} + {reinforce}";
-    }
-
-    /// <summary>
-    /// UI 숨기기
-    /// </summary>
-    public void HideUI()
-    {
-        infoPanelUI.SetActive(false);
-        //rangeIndicator.SetActive(false);
-        towerIndicateImg.SetActive(false);
-
-        currentSelectedTower = null;
+            int reinforce = towerReinforce.GetReinforceLevel();
+            reinforceText.text = $"{this.type} + {reinforce}";
+        }
     }
 }

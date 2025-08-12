@@ -3528,8 +3528,8 @@ MonoBehaviour:
   flipButton: {fileID: 225324581}
   lightButton: {fileID: 144644286}
   darkButton: {fileID: 1366993591}
-  lReinforceButton: {fileID: 1288874745}
-  dReinforceButton: {fileID: 0}
+  reinforceButton: {fileID: 1288874745}
+  reinforceText: {fileID: 1138578488}
   sellButton: {fileID: 0}
   towerIndicateImg: {fileID: 475498027}
   offsetFromTower: {x: 50, y: 0}

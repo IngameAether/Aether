@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class TowerSpriteController : MonoBehaviour
 {
-    [Header("Tower Sprite")]
-    [SerializeField] protected SpriteRenderer elementRenderer;  // 원소
-    [SerializeField] protected SpriteRenderer magicCircleRenderer;  // 마법진
+    protected SpriteRenderer elementRenderer;  // 원소
+    protected SpriteRenderer magicCircleRenderer;  // 마법진
+    protected SpriteRenderer reinforceMagicCircleRenderer;  // 강화 마법진
 
     [Header("Sprites Array")]
     [SerializeField] protected Sprite[] elementSprites;
@@ -26,6 +26,12 @@ public class TowerSpriteController : MonoBehaviour
         {
             var magicCircle = transform.Find("MagicCircle");
             if (magicCircle != null) magicCircleRenderer = magicCircle.GetComponent<SpriteRenderer>();
+        }
+
+        if (reinforceMagicCircleRenderer == null)
+        {
+            var reinforceMagicCircle = transform.Find("ReinforceMagicCircle");
+            if (reinforceMagicCircle != null) reinforceMagicCircleRenderer = reinforceMagicCircle.GetComponent<SpriteRenderer>();
         }
     }
 
@@ -52,7 +58,7 @@ public class TowerSpriteController : MonoBehaviour
             return;
         }
 
-        if (magicCircleRenderer != null)
-            magicCircleRenderer.sprite = reinforceSprites[(reinforce / 5) - 1];
+        if (reinforceMagicCircleRenderer != null)
+            reinforceMagicCircleRenderer.sprite = reinforceSprites[(reinforce / 5) - 1];
     }
 }
