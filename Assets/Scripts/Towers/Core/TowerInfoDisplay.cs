@@ -36,7 +36,6 @@ public class TowerInfoDisplay : MonoBehaviour
     private Tower currentSelectedTower;
     private Camera _camera;
     private RectTransform _infoPanelRect;
-    private string type;
     private Color reinforceBtnColor;
 
     private void Start()
@@ -95,9 +94,6 @@ public class TowerInfoDisplay : MonoBehaviour
         infoPanelUI.SetActive(false);
         //rangeIndicator.SetActive(false);
         towerIndicateImg.SetActive(false);
-        lightButton.gameObject.SetActive(true);
-        darkButton.gameObject.SetActive(true);
-        reinforceButton.gameObject.SetActive(false);
 
         flipButton.onClick.AddListener(FlipSelectedTower);
         lightButton.onClick.AddListener(LightReinforce);
@@ -173,9 +169,35 @@ public class TowerInfoDisplay : MonoBehaviour
                               $"Atk Speed: {towerSetting.attackSpeed}\n" +
                               $"Critical Hit: {towerSetting.criticalHit}";
 
-        reinforceText.text = $"{type} + {towerSetting.reinforceLevel}";
+        UpdateReinforceUI(tower);
 
         infoPanelUI.SetActive(true);
+    }
+
+    // 타워 강화 타입에 따라 UI 조정
+    private void UpdateReinforceUI(Tower tower)
+    {
+        var towerSetting = tower.GetTowerSetting();
+
+        if (tower.reinforceType == ReinforceType.None)
+        {
+            lightButton.gameObject.SetActive(true);
+            darkButton.gameObject.SetActive(true);
+            reinforceButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            lightButton.gameObject.SetActive(false);
+            darkButton.gameObject.SetActive(false);
+            reinforceButton.gameObject.SetActive(true);
+        }
+
+        reinforceBtnColor = (tower.reinforceType == ReinforceType.Light) ? lightButton.colors.normalColor : darkButton.colors.normalColor;
+        ColorBlock cb = reinforceButton.colors;
+        cb.normalColor = reinforceBtnColor;
+        reinforceButton.colors = cb;
+
+        reinforceText.text = $"{currentSelectedTower.type} + {towerSetting.reinforceLevel}";
     }
 
     // 타워 가리키는 원 표시
@@ -229,47 +251,29 @@ public class TowerInfoDisplay : MonoBehaviour
     // 빛 강화 선택
     private void LightReinforce()
     {
-        Debug.Log("빛 강화 선택");
         if (currentSelectedTower != null)
         {
             var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
-            towerReinforce.AssignReinforceType(TowerReinforce.ReinforceType.Light);
+            towerReinforce.AssignReinforceType(ReinforceType.Light);
             towerReinforce.ReinforceTower();
 
-            reinforceBtnColor = lightButton.colors.normalColor;
-            SwitchReinforceButton("빛", 1);
+            currentSelectedTower.type = "빛";
+            UpdateReinforceUI(currentSelectedTower);
         }
     }
 
     // 어둠 강화 선택
     private void DarkReinforce()
     {
-        Debug.Log("어둠 강화 선택");
         if (currentSelectedTower != null)
         {
             var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
-            towerReinforce.AssignReinforceType(TowerReinforce.ReinforceType.Dark);
+            towerReinforce.AssignReinforceType(ReinforceType.Dark);
             towerReinforce.ReinforceTower();
 
-            reinforceBtnColor = darkButton.colors.normalColor;
-            SwitchReinforceButton("어둠", 1);
+            currentSelectedTower.type = "어둠";
+            UpdateReinforceUI(currentSelectedTower);
         }
-    }
-
-    // 선택한 강화 버튼만 표시
-    private void SwitchReinforceButton(string type, int reinforce)
-    {
-        // 버튼 색 변경
-        ColorBlock cb = reinforceButton.colors;
-        cb.normalColor = reinforceBtnColor;
-        reinforceButton.colors = cb;
-
-        lightButton.gameObject.SetActive(false);
-        darkButton.gameObject.SetActive(false);
-        reinforceButton.gameObject.SetActive(true);
-
-        this.type = type;
-        reinforceText.text = $"{type} + {reinforce}";
     }
 
     // 강화 레벨업
@@ -281,7 +285,7 @@ public class TowerInfoDisplay : MonoBehaviour
             towerReinforce.ReinforceTower();
 
             int reinforce = towerReinforce.GetReinforceLevel();
-            reinforceText.text = $"{this.type} + {reinforce}";
+            reinforceText.text = $"{currentSelectedTower.type} + {reinforce}";
         }
     }
 }

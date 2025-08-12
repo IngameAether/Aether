@@ -18,10 +18,17 @@ public class TowerSetting
     [field: SerializeField] public float criticalHit { get; private set; }
 }
 
+public enum ReinforceType { None, Light, Dark };
+
 public abstract class Tower : MonoBehaviour
 {
     [Header("Tower Configuration")] [SerializeField]
     protected TowerSetting towerSetting;
+
+    [Header("Tower Reinforce")]
+    public ReinforceType reinforceType;
+
+    public string type { get; set; }
 
     protected SpriteRenderer spriteRenderer;
     protected SpriteRenderer magicCircleRenderer;

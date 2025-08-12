@@ -8,10 +8,6 @@ public class TowerReinforce : MonoBehaviour
     protected TowerSetting towerSetting;
 
     protected TowerSpriteController towerSpriteController;
-    public enum ReinforceType { None, Light, Dark };
-
-    [Header("Tower Enhance")]
-    [SerializeField] private ReinforceType curReinforceType = ReinforceType.None;
 
     private void Start()
     {
@@ -23,8 +19,10 @@ public class TowerReinforce : MonoBehaviour
     // 타워 강화 타입 지정: 처음 1번만 사용
     public void AssignReinforceType(ReinforceType type)
     {
-        if (curReinforceType == ReinforceType.None)
-            curReinforceType = type;
+        if (tower.reinforceType == ReinforceType.None)
+        {
+            tower.reinforceType = type;
+        }
     }
 
     // 타워 강화
@@ -36,7 +34,7 @@ public class TowerReinforce : MonoBehaviour
             return;
         }
 
-        if (curReinforceType != ReinforceType.None)
+        if (tower.reinforceType != ReinforceType.None)
         {
             towerSetting.reinforceLevel++;
             TowerReinforceUpgrade();
@@ -79,6 +77,4 @@ public class TowerReinforce : MonoBehaviour
 
     // 강화 레벨 읽기
     public int GetReinforceLevel() => towerSetting.reinforceLevel;
-    // 강화 타입 읽기
-    public ReinforceType GetReinforceType() => curReinforceType;
 }
