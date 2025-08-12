@@ -10,6 +10,7 @@ public class SpawnManager : MonoBehaviour
     // ������ �� ������
     public GameObject[] enemyPrefabs;
     public MapManage mapManage; // MapManage ��ũ��Ʈ ���۷���
+    public BuffChoiceUI buffChoiceUI;
 
     [Header("UI")]
     [SerializeField] private TMP_Text waveText;
@@ -25,6 +26,8 @@ public class SpawnManager : MonoBehaviour
     private float _currentEndTime;
     private int _reachedEndEnemyCount = 0;
     private Coroutine _spawnCoroutine;
+
+    private bool _isWaitingForBuffChoice = false;
 
     private void Start()
     {
@@ -48,9 +51,16 @@ public class SpawnManager : MonoBehaviour
         waveText.text = "0 wave";
 
         EnemyMovement.OnReachEndPoint += HandleReachedEndEnemy;
+        buffChoiceUI.OnBuffChoiceCompleted += HandleBuffChoiceCompleted;
 
         Debug.Log("SpawnManager �ʱ�ȭ �Ϸ�. Start ��ư Ŭ�� ��� ��.");
         _spawnCoroutine = StartCoroutine(SpawnEnmiesRoutine());
+    }
+
+    private void OnDestroy()
+    {
+        EnemyMovement.OnReachEndPoint -= HandleReachedEndEnemy;
+        buffChoiceUI.OnBuffChoiceCompleted -= HandleBuffChoiceCompleted;
     }
 
     IEnumerator SpawnEnmiesRoutine()
@@ -102,6 +112,11 @@ public class SpawnManager : MonoBehaviour
 
             Debug.Log($"--- ���̺� {waveIndex + 1} �� ���� �Ϸ�. ---");
 
+            if ((waveIndex + 1) % 10 == 0 && buffChoiceUI != null)
+            {
+                yield return StartCoroutine(HandleBuffChoice());
+            }
+
             // ������ ���̺갡 �ƴ϶�� ���̺� �� ��� �ð� ����
             if (waveIndex < waves.Count - 1)
             {
@@ -145,6 +160,25 @@ public class SpawnManager : MonoBehaviour
         StopCoroutine(_spawnCoroutine);
     }
 
+    private IEnumerator HandleBuffChoice()
+    {
+        Debug.Log($"웨이브 {currentWaveLevel + 1} 완료! 버프 선택을 시작합니다.");
+
+        BuffData[] buffChoices = BuffManager.Instance.GetRandomBuffChoices();
+
+        _isWaitingForBuffChoice = true;
+        buffChoiceUI.ShowBuffChoices(buffChoices);
+
+        while (_isWaitingForBuffChoice)
+        {
+            yield return null;
+        }
+
+        Debug.Log("버프 선택이 완료되었습니다. 게임을 계속 진행합니다.");
+    }
+
+    #region Acton Handler
+
     private void HandleReachedEndEnemy()
     {
         _reachedEndEnemyCount++;
@@ -153,6 +187,13 @@ public class SpawnManager : MonoBehaviour
             GameOver();
         }
     }
+
+    private void HandleBuffChoiceCompleted()
+    {
+        _isWaitingForBuffChoice = false;
+    }
+
+    #endregion
 }
 
 [System.Serializable]

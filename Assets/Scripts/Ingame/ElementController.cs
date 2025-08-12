@@ -16,10 +16,9 @@ public class ElementController : MonoBehaviour
 
     void OnMouseDown()
     {
-        
+
         Debug.LogWarning("원소 클릭함: TowerCombiner로 전달");
         TowerCombiner.Instance.SelectElement(this);
-       
     }
 
     // TowerCombiner가 원소를 선택/ 선택 해제 할 때 호출하는 메소드
