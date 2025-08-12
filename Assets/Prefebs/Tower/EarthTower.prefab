@@ -52,13 +52,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerSetting:
-    <name>k__BackingField: Earth Tower
-    <description>k__BackingField: straight projectile
-    <rank>k__BackingField: 1
-    <damage>k__BackingField: 20
-    <attackSpeed>k__BackingField: 1
-    <range>k__BackingField: 2.5
-    <criticalHit>k__BackingField: 0
+    Name: 
+    Description: 
+    Type: 2
+    Rank: 0
+    Damage: 0
+    AttackSpeed: 0
+    Range: 0
+    CriticalHit: 0
   direction: {x: 0, y: 0, z: 0}
   projectilePrefab: {fileID: 5458754674072186368, guid: 87be3284f521e3e418640677cd9a39b5, type: 3}
 --- !u!58 &-3339964117942688448

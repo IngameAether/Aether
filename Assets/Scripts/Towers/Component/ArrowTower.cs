@@ -37,7 +37,7 @@ public class ArrowTower : Tower
         var projectileScript = projectile.GetComponent<TowerAttack>();
         if (projectileScript != null )
         {
-            projectileScript.Initialize(towerSetting.damage, currentTarget, direction, projectileSpeed);
+            projectileScript.Initialize(towerSetting.Damage, currentTarget, direction, projectileSpeed);
         }
     }
 }

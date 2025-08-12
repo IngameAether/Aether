@@ -52,13 +52,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   towerSetting:
-    <name>k__BackingField: Water Tower
-    <description>k__BackingField: straight projectile
-    <rank>k__BackingField: 1
-    <damage>k__BackingField: 8
-    <attackSpeed>k__BackingField: 1.5
-    <range>k__BackingField: 2.5
-    <criticalHit>k__BackingField: 0
+    Name: 
+    Description: 
+    Type: 1
+    Rank: 0
+    Damage: 0
+    AttackSpeed: 0
+    Range: 0
+    CriticalHit: 0
   direction: {x: 0, y: 0, z: 0}
   projectilePrefab: {fileID: 4766331063098911513, guid: 14d41416ca05d3a448b9c9394a949701, type: 3}
 --- !u!58 &8841763817496565554

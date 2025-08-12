@@ -151,14 +151,14 @@ using TMPro;
         {
             var towerSetting = tower.GetTowerSetting();
 
-            towerNameText.text = towerSetting.name;
+            towerNameText.text = towerSetting.Name;
             //towerDescriptionText.text = towerSetting.description;
 
-            towerStatsText.text = $"Rank: {towerSetting.rank}\n" +
-                                  $"Attack: {towerSetting.damage}\n" +
-                                  $"Atk Range: {towerSetting.range}" +
-                                  $"Atk Speed: {towerSetting.attackSpeed}\n" +
-                                  $"Critical Hit: {towerSetting.criticalHit}";
+            towerStatsText.text = $"Rank: {towerSetting.Rank}\n" +
+                                  $"Attack: {towerSetting.Damage}\n" +
+                                  $"Atk Range: {towerSetting.Range}" +
+                                  $"Atk Speed: {towerSetting.AttackSpeed}\n" +
+                                  $"Critical Hit: {towerSetting.CriticalHit}";
 
             infoPanelUI.SetActive(true);
         }

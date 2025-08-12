@@ -5,22 +5,21 @@ using UnityEngine;
 [Serializable]
 public class TowerSetting
 {
-    [field: Header("Tower Stats")]
-    [field: SerializeField]
-    public string name { get; private set; }
-
-    [field: SerializeField] public string description { get; private set; }
-    [field: SerializeField] public int rank { get; private set; }
-    [field: SerializeField] public float damage { get; private set; }
-    [field: SerializeField] public float attackSpeed { get; private set; }
-    [field: SerializeField] public float range { get; private set; }
-    [field: SerializeField] public float criticalHit { get; private set; }
+    [Header("Tower Stats")]
+    public string Name;
+    public string Description;
+    public ElementType Type;
+    public int Rank;
+    public float Damage;
+    public float AttackSpeed;
+    public float Range;
+    public float CriticalHit;
 }
 
 public abstract class Tower : MonoBehaviour
 {
-    [Header("Tower Configuration")] [SerializeField]
-    protected TowerSetting towerSetting;
+    [Header("Tower Configuration")]
+    [SerializeField] protected TowerSetting towerSetting;
 
     protected SpriteRenderer spriteRenderer;
     protected SpriteRenderer magicCircleRenderer;
@@ -29,7 +28,6 @@ public abstract class Tower : MonoBehaviour
     protected bool isFacingRight = true;
     protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
     public Vector3 direction; // 적 방향
-
     public static event Action<Tower> OnTowerClicked;
 
     public TowerSetting GetTowerSetting()
@@ -37,19 +35,21 @@ public abstract class Tower : MonoBehaviour
         return towerSetting;
     }
 
-    public Vector3 GetPosition()
-    {
-        return transform.position;
-    }
-
-    public bool GetIsFacingRight()
-    {
-        return isFacingRight;
-    }
-
     protected virtual void Start()
     {
         InitializeTower();
+    }
+
+    protected virtual void OnEnable()
+    {
+        BuffManager.Instance.OnAllTowerAttackSpeedChanged += HandleUpdateAttackSpeed;
+        BuffManager.Instance.OnElementDamageChanged += HandleUpdateElementDamage;
+    }
+
+    protected virtual void OnDisable()
+    {
+        BuffManager.Instance.OnAllTowerAttackSpeedChanged -= HandleUpdateAttackSpeed;
+        BuffManager.Instance.OnElementDamageChanged -= HandleUpdateElementDamage;
     }
 
     protected virtual void Update()
@@ -107,7 +107,7 @@ public abstract class Tower : MonoBehaviour
         if (!target) return false;
 
         var distance = Vector2.Distance(transform.position, target.position);
-        return distance <= towerSetting.range; // 타겟과의 거리가 사거리보다 작거나 같은지 확인
+        return distance <= towerSetting.Range; // 타겟과의 거리가 사거리보다 작거나 같은지 확인
     }
 
     /// <summary>
@@ -119,7 +119,7 @@ public abstract class Tower : MonoBehaviour
 
         var enemiesInRange = Physics2D.OverlapCircleAll(
             transform.position,
-            towerSetting.range,
+            towerSetting.Range,
             enemyLayerMask
         );
 
@@ -160,12 +160,12 @@ public abstract class Tower : MonoBehaviour
     /// </summary>
     protected virtual bool CanAttack()
     {
-        if (towerSetting.attackSpeed <= 0f)
+        if (towerSetting.AttackSpeed <= 0f)
         {
             Debug.Log("AttackSpeed가 0 이하입니다.");
             return false;
         }
-        float attackInterval = 1f / towerSetting.attackSpeed;
+        float attackInterval = 1f / towerSetting.AttackSpeed;
         var isDelayOver = Time.time >= lastAttackTime + attackInterval;
         var isAlive = isTargetAlive(currentTarget);
         return isDelayOver && isAlive;
@@ -178,6 +178,8 @@ public abstract class Tower : MonoBehaviour
 
     #endregion
 
+    #region Action Handler
+
     /// <summary>
     ///     마우스 클릭 감지
     /// </summary>
@@ -185,4 +187,17 @@ public abstract class Tower : MonoBehaviour
     {
         OnTowerClicked?.Invoke(this);
     }
+
+    private void HandleUpdateAttackSpeed(float percentage)
+    {
+        towerSetting.AttackSpeed *= 1f + (percentage / 100f);
+    }
+
+    private void HandleUpdateElementDamage(ElementType element, float percentage)
+    {
+        if (towerSetting.Type != element) return;
+        towerSetting.Damage *= 1f + (percentage / 100f);
+    }
+
+    #endregion
 }

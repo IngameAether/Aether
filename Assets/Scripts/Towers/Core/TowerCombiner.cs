@@ -213,7 +213,7 @@ public class TowerCombiner : MonoBehaviour
         var towerComponent = createdTower.GetComponent<Tower>();
         if (towerComponent != null)
             // etc
-            Debug.Log($"타워 컴포넌트 설정 완료: {towerComponent.GetTowerSetting().name}");
+            Debug.Log($"타워 컴포넌트 설정 완료: {towerComponent.GetTowerSetting().Name}");
     }
 
     /// <summary>
