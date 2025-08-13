@@ -8,7 +8,6 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 62a9f0aa5b59740cfbadc7e5f9823bb0, type: 3}
-  importerVersion: 2
   textureImporterSettings:
     alphaSource: 1
     mipMapMode: 0
@@ -78,7 +77,6 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
-    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -91,7 +89,6 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
-    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -122,7 +119,7 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Frame_0
+  - name: Lv2_tower_element_Frame_0
     originalName: 
     pivot: {x: 0.5, y: -1.7272727}
     alignment: 9
@@ -133,7 +130,7 @@ ScriptedImporter:
       y: 4
       width: 16
       height: 22
-    spriteID: 0dd82966b70e4bd45a5020ae0fd52a01
+    spriteID: 00f417ddb68d9854e8a4430107d2c406
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -142,7 +139,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 33, y: 4}
-  - name: Frame_1
+  - name: Lv2_tower_element_Frame_1
     originalName: 
     pivot: {x: 0.5, y: -2.5}
     alignment: 9
@@ -153,7 +150,7 @@ ScriptedImporter:
       y: 34
       width: 16
       height: 16
-    spriteID: e19bdfb1c0a1d6a4cbdc2890e35eb3c5
+    spriteID: 63b28a45b2538ae4e83e3a8307df7225
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -162,7 +159,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 33, y: 34}
-  - name: Frame_2
+  - name: Lv2_tower_element_Frame_2
     originalName: 
     pivot: {x: 0.5263158, y: -2}
     alignment: 9
@@ -173,7 +170,7 @@ ScriptedImporter:
       y: 34
       width: 19
       height: 19
-    spriteID: 60c1d2b7d6e0b9946b65021903b2fe8f
+    spriteID: be5984f0fbe434b4890c2c7b64c8fed9
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -182,7 +179,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 34}
-  - name: Frame_3
+  - name: Lv2_tower_element_Frame_3
     originalName: 
     pivot: {x: 0.52380955, y: -1.6818182}
     alignment: 9
@@ -193,7 +190,7 @@ ScriptedImporter:
       y: 4
       width: 21
       height: 22
-    spriteID: 490bdf9f69513c24abab1c9cff3407ff
+    spriteID: 80ada9cebdf959f4f97dc51abde61501
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -205,53 +202,44 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    uuid:
-      value0: 2974697129
-      value1: 0
-      value2: 0
-      value3: 0
-    guid: 0
+    guid: -161246187
     name: Lv2_tower_element
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Frame_0
+    - name: Lv2_tower_element_Frame_0
       frameIndex: 0
-      additiveSortOrder: 0
       cellRect:
         x: 24
         y: 38
         width: 16
         height: 22
-      spriteId: 0dd82966b70e4bd45a5020ae0fd52a01
-    - name: Frame_1
+      spriteId: 00f417ddb68d9854e8a4430107d2c406
+    - name: Lv2_tower_element_Frame_1
       frameIndex: 1
-      additiveSortOrder: 0
       cellRect:
         x: 24
         y: 40
         width: 16
         height: 16
-      spriteId: e19bdfb1c0a1d6a4cbdc2890e35eb3c5
-    - name: Frame_2
+      spriteId: 63b28a45b2538ae4e83e3a8307df7225
+    - name: Lv2_tower_element_Frame_2
       frameIndex: 2
-      additiveSortOrder: 0
       cellRect:
         x: 22
         y: 38
         width: 19
         height: 19
-      spriteId: 60c1d2b7d6e0b9946b65021903b2fe8f
-    - name: Frame_3
+      spriteId: be5984f0fbe434b4890c2c7b64c8fed9
+    - name: Lv2_tower_element_Frame_3
       frameIndex: 3
-      additiveSortOrder: 0
       cellRect:
         x: 21
         y: 37
         width: 21
         height: 22
-      spriteId: 490bdf9f69513c24abab1c9cff3407ff
+      spriteId: 80ada9cebdf959f4f97dc51abde61501
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -267,8 +255,6 @@ ScriptedImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     androidETC2FallbackOverride: 0
-  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 64, y: 64}
-  previousTextureSize: {x: 64, y: 64}

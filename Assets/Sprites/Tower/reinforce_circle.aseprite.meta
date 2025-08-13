@@ -8,7 +8,6 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 62a9f0aa5b59740cfbadc7e5f9823bb0, type: 3}
-  importerVersion: 2
   textureImporterSettings:
     alphaSource: 1
     mipMapMode: 0
@@ -78,7 +77,6 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
-    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -91,7 +89,6 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
-    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -122,7 +119,7 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Frame_0
+  - name: reinforce_circle_Frame_0
     originalName: 
     pivot: {x: 0.5, y: -0.033333335}
     alignment: 9
@@ -133,7 +130,7 @@ ScriptedImporter:
       y: 4
       width: 60
       height: 60
-    spriteID: 99c571ea0e683924d9b6183b61e14ad7
+    spriteID: 711402aaef0fb174db5209794185b29f
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -142,7 +139,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 4}
-  - name: Frame_1
+  - name: reinforce_circle_Frame_1
     originalName: 
     pivot: {x: 0.5, y: -0.033333335}
     alignment: 9
@@ -153,7 +150,7 @@ ScriptedImporter:
       y: 72
       width: 60
       height: 60
-    spriteID: ab2da9d8e66b50847b426044f591fce9
+    spriteID: b8a6cf7217ff077478e1cbaf8f02441c
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -162,7 +159,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 72}
-  - name: Frame_2
+  - name: reinforce_circle_Frame_2
     originalName: 
     pivot: {x: 0.5, y: -0.033333335}
     alignment: 9
@@ -173,7 +170,7 @@ ScriptedImporter:
       y: 140
       width: 60
       height: 60
-    spriteID: 65b824ccdc9866045b41b7b44efc061e
+    spriteID: 5ac9d476ec99a824e86d03557ee92f73
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -182,7 +179,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 140}
-  - name: Frame_3
+  - name: reinforce_circle_Frame_3
     originalName: 
     pivot: {x: 0.5, y: -0.033333335}
     alignment: 9
@@ -193,7 +190,7 @@ ScriptedImporter:
       y: 4
       width: 60
       height: 60
-    spriteID: b9ec6f209c1a25a4aa4c7b6929c24e6b
+    spriteID: 97a3b37ec0ccc624fae04a680a4b986b
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -202,7 +199,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 72, y: 4}
-  - name: Frame_4
+  - name: reinforce_circle_Frame_4
     originalName: 
     pivot: {x: 0.5, y: -0.16666667}
     alignment: 9
@@ -213,7 +210,7 @@ ScriptedImporter:
       y: 4
       width: 38
       height: 48
-    spriteID: 7de943eed9343c544a04161731ebb3f7
+    spriteID: 9d8d6a41fb255194c8d7b1772971749d
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -222,7 +219,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 140, y: 4}
-  - name: Frame_5
+  - name: reinforce_circle_Frame_5
     originalName: 
     pivot: {x: 0.5, y: -0.0925926}
     alignment: 9
@@ -233,7 +230,7 @@ ScriptedImporter:
       y: 198
       width: 42
       height: 54
-    spriteID: f60a7e29afd862447b14f399f9047d5a
+    spriteID: bafb89634f078c14d8e7540f42d7a2d0
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -242,7 +239,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 72, y: 198}
-  - name: Frame_6
+  - name: reinforce_circle_Frame_6
     originalName: 
     pivot: {x: 0.5, y: -0.071428575}
     alignment: 9
@@ -253,7 +250,7 @@ ScriptedImporter:
       y: 72
       width: 58
       height: 56
-    spriteID: 1017dd3668dccae4885244ca5acced8e
+    spriteID: ca3da462c2145c544bb19a8fd1d14592
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -262,7 +259,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 72, y: 72}
-  - name: Frame_7
+  - name: reinforce_circle_Frame_7
     originalName: 
     pivot: {x: 0.5, y: -0.0925926}
     alignment: 9
@@ -273,7 +270,7 @@ ScriptedImporter:
       y: 136
       width: 58
       height: 54
-    spriteID: 7d7f342e4f6443a498404fb095029172
+    spriteID: 6e70887decd07e646849bee0782c06ef
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -285,89 +282,76 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    uuid:
-      value0: 2140415980
-      value1: 0
-      value2: 0
-      value3: 0
-    guid: 0
+    guid: -658380548
     name: reinforce_circle
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Frame_0
+    - name: reinforce_circle_Frame_0
       frameIndex: 0
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 2
         width: 60
         height: 60
-      spriteId: 99c571ea0e683924d9b6183b61e14ad7
-    - name: Frame_1
+      spriteId: 711402aaef0fb174db5209794185b29f
+    - name: reinforce_circle_Frame_1
       frameIndex: 1
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 2
         width: 60
         height: 60
-      spriteId: ab2da9d8e66b50847b426044f591fce9
-    - name: Frame_2
+      spriteId: b8a6cf7217ff077478e1cbaf8f02441c
+    - name: reinforce_circle_Frame_2
       frameIndex: 2
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 2
         width: 60
         height: 60
-      spriteId: 65b824ccdc9866045b41b7b44efc061e
-    - name: Frame_3
+      spriteId: 5ac9d476ec99a824e86d03557ee92f73
+    - name: reinforce_circle_Frame_3
       frameIndex: 3
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 2
         width: 60
         height: 60
-      spriteId: b9ec6f209c1a25a4aa4c7b6929c24e6b
-    - name: Frame_4
+      spriteId: 97a3b37ec0ccc624fae04a680a4b986b
+    - name: reinforce_circle_Frame_4
       frameIndex: 4
-      additiveSortOrder: 0
       cellRect:
         x: 13
         y: 8
         width: 38
         height: 48
-      spriteId: 7de943eed9343c544a04161731ebb3f7
-    - name: Frame_5
+      spriteId: 9d8d6a41fb255194c8d7b1772971749d
+    - name: reinforce_circle_Frame_5
       frameIndex: 5
-      additiveSortOrder: 0
       cellRect:
         x: 11
         y: 5
         width: 42
         height: 54
-      spriteId: f60a7e29afd862447b14f399f9047d5a
-    - name: Frame_6
+      spriteId: bafb89634f078c14d8e7540f42d7a2d0
+    - name: reinforce_circle_Frame_6
       frameIndex: 6
-      additiveSortOrder: 0
       cellRect:
         x: 3
         y: 4
         width: 58
         height: 56
-      spriteId: 1017dd3668dccae4885244ca5acced8e
-    - name: Frame_7
+      spriteId: ca3da462c2145c544bb19a8fd1d14592
+    - name: reinforce_circle_Frame_7
       frameIndex: 7
-      additiveSortOrder: 0
       cellRect:
         x: 3
         y: 5
         width: 58
         height: 54
-      spriteId: 7d7f342e4f6443a498404fb095029172
+      spriteId: 6e70887decd07e646849bee0782c06ef
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -407,8 +391,6 @@ ScriptedImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     androidETC2FallbackOverride: 0
-  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 64, y: 64}
-  previousTextureSize: {x: 256, y: 256}

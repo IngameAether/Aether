@@ -8,7 +8,6 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 62a9f0aa5b59740cfbadc7e5f9823bb0, type: 3}
-  importerVersion: 2
   textureImporterSettings:
     alphaSource: 1
     mipMapMode: 0
@@ -78,7 +77,6 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
-    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -91,7 +89,6 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
-    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -122,7 +119,7 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Frame_0
+  - name: tower_level_circle_Frame_0
     originalName: 
     pivot: {x: 0.5, y: -0.055555556}
     alignment: 9
@@ -133,7 +130,7 @@ ScriptedImporter:
       y: 4
       width: 60
       height: 18
-    spriteID: e42cb7918b9d8b245a7a49499bffaeed
+    spriteID: 52fa83b9882c59347a4b8c7abf5b062b
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -142,7 +139,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 4}
-  - name: Frame_1
+  - name: tower_level_circle_Frame_1
     originalName: 
     pivot: {x: 0.5, y: -0.055555556}
     alignment: 9
@@ -153,7 +150,7 @@ ScriptedImporter:
       y: 30
       width: 60
       height: 18
-    spriteID: 2e9a31af5b5be3747afb4761a5e6a94c
+    spriteID: eaff6bff0f1eb144da0122f58b4721b5
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -162,7 +159,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 30}
-  - name: Frame_2
+  - name: tower_level_circle_Frame_2
     originalName: 
     pivot: {x: 0.5, y: -0.055555556}
     alignment: 9
@@ -173,7 +170,7 @@ ScriptedImporter:
       y: 56
       width: 60
       height: 18
-    spriteID: e101a7d6e4ad10b468bda80003f1a294
+    spriteID: 1e590b0eebbf0c54184bd1629ef08fab
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -182,7 +179,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 56}
-  - name: Frame_3
+  - name: tower_level_circle_Frame_3
     originalName: 
     pivot: {x: 0.5, y: -0.055555556}
     alignment: 9
@@ -193,7 +190,7 @@ ScriptedImporter:
       y: 82
       width: 60
       height: 18
-    spriteID: 39e728f694cfcc84b8ca9a4ef6a8cc2c
+    spriteID: 5717f94ee15969f45a4c15f40329fb0f
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -202,7 +199,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 82}
-  - name: Frame_4
+  - name: tower_level_circle_Frame_4
     originalName: 
     pivot: {x: 0.5, y: -0.055555556}
     alignment: 9
@@ -213,7 +210,7 @@ ScriptedImporter:
       y: 108
       width: 60
       height: 18
-    spriteID: fb5c8281d997a8d4696a818fb78b17e9
+    spriteID: 00f4bf34e8d385741828f3245e797488
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -222,7 +219,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 108}
-  - name: Frame_5
+  - name: tower_level_circle_Frame_5
     originalName: 
     pivot: {x: 0.5, y: -0.055555556}
     alignment: 9
@@ -233,7 +230,7 @@ ScriptedImporter:
       y: 134
       width: 60
       height: 18
-    spriteID: 52d9b3be45383ed4a89d519d67e5b101
+    spriteID: f07a1ded2b7fabd4686dc1496ab553fd
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -245,71 +242,60 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    uuid:
-      value0: 2263172991
-      value1: 0
-      value2: 0
-      value3: 0
-    guid: 0
+    guid: 831512563
     name: tower_level_circle
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: Frame_0
+    - name: tower_level_circle_Frame_0
       frameIndex: 0
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 1
         width: 60
         height: 18
-      spriteId: e42cb7918b9d8b245a7a49499bffaeed
-    - name: Frame_1
+      spriteId: 52fa83b9882c59347a4b8c7abf5b062b
+    - name: tower_level_circle_Frame_1
       frameIndex: 1
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 1
         width: 60
         height: 18
-      spriteId: 2e9a31af5b5be3747afb4761a5e6a94c
-    - name: Frame_2
+      spriteId: eaff6bff0f1eb144da0122f58b4721b5
+    - name: tower_level_circle_Frame_2
       frameIndex: 2
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 1
         width: 60
         height: 18
-      spriteId: e101a7d6e4ad10b468bda80003f1a294
-    - name: Frame_3
+      spriteId: 1e590b0eebbf0c54184bd1629ef08fab
+    - name: tower_level_circle_Frame_3
       frameIndex: 3
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 1
         width: 60
         height: 18
-      spriteId: 39e728f694cfcc84b8ca9a4ef6a8cc2c
-    - name: Frame_4
+      spriteId: 5717f94ee15969f45a4c15f40329fb0f
+    - name: tower_level_circle_Frame_4
       frameIndex: 4
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 1
         width: 60
         height: 18
-      spriteId: fb5c8281d997a8d4696a818fb78b17e9
-    - name: Frame_5
+      spriteId: 00f4bf34e8d385741828f3245e797488
+    - name: tower_level_circle_Frame_5
       frameIndex: 5
-      additiveSortOrder: 0
       cellRect:
         x: 2
         y: 1
         width: 60
         height: 18
-      spriteId: 52d9b3be45383ed4a89d519d67e5b101
+      spriteId: f07a1ded2b7fabd4686dc1496ab553fd
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -349,8 +335,6 @@ ScriptedImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     androidETC2FallbackOverride: 0
-  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 64, y: 64}
-  previousTextureSize: {x: 128, y: 256}

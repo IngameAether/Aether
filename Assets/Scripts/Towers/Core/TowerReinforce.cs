@@ -28,7 +28,7 @@ public class TowerReinforce : MonoBehaviour
     // 타워 강화
     public void ReinforceTower()
     {
-        if (towerSetting.rank == 4)
+        if (towerSetting.Rank == 4)
         {
             Debug.Log("Level 4 Tower can't reinforce!");
             return;
@@ -45,14 +45,14 @@ public class TowerReinforce : MonoBehaviour
     // 타워 레벨업 조건 체크
     private void CheckLevelUpgrade()
     {
-        if (towerSetting.rank == 2 && towerSetting.reinforceLevel == 10)
+        if (towerSetting.Rank == 2 && towerSetting.reinforceLevel == 10)
         {
-            towerSetting.rank++;
+            towerSetting.Rank++;
             TowerLevelUpgrade();
             Debug.Log($"{gameObject.name} lv.3으로 레벨업");
         }
 
-        if (towerSetting.rank == 3 && towerSetting.reinforceLevel == 20)
+        if (towerSetting.Rank == 3 && towerSetting.reinforceLevel == 20)
         {
             // 추가적인 능력 부여
         }
@@ -61,8 +61,8 @@ public class TowerReinforce : MonoBehaviour
     // 타워 레벨 상승
     public void TowerLevelUpgrade()
     {
-        towerSetting.rank++;
-        if (towerSpriteController != null) towerSpriteController.SetSpritesByLevel(towerSetting.rank);
+        towerSetting.Rank++;
+        if (towerSpriteController != null) towerSpriteController.SetSpritesByLevel(towerSetting.Rank);
     }
 
     // 타워 강화
