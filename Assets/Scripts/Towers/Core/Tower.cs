@@ -10,11 +10,14 @@ public class TowerSetting
     public string Description;
     public ElementType Type;
     public int Rank;
+    public int reinforceLevel;
     public float Damage;
     public float AttackSpeed;
     public float Range;
     public float CriticalHit;
 }
+
+public enum ReinforceType { None, Light, Dark };
 
 public abstract class Tower : MonoBehaviour
 {
@@ -23,13 +26,18 @@ public abstract class Tower : MonoBehaviour
 
     public static event Action<Tower> OnTowerClicked;
 
+    [Header("Tower Reinforce")]
+    public ReinforceType reinforceType;
+
+    public string type { get; set; }
+
     protected SpriteRenderer spriteRenderer;
     protected SpriteRenderer magicCircleRenderer;
 
     protected float lastAttackTime;
     protected bool isFacingRight = true;
     protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
-    public Vector3 direction; // 적 방향
+    protected Vector3 direction; // 적 방향
 
     private float _originalDamage;
     private float _originalAttackSpeed;

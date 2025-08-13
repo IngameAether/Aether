@@ -26,9 +26,13 @@ public class TowerCombiner : MonoBehaviour
     private readonly List<Tile> _selectedTiles = new();
     private Dictionary<ElementType, GameObject> _elementTowerMap;
 
+    private TowerSpriteController towerSpriteController;
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
+
+        towerSpriteController = FindObjectOfType<TowerSpriteController>();
     }
 
     private void Start()
@@ -136,6 +140,7 @@ public class TowerCombiner : MonoBehaviour
         {
             Debug.LogWarning($"조합 성공! {element1} 원소 3개가 조합되어 1단계 타워가 생성됩니다.");
             CreateLevel1Tower();
+            towerSpriteController.SetSpritesByLevel(1);
         }
         else
         {
@@ -214,6 +219,8 @@ public class TowerCombiner : MonoBehaviour
         if (towerComponent != null)
             // etc
             Debug.Log($"타워 컴포넌트 설정 완료: {towerComponent.GetTowerSetting().Name}");
+
+        towerSpriteController = createdTower.GetComponent<TowerSpriteController>();
     }
 
     /// <summary>
