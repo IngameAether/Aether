@@ -19,9 +19,7 @@ public class ArrowTower : Tower
         if (mouthAnimator != null && scaleAnimator != null)
         {
             mouthAnimator.SetTrigger("CanAttack");
-            scaleAnimator.SetTrigger("CanAttack");
-            // 발사 모션의 발사 프레임에 맞게 투사체 생성
-            StartCoroutine(SpawnAfterDelay(0.15f)); // 딜레이는 애니메이션과 맞춰 조정
+            scaleAnimator.SetTrigger("CanAttack");           
             Debug.Log("Animation 실행");
         }
         else
@@ -53,7 +51,7 @@ public class ArrowTower : Tower
         }
 
         Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : transform.position;
-        GameObject projectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+        GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
         var projectileScript = projectile.GetComponent<TowerAttack>();
         if (projectileScript != null)
         {

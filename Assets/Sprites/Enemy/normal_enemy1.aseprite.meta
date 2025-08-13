@@ -7,7 +7,7 @@ ScriptedImporter:
       type: UnityEngine:AnimationClip
       assembly: UnityEngine.AnimationModule
       name: normal_enemy1_Clip
-    second: {fileID: 7400000, guid: 8f70168a37520c14ea4113dc40860fc9, type: 2}
+    second: {fileID: 7400000, guid: e25fdc75f99c8844abd2fa39d54b6007, type: 2}
   serializedVersion: 2
   userData: 
   assetBundleName: 
@@ -100,7 +100,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638886458010088903
+  platformSettingsDirtyTick: 638907157937497035
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -248,6 +248,18 @@ ScriptedImporter:
     overridden: 0
     ignorePlatformSupport: 0
     maxTextureSize: 16384
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
+  - name: Server
+    overridden: 0
+    ignorePlatformSupport: 0
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0

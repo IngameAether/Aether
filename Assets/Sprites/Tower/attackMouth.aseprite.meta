@@ -7,7 +7,7 @@ ScriptedImporter:
       type: UnityEngine:AnimationClip
       assembly: UnityEngine.AnimationModule
       name: attackMouth_Clip
-    second: {fileID: 7400000, guid: caa241a5c40f1af42b29bb2bd3e8354a, type: 2}
+    second: {fileID: 7400000, guid: a92e6c4c272d4b5448326f59e2e35f1e, type: 2}
   serializedVersion: 2
   userData: 
   assetBundleName: 
@@ -100,7 +100,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638873389373982500
+  platformSettingsDirtyTick: 638907162146312049
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -500,6 +500,18 @@ ScriptedImporter:
     overridden: 0
     ignorePlatformSupport: 0
     maxTextureSize: 16384
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
+  - name: Server
+    overridden: 0
+    ignorePlatformSupport: 0
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0
