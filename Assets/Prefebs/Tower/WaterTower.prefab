@@ -144,11 +144,12 @@ MonoBehaviour:
     Description: straight projectile
     Type: 1
     Rank: 1
+    reinforceLevel: 0
     Damage: 8
     AttackSpeed: 1.5
     Range: 2.5
     CriticalHit: 0
-  direction: {x: 0, y: 0, z: 0}
+  reinforceType: 0
   projectilePrefab: {fileID: 4766331063098911513, guid: 14d41416ca05d3a448b9c9394a949701, type: 3}
   spawnPoint: {fileID: 0}
 --- !u!58 &8841763817496565554
@@ -232,22 +233,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c74c957ffaeae1441baec55f55aa609c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  elementRenderer: {fileID: 1856866240783546276}
-  magicCircleRenderer: {fileID: 7576678121438581951}
-  reinforceMagicCircleRenderer: {fileID: 4237308219115099693}
   elementSprites:
-  - {fileID: -8237349694351642541, guid: 612a76339249bd741aacdc91beb03ac3, type: 3}
-  - {fileID: -9193004602809147622, guid: ead2ec0edf0a34b48926cfca0b4d1ec2, type: 3}
+  - {fileID: -9212672696627779611, guid: 612a76339249bd741aacdc91beb03ac3, type: 3}
+  - {fileID: -1188321544680908049, guid: ead2ec0edf0a34b48926cfca0b4d1ec2, type: 3}
   levelSprites:
-  - {fileID: 3307173952323691292, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
-  - {fileID: 772001945280663079, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
-  - {fileID: -8027322318212132347, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
-  - {fileID: -1370465342623556932, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
+  - {fileID: -886020809869896292, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
+  - {fileID: 711524243418297025, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
+  - {fileID: -2090310456032504481, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
+  - {fileID: -4354247715921585579, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
   reinforceSprites:
-  - {fileID: -554164107608994445, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
-  - {fileID: 6903431820367259015, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
-  - {fileID: 5304421901645159822, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
-  - {fileID: 7231015256633251017, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
+  - {fileID: -2983004623534969133, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
+  - {fileID: -4745038267386370024, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
+  - {fileID: 588263254867712404, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
+  - {fileID: -4787295684656608353, guid: 99114e635ebd22043a1e1bc54f1a2d20, type: 3}
 --- !u!114 &8602095056099424060
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -260,8 +258,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02f8366314489114692c190c850cb9ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  level: 1
-  reinforce: 0
 --- !u!1 &3354781947211632409
 GameObject:
   m_ObjectHideFlags: 0
@@ -419,7 +415,7 @@ SpriteRenderer:
   m_SortingLayerID: 109444711
   m_SortingLayer: 3
   m_SortingOrder: 2
-  m_Sprite: {fileID: -3678311724802922139, guid: f3dc624a46b8a9542b67589f3e02d944, type: 3}
+  m_Sprite: {fileID: -701087444940085675, guid: f3dc624a46b8a9542b67589f3e02d944, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -504,12 +500,12 @@ SpriteRenderer:
   m_SortingLayerID: 109444711
   m_SortingLayer: 3
   m_SortingOrder: 2
-  m_Sprite: {fileID: -8009599154582771633, guid: d731a4f2d4f1dba4f95e017a7efd6d06, type: 3}
+  m_Sprite: {fileID: -8665605500713675904, guid: d731a4f2d4f1dba4f95e017a7efd6d06, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.046875, y: 0.015625}
+  m_Size: {x: 0.109375, y: 0.078125}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -693,7 +689,7 @@ SpriteRenderer:
   m_SortingLayerID: 109444711
   m_SortingLayer: 3
   m_SortingOrder: 1
-  m_Sprite: {fileID: 3814347106357871801, guid: bcc977e31109de344a0b2f1e0d0a4c6d, type: 3}
+  m_Sprite: {fileID: -2388896233545587070, guid: bcc977e31109de344a0b2f1e0d0a4c6d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

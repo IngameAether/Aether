@@ -46,10 +46,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03ff00a2dd042d6458d9e96e9198427f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tileInteraction: {fileID: 0}
+  parentTile: {fileID: 0}
   type: 2
   isClick: 0
-  selectTile: {fileID: 0}
 --- !u!58 &2010846767897384555
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -158,7 +157,7 @@ SpriteRenderer:
   m_SortingLayerID: 109444711
   m_SortingLayer: 3
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7655876398513565757, guid: 7e6289d4011cb1e4984bcc0eb6ebc6c6, type: 3}
+  m_Sprite: {fileID: -5595682925677003819, guid: 7e6289d4011cb1e4984bcc0eb6ebc6c6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
