@@ -11,10 +11,13 @@ public class MagicBookSelectionUI : MonoBehaviour
     private MagicBookManager _bookManager;
     private MagicBookData[] _currentChoices;
 
-    private void Start()
+    private void Awake()
     {
         _bookManager = FindObjectOfType<MagicBookManager>();
+    }
 
+    private void Start()
+    {
         for (int i = 0; i < _bookButtons.Length; i++)
         {
             int index = i;

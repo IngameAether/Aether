@@ -6,7 +6,6 @@ using Random = UnityEngine.Random;
 public class MagicBookManager : MonoBehaviour
 {
     [SerializeField] private MagicBookData[] _allBooks;
-
     public static event Action<EBookEffectType, int> OnBookEffectApplied;
 
     private Dictionary<string, MagicBookData> _allBooksDict;

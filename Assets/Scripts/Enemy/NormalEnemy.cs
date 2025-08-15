@@ -13,7 +13,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 
     // 이동 속도
     public float moveSpeed = 2f;
-    
+
     // 마법 저항력 (Magic Resistance)
     [Range(0, 50)] // Inspector 창에서 5~50 사이의 값만 입력 가능하도록 설정
     public int magicResistance = 5; // 기본 마법 저항력을 5%로 설정
@@ -26,7 +26,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     public Image healthBarFillImage; // 체력 바의 Fill 타입 이미지
 
     // EnemyMovement 컴포넌트 참조
-    private EnemyMovement enemyMovement; 
+    private EnemyMovement enemyMovement;
 
     void Start()
     {
@@ -101,7 +101,8 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     void Die()
     {
         Debug.Log(gameObject.name + "가 죽었습니다.");
-        // TODO: 여기에 적이 죽었을 때 발생할 이벤트 (애니메이션 재생, 아이템 드랍, 오브젝트 제거 등)를 추가
+        int bonus = ResourceManager.Instance.EnemyKillBonusCoin;
+        ResourceManager.Instance.AddCoin(0 + bonus); // 기본값 일단 0으로 표시만 함
         Destroy(gameObject); // 예시: 적 오브젝트 제거
     }
 

@@ -14,6 +14,8 @@ public class TowerDragSale : MonoBehaviour
     public Tile selectTile; // 이 타워가 배치된 타일 참조
     private BoxCollider2D _boxCollider2D;
 
+    private int _towerSellBonusCoin = 0;
+
     private void Start()
     {
         _boxCollider2D = selectTile.GetComponent<BoxCollider2D>();
@@ -30,6 +32,16 @@ public class TowerDragSale : MonoBehaviour
         {
             Debug.Log("SaleController를 성공적으로 찾았습니다!"); // 이 로그가 뜨는지 확인
         }
+    }
+
+    private void OnEnable()
+    {
+        MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
+    }
+
+    private void OnDisable()
+    {
+        MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
     }
 
     private void OnMouseDown()
@@ -89,7 +101,7 @@ public class TowerDragSale : MonoBehaviour
                     selectTile.isElementBuild = true;
                 }
                 Debug.Log($"{gameObject.name} 판매됨");
-                SaleController.Instance.AddCoin(20, true);
+                ResourceManager.Instance.AddCoin(20 + _towerSellBonusCoin);
 
                 Destroy(gameObject);
             }
@@ -112,5 +124,11 @@ public class TowerDragSale : MonoBehaviour
     public void SetAssignedTile(Tile tile)
     {
         selectTile = tile;
+    }
+
+    private void HandleBookEffectApplied(EBookEffectType bookEffectType, int value)
+    {
+        if (bookEffectType != EBookEffectType.SellBonus) return;
+        _towerSellBonusCoin = value;
     }
 }

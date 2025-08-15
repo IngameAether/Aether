@@ -86,7 +86,7 @@ public class MapRenderer : MonoBehaviour
             }
         }
 
-        SaleController.Instance.ClearCoin();
+        ResourceManager.Instance.ResetAllResources();
     }
 
     public Vector3 GetTileWorldPosition(int tileX, int tileY, int mapWidth, int mapHeight)

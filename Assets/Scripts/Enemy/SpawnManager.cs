@@ -28,7 +28,7 @@ public class SpawnManager : MonoBehaviour
     private Coroutine _spawnCoroutine;
 
     private bool _isWaitingForMagicBook = false;
-    private int _waveAether = 0;
+    private int _waveEndBonusCoin = 0;
 
     private void Start()
     {
@@ -124,7 +124,7 @@ public class SpawnManager : MonoBehaviour
 
             Debug.Log($"--- ���̺� {waveIndex + 1} �� ���� �Ϸ�. ---");
 
-            SaleController.Instance.AddCoin(_waveAether, false);
+            ResourceManager.Instance.AddCoin(_waveEndBonusCoin);
 
             // ������ ���̺갡 �ƴ϶�� ���̺� �� ��� �ð� ����
             if (waveIndex < waves.Count - 1)
@@ -198,7 +198,7 @@ public class SpawnManager : MonoBehaviour
     private void HandleBookEffectApplied(EBookEffectType bookEffectType, int value)
     {
         if (bookEffectType != EBookEffectType.WaveAether) return;
-        _waveAether = value;
+        _waveEndBonusCoin = value;
     }
 
     private void HandleBookSelectCompleted()

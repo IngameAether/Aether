@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class SaleController : MonoBehaviour
 {
-    public static SaleController Instance { get; private set; }
     public RectTransform SalePanelRectTransform { get; private set; }
 
     [Header("UI References")]
@@ -17,24 +16,20 @@ public class SaleController : MonoBehaviour
     public GameObject saleTextObject;
 
     private Image highlightImage;
-    private int _coin = 0;
-    private int _sellBonus = 0;
 
     private void Awake()
     {
-        if (Instance != null) return;
-        Instance = this;
         InitializeComponents();
     }
 
     private void OnEnable()
     {
-        MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
+        ResourceManager.OnCoinChanged += HandleOnCoinChanged;
     }
 
     private void OnDisable()
     {
-        MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
+        ResourceManager.OnCoinChanged -= HandleOnCoinChanged;
     }
 
     private void InitializeComponents()
@@ -54,25 +49,6 @@ public class SaleController : MonoBehaviour
         {
             saleTextObject.SetActive(false);
         }
-    }
-
-    public void AddCoin(int amount, bool isAddBonus = false)
-    {
-        _coin += (amount + (isAddBonus ? _sellBonus : 0));
-        coinTxt.text = _coin.ToString();
-    }
-
-    public bool SpendCoin(int amount)
-    {
-        if (_coin < amount) return false;
-        _coin -= amount;
-        return true;
-    }
-
-    public void ClearCoin()
-    {
-        _coin = 0;
-        _sellBonus = 0;
     }
 
     public void SetHighlightColor(bool isHighlight)
@@ -110,9 +86,9 @@ public class SaleController : MonoBehaviour
         }
     }
 
-    private void HandleBookEffectApplied(EBookEffectType bookEffectType, int value)
+    private void HandleOnCoinChanged(int coin)
     {
-        if (bookEffectType != EBookEffectType.SellBonus) return;
-        _sellBonus = value;
+        if (coinTxt == null) return;
+        coinTxt.text = coin.ToString();
     }
 }
