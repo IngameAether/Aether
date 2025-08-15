@@ -85,8 +85,8 @@ public class MapRenderer : MonoBehaviour
                     Destroy(tileObjects[x,y]);
             }
         }
-        
-        SaleController.coin = 0;    // 코인 0으로 초기화
+
+        SaleController.Instance.ClearCoin();
     }
 
     public Vector3 GetTileWorldPosition(int tileX, int tileY, int mapWidth, int mapHeight)

@@ -89,7 +89,8 @@ public class TowerDragSale : MonoBehaviour
                     selectTile.isElementBuild = true;
                 }
                 Debug.Log($"{gameObject.name} 판매됨");
-                SaleController.coin += 20;
+                SaleController.Instance.AddCoin(20, true);
+
                 Destroy(gameObject);
             }
             else // 판매 취소 시
@@ -108,7 +109,6 @@ public class TowerDragSale : MonoBehaviour
         return mousePosition;
     }
 
-    //
     public void SetAssignedTile(Tile tile)
     {
         selectTile = tile;

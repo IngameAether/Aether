@@ -10,7 +10,7 @@ public class SpawnManager : MonoBehaviour
     // ������ �� ������
     public GameObject[] enemyPrefabs;
     public MapManage mapManage; // MapManage ��ũ��Ʈ ���۷���
-    public BuffChoiceUI buffChoiceUI;
+    public MagicBookSelectionUI buffChoiceUI;
 
     [Header("UI")]
     [SerializeField] private TMP_Text waveText;
@@ -22,12 +22,13 @@ public class SpawnManager : MonoBehaviour
 
     // ������ ���� ���� ������ Ȯ���ϴ� �÷���
     private bool isSpawning = false;
-    public static int currentWaveLevel = 0;
+    public int currentWaveLevel = 0;
     private float _currentEndTime;
     private int _reachedEndEnemyCount = 0;
     private Coroutine _spawnCoroutine;
 
-    private bool _isWaitingForBuffChoice = false;
+    private bool _isWaitingForMagicBook = false;
+    private int _waveAether = 0;
 
     private void Start()
     {
@@ -51,7 +52,8 @@ public class SpawnManager : MonoBehaviour
         waveText.text = "0 wave";
 
         EnemyMovement.OnReachEndPoint += HandleReachedEndEnemy;
-        buffChoiceUI.OnBuffChoiceCompleted += HandleBuffChoiceCompleted;
+        MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
+        buffChoiceUI.OnBookSelectCompleted += HandleBookSelectCompleted;
 
         Debug.Log("SpawnManager �ʱ�ȭ �Ϸ�. Start ��ư Ŭ�� ��� ��.");
         _spawnCoroutine = StartCoroutine(SpawnEnmiesRoutine());
@@ -60,7 +62,8 @@ public class SpawnManager : MonoBehaviour
     private void OnDestroy()
     {
         EnemyMovement.OnReachEndPoint -= HandleReachedEndEnemy;
-        buffChoiceUI.OnBuffChoiceCompleted -= HandleBuffChoiceCompleted;
+        MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
+        buffChoiceUI.OnBookSelectCompleted -= HandleBookSelectCompleted;
     }
 
     IEnumerator SpawnEnmiesRoutine()
@@ -95,6 +98,11 @@ public class SpawnManager : MonoBehaviour
             currentWaveLevel = waveIndex;
             waveText.text = $"{waveIndex + 1} wave";
 
+            if ((waveIndex + 1) % 10 == 0 && buffChoiceUI != null)
+            {
+                yield return StartCoroutine(HandleBuffChoice());
+            }
+
             yield return new WaitForSeconds(waves[waveIndex].startTime);
 
             Wave currentWave = waves[waveIndex];
@@ -116,10 +124,7 @@ public class SpawnManager : MonoBehaviour
 
             Debug.Log($"--- ���̺� {waveIndex + 1} �� ���� �Ϸ�. ---");
 
-            if ((waveIndex + 1) % 10 == 0 && buffChoiceUI != null)
-            {
-                yield return StartCoroutine(HandleBuffChoice());
-            }
+            SaleController.Instance.AddCoin(_waveAether, false);
 
             // ������ ���̺갡 �ƴ϶�� ���̺� �� ��� �ð� ����
             if (waveIndex < waves.Count - 1)
@@ -168,17 +173,15 @@ public class SpawnManager : MonoBehaviour
     {
         Debug.Log($"웨이브 {currentWaveLevel + 1} 완료! 버프 선택을 시작합니다.");
 
-        BuffData[] buffChoices = BuffManager.Instance.GetRandomBuffChoices();
+        _isWaitingForMagicBook = true;
+        buffChoiceUI.ShowBookSelection();
 
-        _isWaitingForBuffChoice = true;
-        buffChoiceUI.ShowBuffChoices(buffChoices);
-
-        while (_isWaitingForBuffChoice)
+        while (_isWaitingForMagicBook)
         {
             yield return null;
         }
 
-        Debug.Log("버프 선택이 완료되었습니다. 게임을 계속 진행합니다.");
+        Debug.Log("마법 도서 선택이 완료되었습니다. 게임을 계속 진행합니다.");
     }
 
     #region Acton Handler
@@ -192,9 +195,15 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    private void HandleBuffChoiceCompleted()
+    private void HandleBookEffectApplied(EBookEffectType bookEffectType, int value)
     {
-        _isWaitingForBuffChoice = false;
+        if (bookEffectType != EBookEffectType.WaveAether) return;
+        _waveAether = value;
+    }
+
+    private void HandleBookSelectCompleted()
+    {
+        _isWaitingForMagicBook = false;
     }
 
     #endregion

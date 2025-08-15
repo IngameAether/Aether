@@ -23,6 +23,8 @@ public class GameSaveManager : MonoBehaviour
 
     private GameSaveData _currentGameData;
 
+    private SpawnManager _spawnManager;
+
     private void Awake()
     {
         if (Instance == null)
@@ -44,6 +46,8 @@ public class GameSaveManager : MonoBehaviour
         {
             Directory.CreateDirectory(savePath);
         }
+
+        _spawnManager = FindObjectOfType<SpawnManager>();
     }
 
     /// <summary>
@@ -127,7 +131,7 @@ public class GameSaveManager : MonoBehaviour
         GameSaveData saveData = new GameSaveData
         {
             saveSlot = slotIndex,
-            currentWave = SpawnManager.currentWaveLevel,
+            currentWave = _spawnManager.currentWaveLevel,
             playerLife = GameManager.Instance.currentLives,
             resources = new ResourceData(),
             currentMapId = SceneManager.GetActiveScene().name,

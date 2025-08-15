@@ -39,9 +39,6 @@ public abstract class Tower : MonoBehaviour
     protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
     protected Vector3 direction; // 적 방향
 
-    private float _originalDamage;
-    private float _originalAttackSpeed;
-
     public TowerSetting GetTowerSetting()
     {
         return towerSetting;
@@ -50,18 +47,6 @@ public abstract class Tower : MonoBehaviour
     protected virtual void Start()
     {
         InitializeTower();
-    }
-
-    protected virtual void OnEnable()
-    {
-        BuffManager.Instance.OnAllTowerAttackSpeedChanged += HandleUpdateAttackSpeed;
-        BuffManager.Instance.OnElementDamageChanged += HandleUpdateElementDamage;
-    }
-
-    protected virtual void OnDisable()
-    {
-        BuffManager.Instance.OnAllTowerAttackSpeedChanged -= HandleUpdateAttackSpeed;
-        BuffManager.Instance.OnElementDamageChanged -= HandleUpdateElementDamage;
     }
 
     protected virtual void Update()
@@ -77,13 +62,6 @@ public abstract class Tower : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
-
-        _originalDamage = towerSetting.Damage;
-        _originalAttackSpeed = towerSetting.AttackSpeed;
-
-        var data = BuffManager.Instance.GetActiveBuffData(towerSetting.Type);
-        HandleUpdateAttackSpeed(data.AttackSpeed);
-        HandleUpdateElementDamage(towerSetting.Type, data.ElementDamage);
     }
 
     /// <summary>
@@ -205,17 +183,6 @@ public abstract class Tower : MonoBehaviour
     public void HandleTowerClicked()
     {
         OnTowerClicked?.Invoke(this);
-    }
-
-    private void HandleUpdateAttackSpeed(float percentage)
-    {
-        towerSetting.AttackSpeed = _originalAttackSpeed * (1f + (percentage / 100f));
-    }
-
-    private void HandleUpdateElementDamage(ElementType element, float percentage)
-    {
-        if (towerSetting.Type != element) return;
-        towerSetting.Damage = _originalDamage * (1f + (percentage / 100f));
     }
 
     #endregion

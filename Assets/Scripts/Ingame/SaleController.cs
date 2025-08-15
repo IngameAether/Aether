@@ -6,17 +6,38 @@ using UnityEngine.UI;
 
 public class SaleController : MonoBehaviour
 {
-    Image image;
+    public static SaleController Instance { get; private set; }
+    public RectTransform SalePanelRectTransform { get; private set; }
+
+    [Header("UI References")]
     public Color normalColor;
     public Color highlightColor;
-    public static int coin = 0;
     public TextMeshProUGUI coinTxt;
     public GameObject saleUIPanel;
     public GameObject saleTextObject;
-    private Image highlightImage;
-    public RectTransform SalePanelRectTransform => saleUIPanel != null ? saleUIPanel.GetComponent<RectTransform>() : null;
 
-    void Awake()
+    private Image highlightImage;
+    private int _coin = 0;
+    private int _sellBonus = 0;
+
+    private void Awake()
+    {
+        if (Instance != null) return;
+        Instance = this;
+        InitializeComponents();
+    }
+
+    private void OnEnable()
+    {
+        MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
+    }
+
+    private void OnDisable()
+    {
+        MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
+    }
+
+    private void InitializeComponents()
     {
         highlightImage = GetComponent<Image>();
         if(highlightImage == null)
@@ -27,6 +48,7 @@ public class SaleController : MonoBehaviour
         if (saleUIPanel != null)
         {
             saleUIPanel.SetActive(false);
+            SalePanelRectTransform ??= saleUIPanel.GetComponent<RectTransform>();
         }
         if (saleTextObject != null)
         {
@@ -34,12 +56,23 @@ public class SaleController : MonoBehaviour
         }
     }
 
-    void Update()
+    public void AddCoin(int amount, bool isAddBonus = false)
     {
-        if(coinTxt != null)
-        {
-            coinTxt.text = coin.ToString();
-        }
+        _coin += (amount + (isAddBonus ? _sellBonus : 0));
+        coinTxt.text = _coin.ToString();
+    }
+
+    public bool SpendCoin(int amount)
+    {
+        if (_coin < amount) return false;
+        _coin -= amount;
+        return true;
+    }
+
+    public void ClearCoin()
+    {
+        _coin = 0;
+        _sellBonus = 0;
     }
 
     public void SetHighlightColor(bool isHighlight)
@@ -75,5 +108,11 @@ public class SaleController : MonoBehaviour
         {
             Debug.LogWarning("SaleController: saleTextObject가 할당되지 않았습니다. Inspector를 확인하세요.");
         }
+    }
+
+    private void HandleBookEffectApplied(EBookEffectType bookEffectType, int value)
+    {
+        if (bookEffectType != EBookEffectType.SellBonus) return;
+        _sellBonus = value;
     }
 }
