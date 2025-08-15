@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class BuffChoiceButton : MonoBehaviour
+public class MagicBookButton : MonoBehaviour
 {
     [Header("UI Components")]
     [SerializeField] private Button _button;
@@ -16,8 +16,8 @@ public class BuffChoiceButton : MonoBehaviour
         _button.onClick.AddListener(() => OnButtonClick?.Invoke());
     }
 
-    public void SetBuffData(BuffData data)
+    public void SetBookData(string desc)
     {
-        _descText.text = data.GetDescription();
+        _descText.text = desc;
     }
 }
