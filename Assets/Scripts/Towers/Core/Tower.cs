@@ -25,6 +25,7 @@ public abstract class Tower : MonoBehaviour
     [SerializeField] protected TowerSetting towerSetting;
 
     public static event Action<Tower> OnTowerClicked;
+    public static event Action OnTowerDestroyed;
 
     [Header("Tower Reinforce")]
     public ReinforceType reinforceType;
@@ -53,6 +54,11 @@ public abstract class Tower : MonoBehaviour
     {
         // 타겟 찾기 및 공격
         FindAndAttackTarget();
+    }
+
+    protected virtual void OnDestroy()
+    {
+        OnTowerDestroyed?.Invoke();
     }
 
     /// <summary>

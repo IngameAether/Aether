@@ -102,7 +102,6 @@ public class TowerDragSale : MonoBehaviour
                 }
                 Debug.Log($"{gameObject.name} 판매됨");
                 ResourceManager.Instance.AddCoin(20 + _towerSellBonusCoin);
-
                 Destroy(gameObject);
             }
             else // 판매 취소 시
