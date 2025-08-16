@@ -38,6 +38,13 @@ public class TowerReinforce : MonoBehaviour
             return;
         }
 
+        int bonusReinforce = ResourceManager.Instance.MaxElementUpgrade;
+        if (towerSetting.reinforceLevel >= towerSetting.MaxReinforce + bonusReinforce)
+        {
+            Debug.Log("Tower reinforce level is too high!");
+            return;
+        }
+
         if (tower.reinforceType != ReinforceType.None)
         {
             towerSetting.reinforceLevel++;

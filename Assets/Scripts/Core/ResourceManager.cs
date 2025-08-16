@@ -10,12 +10,12 @@ public class ResourceManager : MonoBehaviour
     public int LightElement { get; private set; }
     public int DarkElement { get; private set; }
     public int EnemyKillBonusCoin { get; private set; } = 0;
+    public int MaxElementUpgrade { get; private set; } = 0;
 
     private int _lightElementChance = 5;
     private int _darkElementChance = 5;
     private int _lightElementRate = 50;
     private int _darkElementRate = 50;
-    private int _maxElementUpgrade = 10;
 
     // 이벤트
     public static event Action<int> OnCoinChanged;
@@ -149,7 +149,7 @@ public class ResourceManager : MonoBehaviour
                 EnemyKillBonusCoin = value;
                 break;
             case EBookEffectType.ElementMaxUpgrade:
-                _maxElementUpgrade += value;
+                MaxElementUpgrade += value;
                 break;
         }
     }
@@ -163,7 +163,7 @@ public class ResourceManager : MonoBehaviour
         _darkElementChance = 5;
         _lightElementRate = 50;
         _darkElementRate = 50;
-        _maxElementUpgrade = 10;
+        MaxElementUpgrade = 10;
 
         OnCoinChanged?.Invoke(Coin);
         OnElementChanged?.Invoke(LightElement, DarkElement);

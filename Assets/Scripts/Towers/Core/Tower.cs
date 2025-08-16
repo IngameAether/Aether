@@ -11,6 +11,7 @@ public class TowerSetting
     public ElementType Type;
     public int Rank;
     public int reinforceLevel;
+    public int MaxReinforce;
     public float Damage;
     public float AttackSpeed;
     public float Range;
