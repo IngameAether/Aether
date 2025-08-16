@@ -2494,25 +2494,192 @@ MonoBehaviour:
   - {fileID: 5417002623811271532, guid: 577f837b52c252d49ba0a5f379d7bae7, type: 3}
   - {fileID: 5417002623811271532, guid: 5249caae0f3ac8e4e93a066912dbc1d9, type: 3}
   - {fileID: 5417002623811271532, guid: c2a15d76c6442fd4da2fe3a036e8a78c, type: 3}
+  - {fileID: 5417002623811271532, guid: e9376d3272f8206408fd74f1f8e882d0, type: 3}
+  - {fileID: 5417002623811271532, guid: 3ab8df893bb59e5408b4e7fef4f247b2, type: 3}
   mapManage: {fileID: 98405527}
   buffChoiceUI: {fileID: 1216908003}
   waveText: {fileID: 553837775}
   waves:
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 0.5
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 0.5
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 0.5
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 4
+      spawnInterval: 2
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 2
+      endTime: 16
+    - enemyPrefabIndex: 4
+      spawnInterval: 16
+      startTime: 1
+      endTime: 17
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 16
+      endTime: 20
+  - enemies:
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 2
+      spawnInterval: 2
+      startTime: 2
+      endTime: 16
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 2
+      spawnInterval: 2
+      startTime: 2
+      endTime: 16
+  - enemies:
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 2
+      startTime: 2
+      endTime: 16
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 2
+      spawnInterval: 2
+      startTime: 2
+      endTime: 16
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
   initialDelay: 1
   waveBreakTime: 15
   currentWaveLevel: 0

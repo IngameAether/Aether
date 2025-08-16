@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -103,24 +105,10 @@ public class SpawnManager : MonoBehaviour
                 yield return StartCoroutine(HandleBuffChoice());
             }
 
-            yield return new WaitForSeconds(waves[waveIndex].startTime);
-
             Wave currentWave = waves[waveIndex];
             Debug.Log($"--- ���̺� {waveIndex + 1} ����!---");
 
-            _currentEndTime = Time.time + waves[waveIndex].endTime;
-
-            while (Time.time <= _currentEndTime)
-            {
-                Vector3 spawnPosition = path[0]; // ����� ù ��° ������ ���� ��ġ�� ���
-                SpawnSingleEnemy(spawnPosition, path);
-
-                // ���� ���̺��� ��� ���� �����ϱ� �������� ���� ���� ���
-                if (Time.time <= _currentEndTime)
-                {
-                    yield return new WaitForSeconds(currentWave.spawnInterval);
-                }
-            }
+            yield return StartCoroutine(SpawnWaveEnemies(currentWave, path));
 
             Debug.Log($"--- ���̺� {waveIndex + 1} �� ���� �Ϸ�. ---");
 
@@ -135,21 +123,58 @@ public class SpawnManager : MonoBehaviour
             else
             {
                 Debug.Log("��� ���̺� �Ϸ�!");
+                SceneManager.LoadScene("MainMenuScene");
             }
         }
 
         isSpawning = false; // ��� ���̺� ���� ���� �÷��� ����
     }
 
-    void SpawnSingleEnemy(Vector3 initialSpawnPosition, List<Vector3> path)
+    private IEnumerator SpawnWaveEnemies(Wave wave, List<Vector3> path)
     {
-        if (enemyPrefabs == null)
+        if (wave.enemies == null || wave.enemies.Count == 0)
+        {
+            Debug.LogWarning("웨이브에 적 데이터가 없습니다");
+            yield break;
+        }
+
+        float waveStartTime = Time.time;
+        float maxWaveEndTime = 0f;
+        var nextSpawnTimes = new Dictionary<int, float>();
+
+        foreach (var enemy in wave.enemies)
+        {
+            nextSpawnTimes[enemy.enemyPrefabIndex] = waveStartTime + enemy.startTime;
+            maxWaveEndTime = Mathf.Max(maxWaveEndTime, enemy.endTime);
+        }
+
+        float waveEndTime = waveStartTime + maxWaveEndTime;
+        while (Time.time < waveEndTime)
+        {
+            float currentTime = Time.time;
+            foreach (var enemy in wave.enemies)
+            {
+                float enemyEndTime = waveStartTime + enemy.endTime;
+                if (currentTime >= nextSpawnTimes[enemy.enemyPrefabIndex] && currentTime < enemyEndTime)
+                {
+                    SpawnSingleEnemy(path[0], path, enemy.enemyPrefabIndex);
+                    nextSpawnTimes[enemy.enemyPrefabIndex] = currentTime + enemy.spawnInterval;
+                }
+            }
+
+            yield return null;
+        }
+    }
+
+    void SpawnSingleEnemy(Vector3 initialSpawnPosition, List<Vector3> path, int enemyIndex = 0)
+    {
+        if (enemyPrefabs == null || enemyIndex >= enemyPrefabs.Length)
         {
             Debug.LogError("������ �� �������� �����ؾ���");
             return;
         }
 
-        GameObject newEnemy = Instantiate(enemyPrefabs[currentWaveLevel], initialSpawnPosition, Quaternion.identity);
+        GameObject newEnemy = Instantiate(enemyPrefabs[enemyIndex], initialSpawnPosition, Quaternion.identity);
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
         if (enemyMovement != null)
@@ -209,10 +234,17 @@ public class SpawnManager : MonoBehaviour
     #endregion
 }
 
-[System.Serializable]
-public class Wave
+[Serializable]
+public class WaveEnemyData
 {
+    public int enemyPrefabIndex;
     public float spawnInterval;
     public float startTime;
     public float endTime;
+}
+
+[Serializable]
+public class Wave
+{
+    public List<WaveEnemyData> enemies = new List<WaveEnemyData>();
 }
