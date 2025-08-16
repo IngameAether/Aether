@@ -6,7 +6,6 @@ public class TowerReinforce : MonoBehaviour
 {
     protected Tower tower;
     protected TowerSetting towerSetting;
-
     protected TowerSpriteController towerSpriteController;
 
     private void Start()
@@ -16,7 +15,10 @@ public class TowerReinforce : MonoBehaviour
         towerSetting = tower.GetTowerSetting();
     }
 
-    // 타워 강화 타입 지정: 처음 1번만 사용
+    /// <summary>
+    /// 타워 강화 타입 지정: 처음 1번만 사용
+    /// </summary>
+    /// <param name="type"></param>
     public void AssignReinforceType(ReinforceType type)
     {
         if (tower.reinforceType == ReinforceType.None)
@@ -25,12 +27,21 @@ public class TowerReinforce : MonoBehaviour
         }
     }
 
-    // 타워 강화
+    /// <summary>
+    /// 타워 강화
+    /// </summary>
     public void ReinforceTower()
     {
         if (towerSetting.Rank == 4)
         {
             Debug.Log("Level 4 Tower can't reinforce!");
+            return;
+        }
+
+        int bonusReinforce = ResourceManager.Instance.MaxElementUpgrade;
+        if (towerSetting.reinforceLevel >= towerSetting.MaxReinforce + bonusReinforce)
+        {
+            Debug.Log("Tower reinforce level is too high!");
             return;
         }
 
@@ -42,7 +53,9 @@ public class TowerReinforce : MonoBehaviour
         }
     }
 
-    // 타워 레벨업 조건 체크
+    /// <summary>
+    /// 타워 레벨업 조건 체크
+    /// </summary>
     private void CheckLevelUpgrade()
     {
         if (towerSetting.Rank == 2 && towerSetting.reinforceLevel == 10)
@@ -58,14 +71,18 @@ public class TowerReinforce : MonoBehaviour
         }
     }
 
-    // 타워 레벨 상승
+    /// <summary>
+    /// 타워 레벨 상승
+    /// </summary>
     public void TowerLevelUpgrade()
     {
         towerSetting.Rank++;
         if (towerSpriteController != null) towerSpriteController.SetSpritesByLevel(towerSetting.Rank);
     }
 
-    // 타워 강화
+    /// <summary>
+    /// 타워 강화
+    /// </summary>
     public void TowerReinforceUpgrade()
     {
         // 강화 레벨이 5,10,15,20이 되면 마법진 변화
@@ -75,6 +92,9 @@ public class TowerReinforce : MonoBehaviour
         }
     }
 
-    // 강화 레벨 읽기
+    /// <summary>
+    /// 강화 레벨 읽기
+    /// </summary>
+    /// <returns></returns>
     public int GetReinforceLevel() => towerSetting.reinforceLevel;
 }

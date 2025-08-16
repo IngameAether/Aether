@@ -60,7 +60,8 @@ MonoBehaviour:
     Description: straight projectile
     Type: 2
     Rank: 1
-    reinforceLevel: 0
+    reinforceLevel: 1
+    MaxReinforce: 5
     Damage: 20
     AttackSpeed: 1
     Range: 2.5

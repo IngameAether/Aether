@@ -6,17 +6,33 @@ using UnityEngine.UI;
 
 public class SaleController : MonoBehaviour
 {
-    Image image;
+    public RectTransform SalePanelRectTransform { get; private set; }
+
+    [Header("UI References")]
     public Color normalColor;
     public Color highlightColor;
-    public static int coin = 0;
     public TextMeshProUGUI coinTxt;
     public GameObject saleUIPanel;
     public GameObject saleTextObject;
-    private Image highlightImage;
-    public RectTransform SalePanelRectTransform => saleUIPanel != null ? saleUIPanel.GetComponent<RectTransform>() : null;
 
-    void Awake()
+    private Image highlightImage;
+
+    private void Awake()
+    {
+        InitializeComponents();
+    }
+
+    private void OnEnable()
+    {
+        ResourceManager.OnCoinChanged += HandleOnCoinChanged;
+    }
+
+    private void OnDisable()
+    {
+        ResourceManager.OnCoinChanged -= HandleOnCoinChanged;
+    }
+
+    private void InitializeComponents()
     {
         highlightImage = GetComponent<Image>();
         if(highlightImage == null)
@@ -27,18 +43,11 @@ public class SaleController : MonoBehaviour
         if (saleUIPanel != null)
         {
             saleUIPanel.SetActive(false);
+            SalePanelRectTransform ??= saleUIPanel.GetComponent<RectTransform>();
         }
         if (saleTextObject != null)
         {
             saleTextObject.SetActive(false);
-        }
-    }
-
-    void Update()
-    {
-        if(coinTxt != null)
-        {
-            coinTxt.text = coin.ToString();
         }
     }
 
@@ -75,5 +84,11 @@ public class SaleController : MonoBehaviour
         {
             Debug.LogWarning("SaleController: saleTextObject가 할당되지 않았습니다. Inspector를 확인하세요.");
         }
+    }
+
+    private void HandleOnCoinChanged(int coin)
+    {
+        if (coinTxt == null) return;
+        coinTxt.text = coin.ToString();
     }
 }

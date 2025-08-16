@@ -76,7 +76,7 @@ public class EnemyMovement : MonoBehaviour
                 currentWaypointIndex++; // 다음 웨이포인트로 이동 목표 변경
             }
         }
-        else 
+        else
         {
             // 적이 마지막 타일 바깥을 빠져나가 없어지게 함
             if (Vector3.Distance(transform.position, waypoints[^1]) < 0.5f) ReachedEndOfPath();

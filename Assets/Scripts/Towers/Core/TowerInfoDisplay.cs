@@ -79,11 +79,13 @@ public class TowerInfoDisplay : MonoBehaviour
     private void OnEnable()
     {
         Tower.OnTowerClicked += ShowTowerInfoAndRange;
+        Tower.OnTowerDestroyed += HideUI;
     }
 
     private void OnDisable()
     {
         Tower.OnTowerClicked -= ShowTowerInfoAndRange;
+        Tower.OnTowerDestroyed -= HideUI;
     }
 
     /// <summary>

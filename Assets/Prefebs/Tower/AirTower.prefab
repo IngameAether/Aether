@@ -144,7 +144,8 @@ MonoBehaviour:
     Description: straight projectile
     Type: 3
     Rank: 1
-    reinforceLevel: 0
+    reinforceLevel: 1
+    MaxReinforce: 5
     Damage: 5
     AttackSpeed: 3
     Range: 3
@@ -330,7 +331,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 109444711
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
