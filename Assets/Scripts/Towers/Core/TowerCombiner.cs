@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public enum ElementType
@@ -150,6 +151,24 @@ public class TowerCombiner : MonoBehaviour
     }
 
     /// <summary>
+    /// 랜덤 타워를 생성하는 함수
+    /// </summary>
+    /// <returns></returns>
+    public void CreateRandomLevel1Tower(TileInteraction tileInteraction, Tile tile)
+    {
+        var keys = _elementTowerMap.Keys.ToArray();
+        int randomIndex = Random.Range(0, keys.Length);
+
+        var newTower = tileInteraction.PlacedTower(_elementTowerMap[keys[randomIndex]], tile);
+        if (towerParent) newTower.transform.SetParent(towerParent);
+        newTower.name = $"{keys[randomIndex]}_Tower_Level1";
+        TileInteraction.isTowerJustCreated = true;
+        OnTowerCreated(newTower, keys[randomIndex]);
+        Debug.Log($"{keys[randomIndex]} 타입의 1단계 타워 생성");
+        towerSpriteController.SetSpritesByLevel(1);
+    }
+
+    /// <summary>
     ///     1단계 타워를 생성하는 함수
     /// </summary>
     /// <param name="elementType">생성할 타워의 원소 타입</param>
@@ -162,10 +181,7 @@ public class TowerCombiner : MonoBehaviour
             {
                 foreach (var selectedTile in _selectedTiles)
                 {
-                    // 하이라이트 해제 및 isClick 상태 false로 변경
-                    if (selectedTile.element != null)
-                        selectedTile.element.GetComponent<ElementController>()?.SetSelected(false);
-
+                    selectedTile.ApplyHighlight(false);
                     var tileInt = selectedTile.GetComponent<TileInteraction>();
                     if (tileInt != null)
                         tileInt.TileReset(selectedTile);
