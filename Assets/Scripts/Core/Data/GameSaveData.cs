@@ -1,6 +1,14 @@
-﻿using System;
+using System;
 using UnityEngine;
 using System.Collections.Generic;
+
+[Serializable]
+public class BuffSaveEntry
+{
+    public EBuffType buffType;
+    public ElementType elementType; // ElementDamage이면 해당 element, else None
+    public float value; // 퍼센트값(정수로 저장되지만 float로 보관해도 무방)
+}
 
 [Serializable]
 public class GameSaveData
@@ -19,6 +27,9 @@ public class GameSaveData
     // 맵 및 타워 정보
     public string currentMapId;
     public List<TowerSaveData> towers = new();
+
+    // 버프관련 정보
+    public List<BuffSaveEntry> activeBuffs = new List<BuffSaveEntry>();
 }
 
 [Serializable]

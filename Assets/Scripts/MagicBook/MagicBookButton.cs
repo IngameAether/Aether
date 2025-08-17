@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,11 +9,12 @@ public class MagicBookButton : MonoBehaviour
     [SerializeField] private Button _button;
     [SerializeField] private TMP_Text _descText;
 
-    public event Action OnButtonClick;
+    private BuffData _buffData;
+    private Action<BuffData> _onClick;
 
     private void Awake()
     {
-        _button.onClick.AddListener(() => OnButtonClick?.Invoke());
+        if (_button == null) _button = GetComponent<Button>();
     }
 
     public void SetBookData(string desc)
