@@ -46,6 +46,17 @@ public abstract class Tower : MonoBehaviour
         return towerSetting;
     }
 
+    public void SetTowerSetting(TowerData data)
+    {
+        towerSetting.Name = data.Name;
+        towerSetting.Type = data.ElementType;
+        towerSetting.Rank = data.Level;
+        towerSetting.Damage = data.BaseDamage;
+        towerSetting.Range = data.BaseRange;
+        towerSetting.AttackSpeed = data.BaseAttackSpeed;
+        towerSetting.CriticalHit = data.BaseCriticalRate;
+    }
+
     protected virtual void Start()
     {
         InitializeTower();
