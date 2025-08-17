@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 public enum EBuffType
@@ -63,3 +63,4 @@ public struct BuffDataResult
         ElementSoulRate = soulRate;
     }
 }
+
