@@ -99,6 +99,7 @@ GameObject:
   - component: {fileID: 7850274060307949558}
   - component: {fileID: 3486002921567557265}
   - component: {fileID: 8602095056099424060}
+  - component: {fileID: -2916429834596027930}
   m_Layer: 0
   m_Name: WaterTower
   m_TagString: Untagged
@@ -259,6 +260,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02f8366314489114692c190c850cb9ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-2916429834596027930
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2255666967045128489}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20edbcd3837c4fb99fa8e32522bad5a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3354781947211632409
 GameObject:
   m_ObjectHideFlags: 0
@@ -331,7 +344,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 109444711
   m_SortingLayer: 3
-  m_SortingOrder: 1
+  m_SortingOrder: 2
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
