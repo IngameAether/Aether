@@ -426,6 +426,7 @@ Transform:
   - {fileID: 1588813746}
   - {fileID: 365221777}
   - {fileID: 1423849170}
+  - {fileID: 339857278}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &98405526
@@ -1307,6 +1308,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 273794445}
   m_CullTransparentMesh: 1
+--- !u!1 &339857277
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 339857278}
+  - component: {fileID: 339857279}
+  m_Layer: 0
+  m_Name: ClickManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &339857278
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339857277}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 81341531}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &339857279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 339857277}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f73e7282c0642dfab24dbc7bd165e8c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  doubleClickTime: 0.3
 --- !u!1 &359118785
 GameObject:
   m_ObjectHideFlags: 0
@@ -1816,6 +1862,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c46b5518e16448ffa7080c1bfb52a388, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allTowerData:
+  - {fileID: 11400000, guid: a339eaaaf61ea394392fb04242ff03ad, type: 2}
+  - {fileID: 11400000, guid: ff1b19a22558161479babad7318204a0, type: 2}
+  - {fileID: 11400000, guid: 3e9bcde478196ba4ab18928bea8d526e, type: 2}
+  - {fileID: 11400000, guid: 699c526a23d75d740b240a367adf19c1, type: 2}
+  - {fileID: 11400000, guid: de7bd8e3403c9f44185836ab1d329009, type: 2}
+  - {fileID: 11400000, guid: fe6ce128d077fe34a95d9d66c1a0e214, type: 2}
+  - {fileID: 11400000, guid: 4bd9325fb78a8b243b4c17b58641acd4, type: 2}
+  - {fileID: 11400000, guid: 9ff7e58d8650a7749a49828040024d20, type: 2}
+  - {fileID: 11400000, guid: e8a7338e8ab84494d82595a53ed720db, type: 2}
+  - {fileID: 11400000, guid: a7cd8e24412622a49afe6200a2dc3f79, type: 2}
+  - {fileID: 11400000, guid: 492383045ae5f5244b338b389b636a19, type: 2}
+  - {fileID: 11400000, guid: 6dce6fd4978494646bea613e4ef6e147, type: 2}
   waterPrefab: {fileID: 2255666967045128489, guid: 85fdbda203c8aed4cbccf6461c1ae228, type: 3}
   earthPrefab: {fileID: 87051376619690041, guid: 407f851d9ba3201418a26153ad229f81, type: 3}
   airPrefab: {fileID: 2156860131253734831, guid: 0437ffc897e652e499c7af10157e99ec, type: 3}
@@ -2494,25 +2553,192 @@ MonoBehaviour:
   - {fileID: 5417002623811271532, guid: 577f837b52c252d49ba0a5f379d7bae7, type: 3}
   - {fileID: 5417002623811271532, guid: 5249caae0f3ac8e4e93a066912dbc1d9, type: 3}
   - {fileID: 5417002623811271532, guid: c2a15d76c6442fd4da2fe3a036e8a78c, type: 3}
+  - {fileID: 5417002623811271532, guid: e9376d3272f8206408fd74f1f8e882d0, type: 3}
+  - {fileID: 5417002623811271532, guid: 3ab8df893bb59e5408b4e7fef4f247b2, type: 3}
   mapManage: {fileID: 98405527}
   buffChoiceUI: {fileID: 1216908003}
   waveText: {fileID: 553837775}
   waves:
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
-  - spawnInterval: 1
-    startTime: 1
-    endTime: 16
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 0.5
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 0.5
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 0.5
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 4
+      spawnInterval: 2
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 2
+      endTime: 16
+    - enemyPrefabIndex: 4
+      spawnInterval: 16
+      startTime: 1
+      endTime: 17
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 16
+      endTime: 20
+  - enemies:
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 2
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 2
+      spawnInterval: 2
+      startTime: 2
+      endTime: 16
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 2
+      spawnInterval: 2
+      startTime: 2
+      endTime: 16
+  - enemies:
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 2
+      startTime: 2
+      endTime: 16
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
+  - enemies:
+    - enemyPrefabIndex: 2
+      spawnInterval: 2
+      startTime: 2
+      endTime: 16
+    - enemyPrefabIndex: 3
+      spawnInterval: 2
+      startTime: 1
+      endTime: 15
   initialDelay: 1
   waveBreakTime: 15
   currentWaveLevel: 0

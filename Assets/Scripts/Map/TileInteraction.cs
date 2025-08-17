@@ -26,14 +26,15 @@ public class TileInteraction : MonoBehaviour
         MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
     }
 
-    private void OnMouseDown()
+    /// <summary>
+    /// InputManager에서 호출하는 클릭 처리 (OnMouseDown 대체)
+    /// </summary>
+    public void OnClick()
     {
-        if (Time.timeScale == 0f) return;   // 게임이 멈추면 클릭 등 상호작용 무시
+        if (Time.timeScale == 0f) return;
 
-        if(tile.element != null) // 빈 타일 클릭시에만 로직 수행
-        {
-            return;
-        }
+        if(tile.element != null) return;
+
         if (!tile.isBuild || !tile.isElementBuild)
         {
             tile.PrintTileInfo();
@@ -52,6 +53,7 @@ public class TileInteraction : MonoBehaviour
             ElementType assignedElementType = ElementType.None;
             GameObject selectedPrefab = staticElementPrefabs[ranNum];
             ElementController ecFromPrefab = selectedPrefab.GetComponent<ElementController>();
+
             if (ecFromPrefab != null)
             {
                 assignedElementType = ecFromPrefab.type;
@@ -64,7 +66,6 @@ public class TileInteraction : MonoBehaviour
 
             GameObject elementObj = Instantiate(selectedPrefab, tile.transform.position, Quaternion.identity);
 
-            // 원소가 배치된 타일 저장
             ElementController ec = elementObj.GetComponent<ElementController>();
             if (ec != null)
             {
@@ -90,11 +91,14 @@ public class TileInteraction : MonoBehaviour
         targetTile.tower = towerObj;
 
         TowerDragSale tds = towerObj.GetComponent<TowerDragSale>();
-
         if(tds != null)
         {
             tds.selectTile = targetTile;
         }
+
+        var towerSelectable = towerObj.GetComponent<TowerSelectable>();
+        towerSelectable.SetTile(targetTile);
+
         return towerObj;
     }
 

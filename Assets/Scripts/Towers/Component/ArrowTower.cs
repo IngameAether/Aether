@@ -19,8 +19,8 @@ public class ArrowTower : Tower
         if (mouthAnimator != null && scaleAnimator != null)
         {
             mouthAnimator.SetTrigger("CanAttack");
-            scaleAnimator.SetTrigger("CanAttack");           
-            Debug.Log("Animation 실행");
+            scaleAnimator.SetTrigger("CanAttack");
+ //           Debug.Log("Animation 실행");
         }
         else
         {

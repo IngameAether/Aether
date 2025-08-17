@@ -12,39 +12,56 @@ public enum ElementType
     Tower // 타워가 건설된 타일
 }
 
-// 원소 뭐 있는지 몰라서 생각나는거 다 적음
-
 public class TowerCombiner : MonoBehaviour
 {
     public static TowerCombiner Instance { get; private set; }
 
-    [Header("타워 조합 설정")] [SerializeField] private GameObject waterPrefab;
+    [Header("타워 데이터")]
+    [SerializeField] private TowerData[] allTowerData; // 모든 타워 데이터
+
+    [Header("기본 타워 프리팹")]
+    [SerializeField] private GameObject waterPrefab;
     [SerializeField] private GameObject earthPrefab;
     [SerializeField] private GameObject airPrefab;
     [SerializeField] private GameObject firePrefab;
     [SerializeField] private Transform towerParent;
 
-    private readonly List<Tile> _selectedTiles = new();
+    private Dictionary<string, TowerData> _towerDataMap;
     private Dictionary<ElementType, GameObject> _elementTowerMap;
 
-    private TowerSpriteController towerSpriteController;
+    // 선택된 아이템들 (원소 + 타워)
+    private readonly List<ISelectable> _selectedItems = new();
+    private TowerSpriteController _towerSpriteController;
+    private SaleController _saleController;
 
     private void Awake()
     {
         if (Instance == null) Instance = this;
-
-        towerSpriteController = FindObjectOfType<TowerSpriteController>();
+        _towerSpriteController = FindObjectOfType<TowerSpriteController>();
+        _saleController = FindObjectOfType<SaleController>();
     }
 
     private void Start()
     {
         InitializeTowerMapping();
+        BuildTowerDataMap();
     }
 
     /// <summary>
-    ///     원소별 타워 매핑을 초기화합니다
-    ///     현재는 모든 원소가 ArrowTower로 설정되어 있습니다.
+    /// 타워 데이터 맵 구성 (성능 최적화)
     /// </summary>
+    private void BuildTowerDataMap()
+    {
+        _towerDataMap = new Dictionary<string, TowerData>();
+
+        foreach (var data in allTowerData)
+        {
+            _towerDataMap.TryAdd(data.ID, data);
+        }
+
+        Debug.Log($"타워 데이터 맵 구성 완료: {_towerDataMap.Count}개 타워");
+    }
+
     private void InitializeTowerMapping()
     {
         _elementTowerMap = new Dictionary<ElementType, GameObject>
@@ -57,200 +74,264 @@ public class TowerCombiner : MonoBehaviour
     }
 
     /// <summary>
-    ///     원소를 선택하는 함수 (클릭 이벤트에서 호출됩니다)
-    ///     최대 3개까지 선택할 수 있습니다
+    /// 통합 선택 로직 (원소/타워 모두 처리)
     /// </summary>
-    /// <param name="elementType">선택할 원소 타입</param>
-    public void SelectElement(ElementController clickedElementController)
-    {
-        var clickedTile = clickedElementController.parentTile;
+    public void SelectItem(ISelectable item)
+{
+    if (item == null) return;
 
-        if (clickedTile == null || clickedTile.CurrentLogicalElementType == ElementType.None)
+    var itemTile = item.GetTile();
+    if (itemTile == null)
+    {
+        Debug.LogWarning("선택된 아이템에 유효한 타일 정보가 없습니다.");
+        return;
+    }
+
+    // 첫 번째 선택
+    if (_selectedItems.Count == 0)
+    {
+        _selectedItems.Add(item);
+        item.SetSelected(true);
+        Debug.Log($"첫 번째 아이템 선택: {item.GetElementType()} Lv{item.GetLevel()}. 현재 선택: {_selectedItems.Count}/3");
+    }
+    // 이미 아이템이 선택되어 있는 경우
+    else
+    {
+        // 이미 선택된 아이템을 다시 클릭한 경우만 무시
+        if (_selectedItems.Contains(item))
         {
-            Debug.LogWarning("클릭된 원소에 유효한 타일 정보가 없거나, 원소 타입이 None입니다.");
+            Debug.Log("이미 선택된 아이템입니다. 중복 선택을 무시합니다.");
             return;
         }
 
-        if (clickedTile.CurrentLogicalElementType == ElementType.Tower)
+        // 3개가 아직 안 찼으면 타입/레벨 상관없이 계속 선택
+        if (_selectedItems.Count < 3)
         {
-            Debug.LogWarning("타워 타일을 클릭했습니다. 조합 대상이 아닙니다.");
-            ClearSelectedElements();
+            _selectedItems.Add(item);
+            item.SetSelected(true);
+            Debug.Log($"아이템 추가 선택: {item.GetElementType()} Lv{item.GetLevel()}. 현재 선택: {_selectedItems.Count}/3");
+        }
+        // 3개가 이미 선택된 상태에서 추가 클릭시
+        else
+        {
+            Debug.LogWarning("이미 3개의 아이템이 선택되었습니다. 조합을 진행하거나 기다려주세요.");
             return;
         }
-
-        // 첫 번쨰 원소 선택
-        if (_selectedTiles.Count == 0)
-        {
-            _selectedTiles.Add(clickedTile);
-            clickedElementController.SetSelected(true);
-            Debug.Log($"첫 번째 원소 선택: {clickedTile.CurrentLogicalElementType}. 현재 선택된 원소 수: {_selectedTiles.Count}/3");
-        }
-        // 이미 원소가 선택되어 있는 경우
-        else
-        {
-            var firstSelectedType = _selectedTiles[0].CurrentLogicalElementType;
-            var clickedType = clickedTile.CurrentLogicalElementType;
-
-            // 1. 다른 타입의 원소를 클릭했거나
-            // 2. 이미 선택된 타일을 다시 클릭했다면
-            if (clickedType != firstSelectedType)
-            {
-                Debug.Log($"선택된 원소 초기화: 다른 타입 ({clickedType}) 클릭 또는 이미 선택된 타일 재클릭.");
-                ClearSelectedElements();
-                // 새로운 원소를 첫 번째 클릭으로 재시작
-                _selectedTiles.Add(clickedTile);
-                clickedElementController.SetSelected(true); // 새 원소 하이라이트
-                Debug.Log($"새로운 첫 번째 원소 선택: {clickedType}. 현재 선택된 원소 수: {_selectedTiles.Count}/3");
-            }
-            else if (_selectedTiles.Contains(clickedTile)) // 이미 선택된 타일을 다시 클릭한 경우
-            {
-                Debug.Log("이미 선택된 타일입니다. 중복 선택을 무시합니다.");
-                // 아무것도 하지 않고 함수를 종료
-                return;
-            }
-            // 3. 같은 타입의 다른 원소를 클릭했고, 아직 3개가 채워지지 않았다면
-            else if (_selectedTiles.Count < 3)
-            {
-                _selectedTiles.Add(clickedTile);
-                clickedElementController.SetSelected(true); // 해당 원소 하이라이트
-                Debug.Log($"같은 원소 ({clickedType}) 추가 선택. 현재 선택된 원소 수: {_selectedTiles.Count}/3");
-            }
-            else // 3개가 이미 선택된 상태에서 같은 타입의 원소를 추가 클릭시 (물 4개 선택해버렸을 때)
-            {
-                Debug.LogWarning("이미 3개의 원소가 선택되었습니다. 조합을 시도하거나 초기화하세요.");
-            }
-        }
-
-        // 3개가 모두 선택되면 즉시 조합 시도
-        if (_selectedTiles.Count == 3) TryTowerCombination();
     }
 
-    /// <summary>
-    ///     타워 조합을 시도하는 함수
-    ///     선택된 3개의 원소가 모두 같은지 확인하고 타워를 생성합니다
-    /// </summary>
-    public void TryTowerCombination()
+    // 3개가 모두 선택되면 즉시 조합 시도
+    if (_selectedItems.Count == 3)
     {
-        if (_selectedTiles.Count < 3) return;
+        TryCombination();
+    }
+}
 
-        var element1 = _selectedTiles[0].CurrentLogicalElementType;
-        var element2 = _selectedTiles[1].CurrentLogicalElementType;
-        var element3 = _selectedTiles[2].CurrentLogicalElementType;
+/// <summary>
+/// 조합 시도 (3개 선택 완료 후 판정)
+/// </summary>
+private void TryCombination()
+{
+    if (_selectedItems.Count != 3) return;
 
-        if (element1 == element2 && element2 == element3)
+    var item1 = _selectedItems[0];
+    var item2 = _selectedItems[1];
+    var item3 = _selectedItems[2];
+
+    // 모든 아이템이 같은 타입과 레벨인지 확인
+    bool allSameType = (item1.GetElementType() == item2.GetElementType() &&
+                       item2.GetElementType() == item3.GetElementType());
+    bool allSameLevel = (item1.GetLevel() == item2.GetLevel() &&
+                        item2.GetLevel() == item3.GetLevel());
+
+    if (allSameType && allSameLevel)
+    {
+        var elementType = item1.GetElementType();
+        var level = item1.GetLevel();
+
+        Debug.Log($"🎉 조합 성공! {elementType} Lv{level} 아이템 3개가 조합됩니다.");
+
+        switch (level)
         {
-            Debug.LogWarning($"조합 성공! {element1} 원소 3개가 조합되어 1단계 타워가 생성됩니다.");
-            CreateLevel1Tower();
-            towerSpriteController.SetSpritesByLevel(1);
-        }
-        else
-        {
-            Debug.LogWarning($"조합 실패! 같은 원소 3개가 아닙니다. 선택된 원소: {element1}, {element2}, {element3}");
-            ClearSelectedElements();
+            case 0: // 원소 → Lv1 타워
+                CreateUpgradedTower(elementType, 1, false);
+                break;
+            case 1: // Lv1 타워 → Lv2 타워
+                CreateUpgradedTower(elementType, 2, false);
+                break;
+            case 2: // Lv2 타워 → Lv3 타워
+                CreateUpgradedTower(elementType, 3, false);
+                break;
+            case 3: // Lv3 타워 → Lv4 타워
+                TryCreateLevel4Tower();
+                break;
+            default:
+                Debug.LogWarning($"지원되지 않는 레벨: {level}");
+                ClearSelection();
+                break;
         }
     }
+    else
+    {
+        // 원소와 동일한 실패 메시지
+        Debug.LogWarning($"❌ 조합 실패! 같은 타입/레벨의 아이템 3개가 아닙니다.");
+        Debug.LogWarning($"선택된 아이템들: " +
+            $"{item1.GetElementType()} Lv{item1.GetLevel()}, " +
+            $"{item2.GetElementType()} Lv{item2.GetLevel()}, " +
+            $"{item3.GetElementType()} Lv{item3.GetLevel()}");
+        ClearSelection();
+    }
+}
 
     /// <summary>
-    /// 랜덤 타워를 생성하는 함수
+    /// 랜덤 Lv1 타워 생성 (기존 호환성 유지)
     /// </summary>
-    /// <returns></returns>
     public void CreateRandomLevel1Tower(TileInteraction tileInteraction, Tile tile)
     {
+        // 랜덤 원소 타입 선택
         var keys = _elementTowerMap.Keys.ToArray();
         int randomIndex = Random.Range(0, keys.Length);
+        var randomElementType = keys[randomIndex];
 
-        var newTower = tileInteraction.PlacedTower(_elementTowerMap[keys[randomIndex]], tile);
-        if (towerParent) newTower.transform.SetParent(towerParent);
-        newTower.name = $"{keys[randomIndex]}_Tower_Level1";
-        TileInteraction.isTowerJustCreated = true;
-        OnTowerCreated(newTower, keys[randomIndex]);
-        Debug.Log($"{keys[randomIndex]} 타입의 1단계 타워 생성");
-        towerSpriteController.SetSpritesByLevel(1);
+        CreateUpgradedTower(randomElementType, 1, true, tileInteraction, tile);
     }
 
     /// <summary>
-    ///     1단계 타워를 생성하는 함수
+    /// 통합 타워 생성 로직 (isRandom 매개변수 추가)
     /// </summary>
-    /// <param name="elementType">생성할 타워의 원소 타입</param>
-    private void CreateLevel1Tower()
+    /// <param name="elementType">원소 타입</param>
+    /// <param name="targetLevel">목표 레벨</param>
+    /// <param name="isRandom">랜덤 생성 여부</param>
+    /// <param name="tileInteraction">타일 상호작용 (랜덤시 필요)</param>
+    /// <param name="tile">타겟 타일 (랜덤시 필요)</param>
+    private void CreateUpgradedTower(ElementType elementType, int targetLevel, bool isRandom = false,
+        TileInteraction tileInteraction = null, Tile tile = null)
     {
-        var typeOfTowerToBuild = _selectedTiles[2].CurrentLogicalElementType;
-        if (_elementTowerMap.TryGetValue(typeOfTowerToBuild, out var towerPrefab))
+        string towerId = GetTowerId(elementType, targetLevel);
+
+        // 타워 데이터 검색 (스탯용)
+        TowerData towerData = null;
+        if (!string.IsNullOrEmpty(towerId) && _towerDataMap.TryGetValue(towerId, out var value))
         {
-            if (towerPrefab)
+            towerData = value;
+        }
+
+        Debug.LogError($"ElementType: {elementType}, level: {targetLevel}, towerId: {towerId}, towerData Level: {towerData.Level}");
+
+        // 프리팹은 _elementTowerMap에서 가져오기
+        if (!_elementTowerMap.TryGetValue(elementType, out var towerPrefab))
+        {
+            Debug.LogError($"프리팹을 찾을 수 없습니다: {elementType}");
+            if (!isRandom) ClearSelection();
+            return;
+        }
+
+        // 랜덤 생성이 아닌 경우 기존 아이템들 제거
+        if (!isRandom && _selectedItems.Count > 0)
+        {
+            foreach (var item in _selectedItems)
             {
-                foreach (var selectedTile in _selectedTiles)
+                var itemTile = item.GetTile();
+                var itemTileInteraction = itemTile.GetComponent<TileInteraction>();
+
+                if (itemTileInteraction != null)
                 {
-                    selectedTile.ApplyHighlight(false);
-                    var tileInt = selectedTile.GetComponent<TileInteraction>();
-                    if (tileInt != null)
-                        tileInt.TileReset(selectedTile);
-                    else
-                        Debug.LogError($"Tile {selectedTile.name}에 TileInteraction 스크립트가 없습니다! 원소를 제거할 수 없습니다.");
+                    itemTileInteraction.TileReset(itemTile);
                 }
 
-                var targetTile = _selectedTiles[2]; // 세 번째 타일에서 타워 생성
-                var targetTileInteraction = targetTile.GetComponent<TileInteraction>();
-
-                if (targetTileInteraction != null)
+                // 타워/원소 오브젝트 제거
+                if (item.GetGameObject() != null)
                 {
-                    var newTower = targetTileInteraction.PlacedTower(towerPrefab, targetTile);
-                    if (towerParent) newTower.transform.SetParent(towerParent);
-                    newTower.name = $"{typeOfTowerToBuild}_Tower_Level1";
-                    TileInteraction.isTowerJustCreated = true;
-                    OnTowerCreated(newTower, typeOfTowerToBuild);
-                    Debug.Log($"{typeOfTowerToBuild} 타입의 1단계 타워 생성");
+                    Destroy(item.GetGameObject());
                 }
-                else
-                {
-                    Debug.LogError($"타겟 타일 {targetTile.name}에 TileInteraction 스크립트가 없습니다! 타워를 생성할 수 없습니다.");
-                }
-
-                ClearSelectedElements();
             }
-            else
-            {
-                Debug.LogError($"{typeOfTowerToBuild} 원소에 대한 타워 프리팹이 설정되지 않았습니다!");
-                ClearSelectedElements();
-            }
+        }
+
+        // 타겟 타일 결정
+        Tile targetTile = isRandom ? tile : _selectedItems[2].GetTile();
+        TileInteraction targetTileInteraction = isRandom ? tileInteraction : targetTile.GetComponent<TileInteraction>();
+
+        if (targetTileInteraction != null)
+        {
+            var newTower = targetTileInteraction.PlacedTower(towerPrefab, targetTile);
+            if (towerParent) newTower.transform.SetParent(towerParent);
+
+            newTower.name = $"{elementType}_Tower_Level{targetLevel}";
+
+            // 타워 스탯 설정 (데이터가 있는 경우)
+            var towerComponent = newTower.GetComponent<Tower>();
+            towerComponent.SetTowerSetting(towerData);
+            Debug.Log($"towerData: {towerData.Level}");
+
+            TileInteraction.isTowerJustCreated = true;
+            OnTowerCreated(newTower, elementType);
+            _towerSpriteController?.SetSpritesByLevel(targetLevel);
+
+            Debug.Log($"{elementType} 타입의 {targetLevel}단계 타워 생성 완료{(isRandom ? " (랜덤)" : "")}!");
         }
         else
         {
-            Debug.LogError($"{typeOfTowerToBuild} 원소가 타워 매핑에 존재하지 않습니다!");
-            ClearSelectedElements();
+            Debug.LogError("TileInteraction을 찾을 수 없습니다!");
+        }
+
+        // 선택 초기화 (랜덤이 아닌 경우만)
+        if (!isRandom)
+        {
+            ClearSelection();
         }
     }
 
     /// <summary>
-    ///     타워가 생성되었을 때 호출되는 함수
-    ///     추가적인 로직을 여기에 구현할 수 있습니다
+    /// 원소 타입과 레벨에 따른 타워 ID 반환
     /// </summary>
-    /// <param name="createdTower">생성된 타워 게임오브젝트</param>
-    /// <param name="elementType">타워의 원소 타입</param>
-    private void OnTowerCreated(GameObject createdTower, ElementType elementType)
+    private string GetTowerId(ElementType elementType, int level)
     {
-        // 사운드 재생, 이펙트 생성, UI 업데이트 등
+        string prefix = elementType switch
+        {
+            ElementType.Fire => "F",
+            ElementType.Water => "A",
+            ElementType.Air => "W",
+            ElementType.Earth => "E",
+            _ => ""
+        };
 
-        var towerComponent = createdTower.GetComponent<Tower>();
-        if (towerComponent != null)
-            // etc
-            Debug.Log($"타워 컴포넌트 설정 완료: {towerComponent.GetTowerSetting().Name}");
+        if (string.IsNullOrEmpty(prefix)) return "";
 
-        towerSpriteController = createdTower.GetComponent<TowerSpriteController>();
+        return $"L{level}{prefix}";
     }
 
     /// <summary>
-    ///     선택된 원소들을 초기화하는 함수
-    ///     조합 후나 수동으로 초기화할 때 사용됩니다
+    /// Lv4 타워 생성 시도 (특별한 조합)
     /// </summary>
-    public void ClearSelectedElements()
+    private void TryCreateLevel4Tower()
     {
-        // 선택된 모든 타이르이 하이라이트 해제
-        foreach (var tile in _selectedTiles)
-            if (tile != null && tile.element != null)
-                tile.element.GetComponent<ElementController>()?.SetSelected(false);
+        // Lv4는 특정 Lv3 타워 3개의 조합이므로 별도 로직 필요
+        Debug.Log("Lv4 타워 조합은 아직 구현되지 않았습니다.");
+        ClearSelection();
+    }
 
-        _selectedTiles.Clear();
-        Debug.Log("선택된 원소들이 초기화되었습니다.");
+    /// <summary>
+    /// 타워 생성 완료 시 호출
+    /// </summary>
+    private void OnTowerCreated(GameObject createdTower, ElementType elementType)
+    {
+        var towerComponent = createdTower.GetComponent<Tower>();
+        if (towerComponent != null)
+            Debug.Log($"타워 컴포넌트 설정 완료: {towerComponent.GetTowerSetting().Name}");
+
+        _towerSpriteController = createdTower.GetComponent<TowerSpriteController>();
+    }
+
+    /// <summary>
+    /// 선택 초기화
+    /// </summary>
+    public void ClearSelection()
+    {
+        foreach (var item in _selectedItems)
+        {
+            item?.SetSelected(false);
+        }
+        _selectedItems.Clear();
+        _saleController.ShowSaleUI(false);
+        Debug.Log("선택이 초기화되었습니다.");
     }
 }
