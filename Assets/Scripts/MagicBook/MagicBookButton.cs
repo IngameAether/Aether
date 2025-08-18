@@ -9,9 +9,6 @@ public class MagicBookButton : MonoBehaviour
     [SerializeField] private Button _button;
     [SerializeField] private TMP_Text _descText;
 
-    private BuffData _buffData;
-    private Action<BuffData> _onClick;
-
     private void Awake()
     {
         if (_button == null) _button = GetComponent<Button>();

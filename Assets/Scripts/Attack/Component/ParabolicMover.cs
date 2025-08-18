@@ -16,10 +16,9 @@ public class ParabolicMover : IProjectileMover
     float travelTime;
     Transform spriteChild; // 시각적 오프셋을 위한 child transform
 
-    public ParabolicMover(ProjectileConfig config, SpriteRenderer spriteRendererChild)
+    public ParabolicMover(ProjectileConfig config)
     {
         cfg = config;
-        spriteChild = spriteRendererChild != null ? spriteRendererChild.transform : null;
         gravity = cfg.gravity;
     }
 
@@ -28,15 +27,16 @@ public class ParabolicMover : IProjectileMover
         owner = _owner;
         startPos = owner.transform.position;
         targetPos = aimPoint;
+
+        spriteChild = owner.transform.Find("Sprite");
+
         Vector2 delta = targetPos - startPos;
         float angleRad = Mathf.Deg2Rad * 45f;
         float cos = Mathf.Cos(angleRad);
         float sin = Mathf.Sin(angleRad);
         float speed = cfg.speed;
 
-        // horizontal direction on plane (top-down): normalized vector from start to target
-        if (delta.magnitude < 0.001f) horDir = Vector2.right;
-        else horDir = delta.normalized;
+        horDir = (delta.magnitude < 0.001f) ? Vector2.right : delta.normalized;
 
         horSpeed = speed * cos;
         vertSpeed = speed * sin;

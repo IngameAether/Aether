@@ -5,7 +5,6 @@ using System.Collections.Generic;
 [Serializable]
 public class BuffSaveEntry
 {
-    public EBuffType buffType;
     public ElementType elementType; // ElementDamage이면 해당 element, else None
     public float value; // 퍼센트값(정수로 저장되지만 float로 보관해도 무방)
 }

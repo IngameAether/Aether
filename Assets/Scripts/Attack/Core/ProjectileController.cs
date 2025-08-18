@@ -31,7 +31,7 @@ public class ProjectileController : MonoBehaviour
         switch (cfg.movementType)
         {
             case MovementType.Parabolic:
-                mover = new ParabolicMover(cfg, spriteChild);
+                mover = new ParabolicMover(cfg);
                 break;
             case MovementType.Homing:
                 mover = new HomingMover(cfg);

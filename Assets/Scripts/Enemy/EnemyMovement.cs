@@ -12,6 +12,8 @@ public class EnemyMovement : MonoBehaviour
 
     // 적이 경로의 끝에 도달했을 때 발생할 액션
     public static event Action OnReachEndPoint;
+    public static event Action OnEnemyDestroyed;
+
 
     private void Awake()
     {
@@ -103,5 +105,17 @@ public class EnemyMovement : MonoBehaviour
 
         // OnReachEndPoint 이벤트를 구독하고 있는 다른 스크립트들에게 알림 (선택 사항)
         OnReachEndPoint?.Invoke();
+    }
+
+    public void Die()
+    {
+        OnEnemyDestroyed?.Invoke();
+        Destroy(gameObject);
+    }
+
+    private void ReachEnd()
+    {
+        OnReachEndPoint?.Invoke();
+        Destroy(gameObject);
     }
 }

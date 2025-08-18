@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,6 +15,7 @@ public class SaveSlotInfo
 
 public class GameSaveManager : MonoBehaviour
 {
+    [SerializeField] private WaveManager waveManager;
     public static GameSaveManager Instance { get; private set; }
 
     private const int MAX_SAVE_SLOTS = 3;
@@ -131,7 +132,7 @@ public class GameSaveManager : MonoBehaviour
         GameSaveData saveData = new GameSaveData
         {
             saveSlot = slotIndex,
-            currentWave = _spawnManager.currentWaveLevel,
+            currentWave = waveManager.CurrentWaveLevel,
             playerLife = GameManager.Instance.currentLives,
             resources = new ResourceData(),
             currentMapId = SceneManager.GetActiveScene().name,

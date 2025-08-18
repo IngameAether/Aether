@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 public class MagicBookSelectionUI : MonoBehaviour
@@ -21,7 +21,7 @@ public class MagicBookSelectionUI : MonoBehaviour
         for (int i = 0; i < _bookButtons.Length; i++)
         {
             int index = i;
-            _bookButtons[i].OnButtonClick += () => OnBookSelected(index);
+            //_bookButtons[i].OnButtonClick += () => OnBookSelected(index);
         }
     }
 
