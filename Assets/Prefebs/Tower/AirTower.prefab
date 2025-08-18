@@ -238,6 +238,7 @@ MonoBehaviour:
   elementSprites:
   - {fileID: 5398898533313162258, guid: 612a76339249bd741aacdc91beb03ac3, type: 3}
   - {fileID: -4807574078240882601, guid: ead2ec0edf0a34b48926cfca0b4d1ec2, type: 3}
+  - {fileID: -3859913044651735549, guid: 3f5b8cf9631f641428eccf229a5e41a6, type: 3}
   levelSprites:
   - {fileID: -886020809869896292, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
   - {fileID: 711524243418297025, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
@@ -272,7 +273,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20edbcd3837c4fb99fa8e32522bad5a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &3810173595613539892
 GameObject:
   m_ObjectHideFlags: 0
