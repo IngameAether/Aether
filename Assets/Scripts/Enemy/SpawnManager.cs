@@ -14,7 +14,7 @@ public class SpawnManager : MonoBehaviour
 
     public static event Action OnAllEnemiesCleared;
 
-    private int _aliveEnemies = 0;
+    private int _aliveEnemies;
 
     private void Start()
     {

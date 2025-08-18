@@ -27,28 +27,7 @@ public class WaveManager : MonoBehaviour
         spawnManager ??= FindObjectOfType<SpawnManager>();
         Debug.Log($"WaveManager: SpawnManager 연결됨? {(spawnManager != null)}");
 
-        if (buffChoiceUI != null)
-        {
-            buffChoiceUI.OnBookSelectCompleted += HandleBookSelectCompleted;
-            Debug.Log("WaveManager: buffChoiceUI 이벤트 구독 완료");
-        }
-
-        MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
-        Debug.Log("WaveManager: MagicBookManager 이벤트 구독 완료");
-
-        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
-        Debug.Log("WaveManager: SpawnManager.OnAllEnemiesCleared 이벤트 구독 완료");
-
         StartCoroutine(WaveRoutine());
-    }
-
-    private void OnDestroy()
-    {
-        if (buffChoiceUI != null)
-            buffChoiceUI.OnBookSelectCompleted -= HandleBookSelectCompleted;
-
-        MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
-        SpawnManager.OnAllEnemiesCleared -= HandleWaveCleared;
     }
 
     private IEnumerator HandleBuffChoice()
@@ -114,9 +93,28 @@ public class WaveManager : MonoBehaviour
         _waveEndBonusCoin = value;
     }
 
+    private void OnEnable()
+    {
+        if (buffChoiceUI != null)
+            buffChoiceUI.OnBookSelectCompleted += HandleBookSelectCompleted;
+
+        MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
+        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
+    }
+
+    private void OnDisable()
+    {
+        if (buffChoiceUI != null)
+            buffChoiceUI.OnBookSelectCompleted -= HandleBookSelectCompleted;
+
+        MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
+        SpawnManager.OnAllEnemiesCleared -= HandleWaveCleared;
+    }
+
+    // ❗여기서 코루틴 시작 X. 플래그만 끕니다.
     private void HandleWaveCleared()
     {
-        Debug.Log("WaveManager: Wave cleared 이벤트 받음");
+        Debug.Log("WaveManager: 웨이브 클리어됨 (이벤트 수신) — 다음 루프 진행");
         _waitingForEnemies = false;
     }
     #endregion

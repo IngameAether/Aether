@@ -101,9 +101,21 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     void Die()
     {
         Debug.Log(gameObject.name + "가 죽었습니다.");
+
+        // 코인 보상
         int bonus = ResourceManager.Instance.EnemyKillBonusCoin;
-        ResourceManager.Instance.AddCoin(0 + bonus); // 기본값 일단 0으로 표시만 함
-        Destroy(gameObject); // 예시: 적 오브젝트 제거
+        ResourceManager.Instance.AddCoin(bonus);
+
+        // EnemyMovement에게 알려서 SpawnManager까지 이벤트 전달
+        if (enemyMovement != null)
+        {
+            enemyMovement.Die();
+        }
+        else
+        {
+            Debug.LogError("EnemyMovement 참조 없음! 이벤트 전달 실패");
+        }
+
     }
 
     // 이동 속도 변경 함수 (특수 능력 적용)
