@@ -490,7 +490,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &110472539
 RectTransform:
   m_ObjectHideFlags: 0
@@ -523,9 +523,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 110472538}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 35a3320d50404e14a0d5de51e19e7d6e, type: 3}
+  m_Script: {fileID: 11500000, guid: aa1f5f65018e4db4b229372441ebd5f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _bookSelectionPanel: {fileID: 110472538}
+  _bookButtons:
+  - {fileID: 1527197880}
+  - {fileID: 1102641782}
+  - {fileID: 1933846984}
 --- !u!1 &110662238
 GameObject:
   m_ObjectHideFlags: 0
@@ -2391,7 +2396,7 @@ GameObject:
   - component: {fileID: 758101438}
   - component: {fileID: 758101437}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Detail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2547,7 +2552,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -0.51819, y: 25}
   m_SizeDelta: {x: 1080, y: 2404}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &821584789
@@ -2775,8 +2780,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawnManager: {fileID: 994136629}
-  buffChoiceUI: {fileID: 0}
-  waveText: {fileID: 0}
+  buffChoiceUI: {fileID: 110472540}
+  waveText: {fileID: 553837775}
   initialDelay: 1
   nextWaveDelay: 3
 --- !u!1 &994136628
@@ -3855,7 +3860,7 @@ GameObject:
   - component: {fileID: 1564199215}
   - component: {fileID: 1564199214}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Detail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4568,7 +4573,7 @@ GameObject:
   - component: {fileID: 1763455502}
   - component: {fileID: 1763455501}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: Detail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -18,12 +18,16 @@ public class SpawnManager : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log("SpawnManager: 이벤트 구독 시작");
+
         EnemyMovement.OnEnemyDestroyed += HandleEnemyDestroyed;
         EnemyMovement.OnReachEndPoint += HandleEnemyDestroyed;
     }
 
     private void OnDestroy()
     {
+        Debug.Log("SpawnManager: 이벤트 구독 해제");
+
         EnemyMovement.OnEnemyDestroyed -= HandleEnemyDestroyed;
         EnemyMovement.OnReachEndPoint -= HandleEnemyDestroyed;
     }
@@ -105,8 +109,10 @@ public class SpawnManager : MonoBehaviour
     private void HandleEnemyDestroyed()
     {
         _aliveEnemies--;
+        Debug.Log($"SpawnManager: Enemy destroyed. Alive: {_aliveEnemies}");
         if (_aliveEnemies <= 0)
         {
+            Debug.Log("SpawnManager: All enemies cleared! -> 이벤트 호출");
             OnAllEnemiesCleared?.Invoke();
         }
     }

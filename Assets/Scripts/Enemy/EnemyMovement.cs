@@ -100,11 +100,10 @@ public class EnemyMovement : MonoBehaviour
             Debug.LogError("EnemyMovement: GameManager 인스턴스를 찾을 수 없습니다. 목숨을 감소시킬 수 없습니다.");
         }
 
-        // 적 GameObject 파괴 (또는 오브젝트 풀에 반환)
-        Destroy(gameObject);
-
         // OnReachEndPoint 이벤트를 구독하고 있는 다른 스크립트들에게 알림 (선택 사항)
         OnReachEndPoint?.Invoke();
+        // 적 GameObject 파괴 (또는 오브젝트 풀에 반환)
+        Destroy(gameObject);
     }
 
     public void Die()

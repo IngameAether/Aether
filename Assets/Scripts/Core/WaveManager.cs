@@ -25,12 +25,19 @@ public class WaveManager : MonoBehaviour
     private void Start()
     {
         spawnManager ??= FindObjectOfType<SpawnManager>();
+        Debug.Log($"WaveManager: SpawnManager 연결됨? {(spawnManager != null)}");
 
         if (buffChoiceUI != null)
+        {
             buffChoiceUI.OnBookSelectCompleted += HandleBookSelectCompleted;
+            Debug.Log("WaveManager: buffChoiceUI 이벤트 구독 완료");
+        }
 
         MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
+        Debug.Log("WaveManager: MagicBookManager 이벤트 구독 완료");
+
         SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
+        Debug.Log("WaveManager: SpawnManager.OnAllEnemiesCleared 이벤트 구독 완료");
 
         StartCoroutine(WaveRoutine());
     }
@@ -109,6 +116,7 @@ public class WaveManager : MonoBehaviour
 
     private void HandleWaveCleared()
     {
+        Debug.Log("WaveManager: Wave cleared 이벤트 받음");
         _waitingForEnemies = false;
     }
     #endregion

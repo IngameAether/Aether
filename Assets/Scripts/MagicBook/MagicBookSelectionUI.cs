@@ -21,7 +21,7 @@ public class MagicBookSelectionUI : MonoBehaviour
         for (int i = 0; i < _bookButtons.Length; i++)
         {
             int index = i;
-            //_bookButtons[i].OnButtonClick += () => OnBookSelected(index);
+            _bookButtons[i].OnButtonClick += () => OnBookSelected(index);
         }
     }
 
@@ -44,6 +44,7 @@ public class MagicBookSelectionUI : MonoBehaviour
         }
 
         _bookSelectionPanel.SetActive(true);
+        Time.timeScale = 0f;
         GameTimer.Instance.StopTimer();
     }
 
@@ -53,6 +54,8 @@ public class MagicBookSelectionUI : MonoBehaviour
         _bookManager.SelectBook(bookData.Code);
 
         _bookSelectionPanel.SetActive(false);
+
+        Time.timeScale = 1f;
         GameTimer.Instance.StartTimer();
         OnBookSelectCompleted?.Invoke();
     }
