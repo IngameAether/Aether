@@ -8,6 +8,7 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 62a9f0aa5b59740cfbadc7e5f9823bb0, type: 3}
+  importerVersion: 2
   textureImporterSettings:
     alphaSource: 1
     mipMapMode: 0
@@ -77,6 +78,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -89,6 +91,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -342,94 +345,110 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: 1666735993
+    uuid:
+      value0: 3336314013
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: -958653283
     name: cloud_re
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: cloud_re_Frame_0
+    - name: Frame_0
       frameIndex: 0
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 01e32ba5f9003164f87244f8054f1c1c
-    - name: cloud_re_Frame_1
+    - name: Frame_1
       frameIndex: 1
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 2b7140376eca87947abd990bbfc62075
-    - name: cloud_re_Frame_2
+    - name: Frame_2
       frameIndex: 2
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: bb39402106d84dd49a1bf40fbe5295ef
-    - name: cloud_re_Frame_3
+    - name: Frame_3
       frameIndex: 3
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: bf8be06d261ab2943b279312a698e3a4
-    - name: cloud_re_Frame_4
+    - name: Frame_4
       frameIndex: 4
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 400f68ef8b0d58a41982eee666d49d9d
-    - name: cloud_re_Frame_5
+    - name: Frame_5
       frameIndex: 5
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: ab24539cf90b6124c9d9c57c0093532f
-    - name: cloud_re_Frame_6
+    - name: Frame_6
       frameIndex: 6
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 78fc79e85012cda43afa85b7d43e2f37
-    - name: cloud_re_Frame_7
+    - name: Frame_7
       frameIndex: 7
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 75b5251725db99d44a5fad74e4022950
-    - name: cloud_re_Frame_8
+    - name: Frame_8
       frameIndex: 8
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 122c1b2d561dd244c81b45198e0d97b1
-    - name: cloud_re_Frame_9
+    - name: Frame_9
       frameIndex: 9
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 1abed6f5ec39ee642b810a3114cf2fc0
-    - name: cloud_re_Frame_10
+    - name: Frame_10
       frameIndex: 10
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
@@ -475,6 +494,8 @@ ScriptedImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     androidETC2FallbackOverride: 0
+  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 64, y: 64}
+  previousTextureSize: {x: 256, y: 256}

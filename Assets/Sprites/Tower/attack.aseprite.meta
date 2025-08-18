@@ -8,6 +8,7 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 62a9f0aa5b59740cfbadc7e5f9823bb0, type: 3}
+  importerVersion: 2
   textureImporterSettings:
     alphaSource: 1
     mipMapMode: 0
@@ -77,6 +78,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -89,6 +91,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -362,102 +365,119 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: -1296700270
+    uuid:
+      value0: 4151059802
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: -143907494
     name: attack
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: attack_Frame_0
+    - name: Frame_0
       frameIndex: 0
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 92885e4003f19b64498bd548457530cc
-    - name: attack_Frame_1
+    - name: Frame_1
       frameIndex: 1
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 78e4089ea5fd5d34e9cb51c4ba097898
-    - name: attack_Frame_2
+    - name: Frame_2
       frameIndex: 2
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: f33d8bfd2ac9c094b9a9f4d3b0198e33
-    - name: attack_Frame_3
+    - name: Frame_3
       frameIndex: 3
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: ec9127edf5aaabc4da00dbe5150e34a6
-    - name: attack_Frame_4
+    - name: Frame_4
       frameIndex: 4
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 44e528c3e2baa8c4a8027c7c0da5bfc4
-    - name: attack_Frame_5
+    - name: Frame_5
       frameIndex: 5
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 2eb6b955f5fff9843ace8f7e892e3f3d
-    - name: attack_Frame_6
+    - name: Frame_6
       frameIndex: 6
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: b99a4c4526164284ab085029fbf542b0
-    - name: attack_Frame_7
+    - name: Frame_7
       frameIndex: 7
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 913455c6ee4891346a56da2ddc0d2d1d
-    - name: attack_Frame_8
+    - name: Frame_8
       frameIndex: 8
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 319ae348c78377c409b3d360cf21a957
-    - name: attack_Frame_9
+    - name: Frame_9
       frameIndex: 9
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: 8191c1fdd9dbf77458db86e83e45501e
-    - name: attack_Frame_10
+    - name: Frame_10
       frameIndex: 10
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
         width: 54
         height: 48
       spriteId: c9cecf5a4c38d5044a81d01f6a3a59ce
-    - name: attack_Frame_11
+    - name: Frame_11
       frameIndex: 11
+      additiveSortOrder: 0
       cellRect:
         x: 6
         y: 4
@@ -503,6 +523,8 @@ ScriptedImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     androidETC2FallbackOverride: 0
+  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 64, y: 64}
+  previousTextureSize: {x: 256, y: 256}

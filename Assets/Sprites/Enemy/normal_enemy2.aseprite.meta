@@ -13,6 +13,7 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 62a9f0aa5b59740cfbadc7e5f9823bb0, type: 3}
+  importerVersion: 2
   textureImporterSettings:
     alphaSource: 1
     mipMapMode: 0
@@ -82,6 +83,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -94,6 +96,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -307,78 +310,92 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: 2007461840
+    uuid:
+      value0: 1292464912
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: 1292464912
     name: normal_enemy2
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: normal_enemy2_Frame_0
+    - name: Frame_0
       frameIndex: 0
+      additiveSortOrder: 0
       cellRect:
         x: 0
         y: 0
         width: 64
         height: 64
       spriteId: 87564440b69d848418414818ffdc4ee4
-    - name: normal_enemy2_Frame_1
+    - name: Frame_1
       frameIndex: 1
+      additiveSortOrder: 0
       cellRect:
         x: 18
         y: 10
         width: 28
         height: 45
       spriteId: 432a1044bc94ec242abbc7ea9a63bdea
-    - name: normal_enemy2_Frame_2
+    - name: Frame_2
       frameIndex: 2
+      additiveSortOrder: 0
       cellRect:
         x: 18
         y: 10
         width: 28
         height: 45
       spriteId: 42eb3aaa23c436243a02533c1f313ea6
-    - name: normal_enemy2_Frame_3
+    - name: Frame_3
       frameIndex: 3
+      additiveSortOrder: 0
       cellRect:
         x: 18
         y: 10
         width: 28
         height: 48
       spriteId: 4efa6afce16d1df4aa1b077b1d84babc
-    - name: normal_enemy2_Frame_4
+    - name: Frame_4
       frameIndex: 4
+      additiveSortOrder: 0
       cellRect:
         x: 18
         y: 12
         width: 28
         height: 49
       spriteId: e71bcdf5ec5723e449229be6e2484a64
-    - name: normal_enemy2_Frame_5
+    - name: Frame_5
       frameIndex: 5
+      additiveSortOrder: 0
       cellRect:
         x: 18
         y: 10
         width: 28
         height: 47
       spriteId: 5a8215f8d380ad8449df5d1674a9bbc3
-    - name: normal_enemy2_Frame_6
+    - name: Frame_6
       frameIndex: 6
+      additiveSortOrder: 0
       cellRect:
         x: 18
         y: 10
         width: 28
         height: 45
       spriteId: c429a7555e311714bbfde2dd2b7d31ba
-    - name: normal_enemy2_Frame_7
+    - name: Frame_7
       frameIndex: 7
+      additiveSortOrder: 0
       cellRect:
         x: 15
         y: 10
         width: 35
         height: 45
       spriteId: 6d3533b37bf74e948941ea1e6f208eb3
-    - name: normal_enemy2_Frame_8
+    - name: Frame_8
       frameIndex: 8
+      additiveSortOrder: 0
       cellRect:
         x: 17
         y: 10
@@ -436,6 +453,8 @@ ScriptedImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     androidETC2FallbackOverride: 0
+  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 64, y: 64}
+  previousTextureSize: {x: 128, y: 256}

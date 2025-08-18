@@ -13,6 +13,7 @@ ScriptedImporter:
   assetBundleName: 
   assetBundleVariant: 
   script: {fileID: 11500000, guid: 62a9f0aa5b59740cfbadc7e5f9823bb0, type: 3}
+  importerVersion: 2
   textureImporterSettings:
     alphaSource: 1
     mipMapMode: 0
@@ -82,6 +83,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -94,6 +96,7 @@ ScriptedImporter:
     defaultPivotSpace: 0
     defaultPivotAlignment: 7
     customPivotPosition: {x: 0.5, y: 0.5}
+    mosaicPadding: 4
     spritePadding: 0
     generateModelPrefab: 1
     generateAnimationClips: 1
@@ -367,102 +370,119 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: -40804441
+    uuid:
+      value0: 3753936643
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: -541030653
     name: attackMouth
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: attackMouth_Frame_0
+    - name: Frame_0
       frameIndex: 0
+      additiveSortOrder: 0
       cellRect:
         x: 28
         y: 19
         width: 9
         height: 3
       spriteId: 80ca05806f4cd9d47882cf0b71763386
-    - name: attackMouth_Frame_1
+    - name: Frame_1
       frameIndex: 1
+      additiveSortOrder: 0
       cellRect:
         x: 28
         y: 19
         width: 9
         height: 4
       spriteId: b0c6128cdb3dff04997d1b648e2cb3d6
-    - name: attackMouth_Frame_2
+    - name: Frame_2
       frameIndex: 2
+      additiveSortOrder: 0
       cellRect:
         x: 27
         y: 18
         width: 11
         height: 6
       spriteId: 5f9738e7c61d17341a4d36c3987f5679
-    - name: attackMouth_Frame_3
+    - name: Frame_3
       frameIndex: 3
+      additiveSortOrder: 0
       cellRect:
         x: 27
         y: 18
         width: 11
         height: 7
       spriteId: c4bce688a09b8824696f241ce29b9320
-    - name: attackMouth_Frame_4
+    - name: Frame_4
       frameIndex: 4
+      additiveSortOrder: 0
       cellRect:
         x: 27
         y: 17
         width: 11
         height: 9
       spriteId: 973ab439b737c184b8ac69460f8ae3b5
-    - name: attackMouth_Frame_5
+    - name: Frame_5
       frameIndex: 5
+      additiveSortOrder: 0
       cellRect:
         x: 27
         y: 17
         width: 11
         height: 9
       spriteId: 71b20ab89726a754e8106d47ffc7710d
-    - name: attackMouth_Frame_6
+    - name: Frame_6
       frameIndex: 6
+      additiveSortOrder: 0
       cellRect:
         x: 27
         y: 17
         width: 11
         height: 9
       spriteId: d1b8e599a007e5b41bca649bf1a42b4a
-    - name: attackMouth_Frame_7
+    - name: Frame_7
       frameIndex: 7
+      additiveSortOrder: 0
       cellRect:
         x: 28
         y: 14
         width: 9
         height: 9
       spriteId: 8efbfbcfb17104a47b2e189fb8fe1f99
-    - name: attackMouth_Frame_8
+    - name: Frame_8
       frameIndex: 8
+      additiveSortOrder: 0
       cellRect:
         x: 30
         y: 15
         width: 5
         height: 6
       spriteId: 68afbd643045ced43b3a66746e5c327d
-    - name: attackMouth_Frame_9
+    - name: Frame_9
       frameIndex: 9
+      additiveSortOrder: 0
       cellRect:
         x: 31
         y: 17
         width: 3
         height: 3
       spriteId: 3c84bb84f7e8f434a957739c80f94c8c
-    - name: attackMouth_Frame_10
+    - name: Frame_10
       frameIndex: 10
+      additiveSortOrder: 0
       cellRect:
         x: 31
         y: 18
         width: 3
         height: 2
       spriteId: 6aae328ef68783d48b3ddcbaea74f8eb
-    - name: attackMouth_Frame_11
+    - name: Frame_11
       frameIndex: 11
+      additiveSortOrder: 0
       cellRect:
         x: 31
         y: 18
@@ -520,6 +540,8 @@ ScriptedImporter:
     crunchedCompression: 0
     allowsAlphaSplitting: 0
     androidETC2FallbackOverride: 0
+  generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
   canvasSize: {x: 64, y: 64}
+  previousTextureSize: {x: 64, y: 64}
