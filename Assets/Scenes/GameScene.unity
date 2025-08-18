@@ -2814,12 +2814,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   enemyPrefabs:
-  - {fileID: 5417002623811271532, guid: b33a8bbd5b62d0e498d1a82dc8f8f8f9, type: 3}
-  - {fileID: 5417002623811271532, guid: 577f837b52c252d49ba0a5f379d7bae7, type: 3}
-  - {fileID: 5417002623811271532, guid: 5249caae0f3ac8e4e93a066912dbc1d9, type: 3}
-  - {fileID: 5417002623811271532, guid: c2a15d76c6442fd4da2fe3a036e8a78c, type: 3}
-  - {fileID: 5417002623811271532, guid: e9376d3272f8206408fd74f1f8e882d0, type: 3}
-  - {fileID: 5417002623811271532, guid: 3ab8df893bb59e5408b4e7fef4f247b2, type: 3}
+  - {fileID: 5417002623811271532, guid: 27e6441dcf8aa7f45b4b6d3882d5e9c5, type: 3}
+  - {fileID: 5417002623811271532, guid: 64482ff3366415342908db4b2e23cc6a, type: 3}
+  - {fileID: 5417002623811271532, guid: d161bc6ce2a07b049a58825d5fc6abcc, type: 3}
+  - {fileID: 5417002623811271532, guid: e5157a3e3aad91c49bfa87e21fd5e321, type: 3}
+  - {fileID: 5417002623811271532, guid: c999b4594ceac224f8495db46d1e218a, type: 3}
   mapManage: {fileID: 98405527}
   waves:
   - enemies:
