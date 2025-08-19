@@ -103,4 +103,5 @@ MonoBehaviour:
   isElementBuild: 0
   element: {fileID: 0}
   tower: {fileID: 0}
-  originColor: {r: 0, g: 0, b: 0, a: 0}
+  originColor: {r: 1, g: 1, b: 1, a: 0}
+  highlightColor: {r: 0, g: 0, b: 0, a: 1}

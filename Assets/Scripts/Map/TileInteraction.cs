@@ -1,15 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
-using Towers.Core;
+using System;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class TileInteraction : MonoBehaviour
 {
     public Tile tile;
     public static GameObject[] staticElementPrefabs;  // 전역 변수로 선언(모든 tile이 공유할 내용이므로)
-    public static bool isTowerJustCreated = false;  // Ÿ���� Ŭ���� Ÿ���� ��ġ�� ������ Ÿ���� Ŭ���� ������ �����ϱ� ����
-
+    public static bool isTowerJustCreated = false;  // 타워 생성 플래그
     private BoxCollider2D _boxCollider2D;
+    private bool _isDirectPlaceTower = false;
 
     private void Start()
     {
@@ -17,66 +16,111 @@ public class TileInteraction : MonoBehaviour
         _boxCollider2D = GetComponent<BoxCollider2D>();
     }
 
-    private void OnMouseDown()
+    private void OnEnable()
     {
-        if (Time.timeScale == 0f) return;   // 게임이 멈추면 클릭 등 상호작용 무시
-
-        tile.ChangeCurrentTileColor();
-        tile.PrintTileInfo();
-
-        if (!tile.isBuild || !tile.isElementBuild) return;
-
-        ElementType assignedElementType = ElementType.None;
-
-        int ranNum = Random.Range(0, staticElementPrefabs.Length);
-        GameObject selectedPrefab = staticElementPrefabs[ranNum];
-        ElementController ecFromPrefab = selectedPrefab.GetComponent<ElementController>();
-        if (ecFromPrefab != null)
-        {
-            assignedElementType = ecFromPrefab.type;
-        }
-        else
-        {
-            Debug.LogWarning("프리팹에 ElementController가 없음 or type 할당되지 않음");
-            assignedElementType = ElementType.None;
-        }
-        GameObject elementObj = Instantiate(selectedPrefab, tile.transform.position, Quaternion.identity);
-
-        // 원소가 배치된 타일 저장
-        ElementController ec = elementObj.GetComponent<ElementController>();
-        if (ec != null)
-        {
-            ec.Initialize(this, assignedElementType);
-            ec.selectTile = tile;
-        }
-        else
-        {
-            Debug.LogWarning("생성된 elementObj에 ElementController 컴포넌트가 없음, 초기화 불가능");
-        }
-
-        Debug.Log($"소환된 원소: {staticElementPrefabs[ranNum]}");
-        _boxCollider2D.enabled = false;
-        tile.isElementBuild = false;
-        tile.element = elementObj;
+        MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
     }
 
-    public GameObject PlacedTower(GameObject prefab)
+    private void OnDisable()
     {
-        var towerObj = Instantiate(prefab, tile.transform.position, Quaternion.identity);
-        tile.isElementBuild = false;
-        tile.tower = towerObj;
+        MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
+    }
+
+    /// <summary>
+    /// InputManager에서 호출하는 클릭 처리 (OnMouseDown 대체)
+    /// </summary>
+    public void OnClick()
+    {
+        if (Time.timeScale == 0f) return;
+
+        if(tile.element != null) return;
+
+        if (!tile.isBuild || !tile.isElementBuild)
+        {
+            tile.PrintTileInfo();
+            return;
+        }
+
+        if (_isDirectPlaceTower)
+        {
+            TileReset(tile);
+            TowerCombiner.Instance.CreateRandomLevel1Tower(this, tile);
+            return;
+        }
+        else
+        {
+            int ranNum = Random.Range(0, staticElementPrefabs.Length);
+            ElementType assignedElementType = ElementType.None;
+            GameObject selectedPrefab = staticElementPrefabs[ranNum];
+            ElementController ecFromPrefab = selectedPrefab.GetComponent<ElementController>();
+
+            if (ecFromPrefab != null)
+            {
+                assignedElementType = ecFromPrefab.type;
+            }
+            else
+            {
+                Debug.LogWarning("프리팹에 ElementController가 없음 or type 할당되지 않음");
+                assignedElementType = ElementType.None;
+            }
+
+            GameObject elementObj = Instantiate(selectedPrefab, tile.transform.position, Quaternion.identity);
+
+            ElementController ec = elementObj.GetComponent<ElementController>();
+            if (ec != null)
+            {
+                ec.Initialize(tile, assignedElementType);
+            }
+            else
+            {
+                Debug.LogWarning("생성된 elementObj에 ElementController 컴포넌트가 없음, 초기화 불가능");
+            }
+
+            Debug.Log($"소환된 원소: {staticElementPrefabs[ranNum]}");
+            _boxCollider2D.enabled = false;
+            tile.isElementBuild = false;
+            tile.element = elementObj;
+            tile.PrintTileInfo();
+        }
+    }
+
+    public GameObject PlacedTower(GameObject prefab, Tile targetTile)
+    {
+        var towerObj = Instantiate(prefab, targetTile.transform.position, Quaternion.identity);
+        targetTile.isElementBuild = false;
+        targetTile.tower = towerObj;
 
         TowerDragSale tds = towerObj.GetComponent<TowerDragSale>();
-        tds.selectTile = tile;
+        if(tds != null)
+        {
+            tds.selectTile = targetTile;
+        }
+
+        var towerSelectable = towerObj.GetComponent<TowerSelectable>();
+        towerSelectable.SetTile(targetTile);
 
         return towerObj;
     }
 
-    public void TileReset()
+    public void TileReset(Tile targetTile)
     {
-        tile.isElementBuild = true;
-        Destroy(tile.element.gameObject);
-        tile.element = null;
-        _boxCollider2D.enabled = true;
+        targetTile.isElementBuild = true;
+        if(targetTile.element != null)
+        {
+            Destroy(targetTile.element.gameObject);
+            targetTile.element = null;
+        }
+
+        BoxCollider2D targetCollider = targetTile.GetComponent<BoxCollider2D>();
+        if(targetCollider != null)
+        {
+            targetCollider.enabled = true;
+        }
+    }
+
+    private void HandleBookEffectApplied(EBookEffectType bookEffectType, int value)
+    {
+        if (bookEffectType != EBookEffectType.DirectTowerPlace) return;
+        _isDirectPlaceTower = (value == 1);
     }
 }

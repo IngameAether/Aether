@@ -7,7 +7,7 @@ ScriptedImporter:
       type: UnityEngine:AnimationClip
       assembly: UnityEngine.AnimationModule
       name: normal_enemy1_Clip
-    second: {fileID: 7400000, guid: 8f70168a37520c14ea4113dc40860fc9, type: 2}
+    second: {fileID: 7400000, guid: e25fdc75f99c8844abd2fa39d54b6007, type: 2}
   serializedVersion: 2
   userData: 
   assetBundleName: 
@@ -103,7 +103,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638886458010088903
+  platformSettingsDirtyTick: 638907157937497035
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -127,7 +127,7 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Frame_0
+  - name: normal_enemy1_Frame_0
     originalName: 
     pivot: {x: 0.5, y: -0.03448276}
     alignment: 9
@@ -138,7 +138,7 @@ ScriptedImporter:
       y: 138
       width: 50
       height: 58
-    spriteID: 9d2e24ee71b876349af00610b2e69c13
+    spriteID: 7554630edd36c35449869c8d920cc813
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -147,7 +147,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 138}
-  - name: Frame_1
+  - name: normal_enemy1_Frame_1
     originalName: 
     pivot: {x: 0.5, y: -0.016949153}
     alignment: 9
@@ -158,7 +158,7 @@ ScriptedImporter:
       y: 4
       width: 50
       height: 59
-    spriteID: 66308f068b843494090860f4a3a629ab
+    spriteID: 2c1a224da39a5bc4d8b6321b4ea38a5a
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -167,7 +167,7 @@ ScriptedImporter:
     edges: []
     tessellationDetail: 0
     uvTransform: {x: 4, y: 4}
-  - name: Frame_2
+  - name: normal_enemy1_Frame_2
     originalName: 
     pivot: {x: 0.5, y: -0.016949153}
     alignment: 9
@@ -178,7 +178,7 @@ ScriptedImporter:
       y: 71
       width: 50
       height: 59
-    spriteID: eff7d006ec5efc947ad58c3eef220b26
+    spriteID: c6c504a8b0777c84d83791d4ad048b7e
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -195,7 +195,7 @@ ScriptedImporter:
       value1: 0
       value2: 0
       value3: 0
-    guid: 0
+    guid: 1292464911
     name: normal_enemy1
     layerFlags: 0
     layerType: 0
@@ -209,7 +209,7 @@ ScriptedImporter:
         y: 2
         width: 50
         height: 58
-      spriteId: 9d2e24ee71b876349af00610b2e69c13
+      spriteId: 7554630edd36c35449869c8d920cc813
     - name: Frame_1
       frameIndex: 1
       additiveSortOrder: 0
@@ -218,7 +218,7 @@ ScriptedImporter:
         y: 1
         width: 50
         height: 59
-      spriteId: 66308f068b843494090860f4a3a629ab
+      spriteId: 2c1a224da39a5bc4d8b6321b4ea38a5a
     - name: Frame_2
       frameIndex: 2
       additiveSortOrder: 0
@@ -227,7 +227,7 @@ ScriptedImporter:
         y: 1
         width: 50
         height: 59
-      spriteId: eff7d006ec5efc947ad58c3eef220b26
+      spriteId: c6c504a8b0777c84d83791d4ad048b7e
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -259,6 +259,18 @@ ScriptedImporter:
     overridden: 0
     ignorePlatformSupport: 0
     maxTextureSize: 16384
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 0
+    compressionQuality: 50
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    androidETC2FallbackOverride: 0
+  - name: Server
+    overridden: 0
+    ignorePlatformSupport: 0
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 0

@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI; 
-using UnityEngine.Rendering.PostProcessing; 
+using UnityEngine.UI;
+using UnityEngine.Rendering.PostProcessing;
 using System.Collections;
 using TMPro;
 
@@ -15,13 +15,13 @@ public enum EScene
 
 public class GameManager : MonoBehaviour
 {
-    public GameTimer gameTimer;
     public static GameManager Instance { get; private set; }
     public bool IsGameOver { get; private set; }
 
     [Header("플레이어 목숨")]
-    [SerializeField] private int initialLives = 5; // 기본 목숨은 5로 설정. 인스펙터에서 수정가능
-    private int currentLives; // 남아있는 목숨
+    [SerializeField] private int initialLives = 3; // 기본 목숨은 5로 설정. 인스펙터에서 수정가능
+
+    public int currentLives { get; private set; } // 남아있는 목숨
 
     [Header("UI에 목숨을 표시")]
     [SerializeField] private TextMeshProUGUI livesText; // 텍스트로 남은 목숨을 표시
@@ -59,7 +59,7 @@ public class GameManager : MonoBehaviour
         {
             // 목숨 텍스트 UI를 씬에서 찾습니다.
             // 1. 오브젝트 이름으로 찾기
-            GameObject livesTextObj = GameObject.Find("LivesCountText"); 
+            GameObject livesTextObj = GameObject.Find("LivesCountText");
             if (livesTextObj != null)
             {
                 livesText = livesTextObj.GetComponent<TextMeshProUGUI>();
@@ -98,12 +98,12 @@ public class GameManager : MonoBehaviour
             currentLives--; // 목숨 1 감소
             UpdateLivesUI(); // UI 업데이트
             Debug.Log("Life Lost! Current Lives: {currentLives}");
-            
+
             if(currentLives <= 0) // 목숨이 0이면 게임오버
             {
                 GameOver();
             }
-        }    
+        }
     }
 
     private void UpdateLivesUI() // 목숨 UI 업데이트

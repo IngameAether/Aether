@@ -1,121 +1,96 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using TMPro;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
-    [Header("�� ���� ����")]
-    // ������ �� ������
-    public GameObject enemyPrefab;
-    public MapManage mapManage; // MapManage ��ũ��Ʈ ���۷���
+    [Header("Enemy Settings")]
+    public GameObject[] enemyPrefabs;
+    public MapManage mapManage;
 
-    [Header("UI")]
-    [SerializeField] private TMP_Text waveText;
-
-    [Header("���̺� ����")]
+    [Header("Wave Data")]
     public List<Wave> waves;
-    public float initialDelay = 1f; // ù ���̺� ���� �� ��� �ð�
-    public float waveBreakTime = 10f; // ���̺� �� ��� �ð�
-    
-    // ������ ���� ���� ������ Ȯ���ϴ� �÷���
-    private bool isSpawning = false;
-    private float _currentEndTime;
-    private int _reachedEndEnemyCount = 0;
-    private Coroutine _spawnCoroutine;
+
+    public static event Action OnAllEnemiesCleared;
+
+    private int _aliveEnemies;
 
     private void Start()
     {
-        // Inspector���� �����հ� MapManage ���۷����� ����Ǿ����� Ȯ��
-        if (enemyPrefab == null)
-        {
-            Debug.LogError("SpawnManager: ������ �� �������� �������� �ʾҽ��ϴ�!");
-            return;
-        }
-        if (mapManage == null)
-        {
-            Debug.LogError("SpawnManager: MapManage ���۷����� �������� �ʾҽ��ϴ�!");
-            return;
-        }
-        if (waves == null || waves.Count == 0)
-        {
-            Debug.LogError("SpawnManager: ���̺� ������ ����ֽ��ϴ�!");
-            return;
-        }
-        
-        waveText.text = "0 wave";
+        Debug.Log("SpawnManager: 이벤트 구독 시작");
 
-        EnemyMovement.OnReachEndPoint += HandleReachedEndEnemy;
-        
-        Debug.Log("SpawnManager �ʱ�ȭ �Ϸ�. Start ��ư Ŭ�� ��� ��.");
-        _spawnCoroutine = StartCoroutine(SpawnEnmiesRoutine());
+        EnemyMovement.OnEnemyDestroyed += HandleEnemyDestroyed;
+        EnemyMovement.OnReachEndPoint += HandleEnemyDestroyed;
     }
 
-    IEnumerator SpawnEnmiesRoutine()
+    private void OnDestroy()
     {
-        isSpawning = true; // ���� ���� �÷��� ����
+        Debug.Log("SpawnManager: 이벤트 구독 해제");
 
-        // MapManage�κ��� ������ ��� �����͸� ������
+        EnemyMovement.OnEnemyDestroyed -= HandleEnemyDestroyed;
+        EnemyMovement.OnReachEndPoint -= HandleEnemyDestroyed;
+    }
+
+    public IEnumerator SpawnWaveEnemies(Wave wave)
+    {
         List<Vector3> path = mapManage.GetPathWorldPositions();
         if (path == null || path.Count == 0)
         {
-            Debug.LogError("SpawnManager: ��ȿ�� ��� �����͸� ������ �� �����ϴ�. �� ���� �ߴ�.");
-            isSpawning = false;
-            yield break; // ��ΰ� ������ �ڷ�ƾ ����
+            Debug.LogError("SpawnManager: 경로가 없습니다.");
+            yield break;
         }
-        // ���� ���� �ð� ���
-        yield return new WaitForSeconds(initialDelay);
 
-        for (int waveIndex = 0; waveIndex < waves.Count; waveIndex++)
+        // 마지막 방향 타일 하나 추가
+        if (path.Count >= 2)
         {
-            waveText.text = $"{waveIndex + 1} wave";
-            
-            yield return new WaitForSeconds(waves[waveIndex].startTime);
-            
-            Wave currentWave = waves[waveIndex];
-            Debug.Log($"--- ���̺� {waveIndex + 1} ����!---");
-            
-            _currentEndTime = Time.time + waves[waveIndex].endTime;
+            Vector3 dir = (path[^1] - path[^2]).normalized;
+            path.Add(path[^1] + dir);
+        }
 
-            while (Time.time <= _currentEndTime)
+        if (wave.enemies == null || wave.enemies.Count == 0)
+        {
+            Debug.LogWarning("웨이브에 적 데이터가 없습니다");
+            yield break;
+        }
+
+        float waveStartTime = Time.time;
+        float maxWaveEndTime = 0f;
+        var nextSpawnTimes = new Dictionary<int, float>();
+
+        foreach (var enemy in wave.enemies)
+        {
+            nextSpawnTimes[enemy.enemyPrefabIndex] = waveStartTime + enemy.startTime;
+            maxWaveEndTime = Mathf.Max(maxWaveEndTime, enemy.endTime);
+        }
+
+        float waveEndTime = waveStartTime + maxWaveEndTime;
+        while (Time.time < waveEndTime)
+        {
+            float currentTime = Time.time;
+            foreach (var enemy in wave.enemies)
             {
-                Vector3 spawnPosition = path[0]; // ����� ù ��° ������ ���� ��ġ�� ���
-                SpawnSingleEnemy(spawnPosition, path);
-
-                // ���� ���̺��� ��� ���� �����ϱ� �������� ���� ���� ���
-                if (Time.time <= _currentEndTime)
+                float enemyEndTime = waveStartTime + enemy.endTime;
+                if (currentTime >= nextSpawnTimes[enemy.enemyPrefabIndex] && currentTime < enemyEndTime)
                 {
-                    yield return new WaitForSeconds(currentWave.spawnInterval);
+                    SpawnSingleEnemy(path[0], path, enemy.enemyPrefabIndex);
+                    nextSpawnTimes[enemy.enemyPrefabIndex] = currentTime + enemy.spawnInterval;
                 }
             }
 
-            Debug.Log($"--- ���̺� {waveIndex + 1} �� ���� �Ϸ�. ---");
-
-            // ������ ���̺갡 �ƴ϶�� ���̺� �� ��� �ð� ����
-            if (waveIndex < waves.Count - 1)
-            {
-                Debug.Log($"���� ���̺���� {waveBreakTime}�� ���...");
-                yield return new WaitForSeconds(waveBreakTime);
-            }
-            else
-            {
-                Debug.Log("��� ���̺� �Ϸ�!");
-            }
+            yield return null;
         }
-
-        isSpawning = false; // ��� ���̺� ���� ���� �÷��� ����
     }
 
-    void SpawnSingleEnemy(Vector3 initialSpawnPosition, List<Vector3> path)
+    private void SpawnSingleEnemy(Vector3 initialSpawnPosition, List<Vector3> path, int enemyIndex = 0)
     {
-        if (enemyPrefab == null)
+        if (enemyPrefabs == null || enemyIndex >= enemyPrefabs.Length)
         {
-            Debug.LogError("������ �� �������� �����ؾ���");
+            Debug.LogError("잘못된 enemyIndex로 스폰 시도");
             return;
         }
 
-        GameObject newEnemy = Instantiate(enemyPrefab, initialSpawnPosition, Quaternion.identity);
+        GameObject newEnemy = Instantiate(enemyPrefabs[enemyIndex], initialSpawnPosition, Quaternion.identity);
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
         if (enemyMovement != null)
@@ -125,30 +100,35 @@ public class SpawnManager : MonoBehaviour
         }
         else
         {
-            Debug.LogError("SpawnManager: ������ �� �����տ� EnemyMovement ������Ʈ�� �����ϴ�.");
+            Debug.LogError("SpawnManager: EnemyMovement 컴포넌트가 없습니다.");
         }
+
+        _aliveEnemies++;
     }
 
-    private void GameOver()
+    private void HandleEnemyDestroyed()
     {
-        // 게임 끝나는 기준이 없음. 적 5명 지나가면 끝나는걸로 설정
-        StopCoroutine(_spawnCoroutine);
-    }
-
-    private void HandleReachedEndEnemy()
-    {
-        _reachedEndEnemyCount++;
-        if (_reachedEndEnemyCount >= 5)
+        _aliveEnemies--;
+        Debug.Log($"SpawnManager: Enemy destroyed. Alive: {_aliveEnemies}");
+        if (_aliveEnemies <= 0)
         {
-            GameOver();
+            Debug.Log("SpawnManager: All enemies cleared! -> 이벤트 호출");
+            OnAllEnemiesCleared?.Invoke();
         }
     }
-}
 
-[System.Serializable] 
-public class Wave
-{
-    public float spawnInterval;
-    public float startTime;
-    public float endTime;
+    [System.Serializable]
+    public class WaveEnemyData
+    {
+        public int enemyPrefabIndex;
+        public float spawnInterval;
+        public float startTime;
+        public float endTime;
+    }
+
+    [System.Serializable]
+    public class Wave
+    {
+        public List<WaveEnemyData> enemies = new List<WaveEnemyData>();
+    }
 }

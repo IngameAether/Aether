@@ -1,174 +1,286 @@
-﻿using System;
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
-namespace Towers.Core
+[Serializable]
+public class TowerSetting
 {
+    [Header("Tower Stats")]
+    public string Name;
+    public string Description;
+    public ElementType Type;
+    public int Rank;
+    public int reinforceLevel;
+    public int MaxReinforce;
+    public float Damage;
+    public float AttackSpeed;
+    public float Range;
+    public float CriticalHit;
+}
 
-    [Serializable]
-    public class TowerSetting
+public enum ReinforceType { None, Light, Dark };
+
+public abstract class Tower : MonoBehaviour
+{
+    [Header("Tower Configuration")]
+    [SerializeField] protected TowerSetting towerSetting;
+
+    public static event Action<Tower> OnTowerClicked;
+    public static event Action OnTowerDestroyed;
+
+    [Header("Tower Reinforce")]
+    public ReinforceType reinforceType;
+
+    public TowerData towerData;
+    public string type { get; set; }
+
+    protected SpriteRenderer spriteRenderer;
+    protected SpriteRenderer magicCircleRenderer;
+
+    protected float lastAttackTime;
+    protected bool isFacingRight = true;
+    protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
+    protected Vector3 direction; // 적 방향
+
+    [Header("Firing")]
+    [SerializeField] protected Transform firePoint; 
+
+    public Transform FirePoint => firePoint != null ? firePoint : transform;
+
+    [Header("Projectile Settings")]
+    [SerializeField] protected GameObject projectilePrefab;
+    [SerializeField] protected Transform spawnPoint;
+    [SerializeField] protected float projectileSpeed = 10f;
+    [SerializeField] protected ProjectileMotionType defaultMotionType;
+    [SerializeField] protected DamageEffectType defaultEffectType;
+    [SerializeField] protected Projectile.HitType defaultHitType;
+
+    [SerializeField] private GameObject basicProjectilePrefab;
+    [SerializeField] private GameObject fireProjectilePrefab;
+    [SerializeField] private GameObject advancedProjectilePrefab;
+
+    public TowerSetting GetTowerSetting()
     {
-        [field: Header("Tower Stats")]
-        [field: SerializeField]
-        public string name { get; private set; }
-
-        [field: SerializeField] public string description { get; private set; }
-        [field: SerializeField] public int rank { get; private set; }
-        [field: SerializeField] public float damage { get; private set; }
-        [field: SerializeField] public float attackDelay { get; private set; }
-        [field: SerializeField] public float range { get; private set; }
-        [field: SerializeField] public float criticalHit { get; private set; }
+        return towerSetting;
     }
 
-    public abstract class Tower : MonoBehaviour
+    public void SetTowerSetting(TowerData data)
     {
-        [Header("Tower Configuration")] [SerializeField]
-        protected TowerSetting towerSetting;
+        towerData = data;
+        towerSetting.Name = data.Name;
+        towerSetting.Type = data.ElementType;
+        towerSetting.Rank = data.Level;
+        towerSetting.Damage = data.GetDamage(towerSetting.reinforceLevel);
+        towerSetting.Range = data.BaseRange;
+        towerSetting.AttackSpeed = data.GetAttackSpeed(towerSetting.reinforceLevel);
+        towerSetting.CriticalHit = data.GetCriticalRate(towerSetting.reinforceLevel);
+    }
 
-        protected SpriteRenderer spriteRenderer;
-        protected SpriteRenderer magicCircleRenderer;
+    protected virtual void Start()
+    {
+        InitializeTower();
+    }
 
-        protected float lastAttackTime = 0f;
-        protected bool isFacingRight = true;
-        protected Transform currentTarget;  // 현재 타겟으로 삼고 있는 적의 위치
-        public Vector3 direction;   // 적 방향
+    protected virtual void Update()
+    {
+        // 타겟 찾기 및 공격
+        FindAndAttackTarget();
+    }
 
-        public static event Action<Tower> OnTowerClicked;
+    protected virtual void OnDestroy()
+    {
+        OnTowerDestroyed?.Invoke();
+    }
 
-        public TowerSetting GetTowerSetting() => towerSetting;
-        public Vector3 GetPosition() => transform.position;
-        public bool GetIsFacingRight() => isFacingRight;
+    /// <summary>
+    ///     타워 초기화 - 컴포넌트 설정 및 스프라이트 적용
+    /// </summary>
+    protected virtual void InitializeTower()
+    {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
+        EnsureFirePoint();
+    }
 
-        protected virtual void Start()
+    protected void EnsureFirePoint()
+    {
+        if (firePoint == null)
         {
-            InitializeTower();
+            var found = transform.Find("FirePoint");
+            if (found != null) firePoint = found;
+            else firePoint = transform; // 최후 대체
+        }
+    }
+
+    /// <summary>
+    ///     타워 좌우반전 처리
+    /// </summary>
+    public void FlipTower()
+    {
+        isFacingRight = !isFacingRight;
+
+        spriteRenderer.flipX = isFacingRight;
+        magicCircleRenderer.flipX = isFacingRight;
+    }
+
+    #region Tower Find Target & Attack
+
+    /// <summary>
+    ///     타겟을 찾고 공격하는 함수
+    /// </summary>
+    protected virtual void FindAndAttackTarget()
+    {
+        if (!IsTargetInRange(currentTarget))
+        {
+            currentTarget = FindNearestTarget();
+            return;
         }
 
-        protected virtual void Update()
+        if (CanAttack())
         {
-            // 타겟 찾기 및 공격
-            FindAndAttackTarget();
+            direction = (currentTarget.transform.position - transform.position).normalized;
+            Attack();
+            lastAttackTime = Time.time;
         }
+    }
 
-        /// <summary>
-        /// 타워 초기화 - 컴포넌트 설정 및 스프라이트 적용
-        /// </summary>
-        protected virtual void InitializeTower()
+    /// <summary>
+    ///     타겟이 사거리 안에 있는지 확인
+    /// </summary>
+    protected virtual bool IsTargetInRange(Transform target)
+    {
+        if (!target) return false;
+
+        var distance = Vector2.Distance(transform.position, target.position);
+        return distance <= towerSetting.Range; // 타겟과의 거리가 사거리보다 작거나 같은지 확인
+    }
+
+    /// <summary>
+    ///     가장 가까운 적을 찾는 함수
+    /// </summary>
+    protected virtual Transform FindNearestTarget()
+    {
+        LayerMask enemyLayerMask = LayerMask.GetMask("Enemy");
+
+        var enemiesInRange = Physics2D.OverlapCircleAll(
+            transform.position,
+            towerSetting.Range,
+            enemyLayerMask
+        );
+
+        if (enemiesInRange.Length == 0) return null;
+
+        Transform nearestTarget = null;
+        var nearestDistance = float.MaxValue;
+
+        foreach (var enemyCollider in enemiesInRange)
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-            magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
-        }
+            if (enemyCollider.gameObject == null) continue;
 
-        /// <summary>
-        /// 타워 좌우반전 처리
-        /// </summary>
-        public void FlipTower()
-        {
-            isFacingRight = !isFacingRight;
+            var distance = Vector2.Distance(transform.position, enemyCollider.transform.position);
 
-            spriteRenderer.flipX = isFacingRight;
-            magicCircleRenderer.flipX = isFacingRight;
-        }
-
-        #region Tower Find Target & Attack
-
-        /// <summary>
-        /// 타겟을 찾고 공격하는 함수
-        /// </summary>
-        protected virtual void FindAndAttackTarget()
-        {
-            if (!IsTargetInRange(currentTarget))
+            if (distance < nearestDistance)
             {
-                currentTarget = FindNearestTarget();
-                return;
-            }
-
-            if (CanAttack())
-            {
-                direction = (currentTarget.transform.position - transform.position).normalized;
-                Attack();
-                lastAttackTime = Time.time;
+                nearestDistance = distance;
+                nearestTarget = enemyCollider.transform;
             }
         }
 
-        /// <summary>
-        /// 타겟이 사거리 안에 있는지 확인
-        /// </summary>
-        protected virtual bool IsTargetInRange(Transform target)
-        {
-            if (!target) return false;
+        return nearestTarget;
+    }
 
-            float distance = Vector2.Distance(transform.position, target.position);
-            return distance <= towerSetting.range; // 타겟과의 거리가 사거리보다 작거나 같은지 확인
+    // 타겟이 살아 있는지 확인
+    protected virtual bool isTargetAlive(Transform target)
+    {
+        if (!target) return false;
+
+        var damageable = target.GetComponent<IDamageable>();
+        if (damageable == null) return false;
+
+        return damageable.CurrentHealth > 0f;
+    }
+
+    /// <summary>
+    ///     공격 가능한지 확인 (딜레이 체크)
+    /// </summary>
+    protected virtual bool CanAttack()
+    {
+        if (towerSetting.AttackSpeed <= 0f)
+        {
+            Debug.Log("AttackSpeed가 0 이하입니다.");
+            return false;
+        }
+        float attackInterval = 1f / towerSetting.AttackSpeed;
+        var isDelayOver = Time.time >= lastAttackTime + attackInterval;
+        var isAlive = isTargetAlive(currentTarget);
+        return isDelayOver && isAlive;
+    }
+
+    /// <summary>
+    ///     타워 공격
+    /// </summary>
+    protected virtual void Attack()
+    {
+        if (currentTarget == null) return;
+
+        // 발사체 프리팹 선택
+        GameObject projectilePrefab = null;
+
+        switch (towerSetting.Rank)
+        {
+            case 1:
+                projectilePrefab = basicProjectilePrefab; // 1단계용
+                break;
+            case 2:
+                projectilePrefab = fireProjectilePrefab; // 2단계용 (불타워 효과)
+                break;
+            case 3:
+                projectilePrefab = advancedProjectilePrefab; // 3단계용 (추가 가능)
+                break;
+            default:
+                projectilePrefab = basicProjectilePrefab;
+                break;
         }
 
-        /// <summary>
-        /// 가장 가까운 적을 찾는 함수
-        /// </summary>
-        protected virtual Transform FindNearestTarget()
+        if (projectilePrefab == null) return;
+
+        // 발사체 생성
+        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+
+        // 방향 및 초기화
+        Projectile projectile = proj.GetComponent<Projectile>();
+        projectile.Init(currentTarget);
+    }
+
+    #endregion
+    #region Action Handler
+
+    /// <summary>
+    ///     마우스 클릭 감지
+    /// </summary>
+    public void HandleTowerClicked()
+    {
+        OnTowerClicked?.Invoke(this);
+    }
+
+    #endregion
+    protected virtual void SpawnProjectile()
+    {
+        if (projectilePrefab == null)
         {
-            LayerMask enemyLayerMask = LayerMask.GetMask("Enemy");
-
-            Collider2D[] enemiesInRange = Physics2D.OverlapCircleAll(
-                transform.position,
-                towerSetting.range,
-                enemyLayerMask
-            );
-
-            if (enemiesInRange.Length == 0) return null;
-
-            Transform nearestTarget = null;
-            float nearestDistance = float.MaxValue;
-
-            foreach (Collider2D enemyCollider in enemiesInRange)
-            {
-                if (enemyCollider.gameObject == null) continue;
-
-                float distance = Vector2.Distance(transform.position, enemyCollider.transform.position);
-
-                if (distance < nearestDistance)
-                {
-                    nearestDistance = distance;
-                    nearestTarget = enemyCollider.transform;
-                }
-            }
-
-            return nearestTarget;
+            Debug.LogWarning($"{gameObject.name}에 Projectile Prefab이 할당되지 않았습니다!");
+            return;
         }
 
-        // 타겟이 살아 있는지 확인
-        protected virtual bool isTargetAlive(Transform target)
+        Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : transform.position;
+        GameObject proj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+
+        Projectile projectile = proj.GetComponent<Projectile>();
+        if (projectile != null)
         {
-            if (!target) return false;
-
-            IDamageable damageable = target.GetComponent<IDamageable>();
-            if (damageable == null) return false;
-
-            return damageable.CurrentHealth > 0f;
-        }
-
-        /// <summary>
-        /// 공격 가능한지 확인 (딜레이 체크)
-        /// </summary>
-        protected virtual bool CanAttack()
-        {
-            bool isDelayOver = Time.time >= lastAttackTime + towerSetting.attackDelay;
-            bool isAlive = isTargetAlive(currentTarget);
-            return isDelayOver && isAlive;
-        }
-
-        /// <summary>
-        /// 타워 공격
-        /// </summary>
-        protected abstract void Attack();
-
-        #endregion
-
-        /// <summary>
-        /// 마우스 클릭 감지
-        /// </summary>
-        public void HandleTowerClicked()
-        {
-            OnTowerClicked?.Invoke(this);
+            projectile.motionType = defaultMotionType;
+            projectile.SetTypes(defaultHitType, defaultEffectType);
+            projectile.Init(currentTarget);
         }
     }
 }

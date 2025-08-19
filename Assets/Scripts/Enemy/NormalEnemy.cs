@@ -1,114 +1,128 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; // UI °ü·Ã ±â´ÉÀ» À§ÇØ Ãß°¡
+using UnityEngine.UI; // UI ê´€ë ¨ ê¸°ëŠ¥ì„ ìœ„í•´ ì¶”ê°€
 
 public class NormalEnemy : MonoBehaviour, IDamageable
 {
-    // ÀûÀÇ ÃÖ´ë Ã¼·Â
+    public int idCode;
+    // ì ì˜ ìµœëŒ€ ì²´ë ¥
     public float maxHealth = 10f;
-    // ÇöÀç Ã¼·Â
+    // í˜„ì¬ ì²´ë ¥
     private float currentHealth;
     public float CurrentHealth => currentHealth;
 
-    // ÀÌµ¿ ¼Óµµ
+    // ì´ë™ ì†ë„
     public float moveSpeed = 2f;
-    
-    // ¸¶¹ı ÀúÇ×·Â (Magic Resistance)
-    [Range(0, 50)] // Inspector Ã¢¿¡¼­ 5~50 »çÀÌÀÇ °ª¸¸ ÀÔ·Â °¡´ÉÇÏµµ·Ï ¼³Á¤
-    public int magicResistance = 5; // ±âº» ¸¶¹ı ÀúÇ×·ÂÀ» 5%·Î ¼³Á¤
 
-    // Á¤½Å·Â (Mental Strength, °­ÀÎÇÔ È¿°ú)
-    [Range(0, 100)] // Inspector Ã¢¿¡¼­ 10~100 »çÀÌÀÇ °ª¸¸ ÀÔ·Â °¡´ÉÇÏµµ·Ï ¼³Á¤
-    public int mentalStrength = 10; // ±âº» Á¤½Å·ÂÀ» 10%·Î ¼³Á¤
+    // ë§ˆë²• ì €í•­ë ¥ (Magic Resistance)
+    [Range(0, 50)] // Inspector ì°½ì—ì„œ 5~50 ì‚¬ì´ì˜ ê°’ë§Œ ì…ë ¥ ê°€ëŠ¥í•˜ë„ë¡ ì„¤ì •
+    public int magicResistance = 5; // ê¸°ë³¸ ë§ˆë²• ì €í•­ë ¥ì„ 5%ë¡œ ì„¤ì •
 
-    // Ã¼·Â ¹Ù ÀÌ¹ÌÁö¸¦ ¿¬°áÇÒ º¯¼ö
-    public Image healthBarFillImage; // Ã¼·Â ¹ÙÀÇ Fill Å¸ÀÔ ÀÌ¹ÌÁö
+    // ì •ì‹ ë ¥ (Mental Strength, ê°•ì¸í•¨ íš¨ê³¼)
+    [Range(0, 100)] // Inspector ì°½ì—ì„œ 10~100 ì‚¬ì´ì˜ ê°’ë§Œ ì…ë ¥ ê°€ëŠ¥í•˜ë„ë¡ ì„¤ì •
+    public int mentalStrength = 10; // ê¸°ë³¸ ì •ì‹ ë ¥ì„ 10%ë¡œ ì„¤ì •
 
-    // EnemyMovement ÄÄÆ÷³ÍÆ® ÂüÁ¶
-    private EnemyMovement enemyMovement; 
+    // ì²´ë ¥ ë°” ì´ë¯¸ì§€ë¥¼ ì—°ê²°í•  ë³€ìˆ˜
+    public Image healthBarFillImage; // ì²´ë ¥ ë°”ì˜ Fill íƒ€ì… ì´ë¯¸ì§€
+
+    // EnemyMovement ì»´í¬ë„ŒíŠ¸ ì°¸ì¡°
+    private EnemyMovement enemyMovement;
 
     void Start()
     {
-        // °ÔÀÓ ½ÃÀÛ ½Ã ÇöÀç Ã¼·ÂÀ» ÃÖ´ë Ã¼·ÂÀ¸·Î ¼³Á¤
+        // ê²Œì„ ì‹œì‘ ì‹œ í˜„ì¬ ì²´ë ¥ì„ ìµœëŒ€ ì²´ë ¥ìœ¼ë¡œ ì„¤ì •
         currentHealth = maxHealth;
-        // Ã¼·Â ¹Ù ÃÊ±âÈ­
+        // ì²´ë ¥ ë°” ì´ˆê¸°í™”
         UpdateHealthBar();
 
-        // EnemyMovement ÄÄÆ÷³ÍÆ® ÂüÁ¶
+        // EnemyMovement ì»´í¬ë„ŒíŠ¸ ì°¸ì¡°
         enemyMovement = GetComponent<EnemyMovement>();
         if (enemyMovement == null)
         {
-            Debug.LogError("EnemyMovement ÄÄÆ÷³ÍÆ®¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogError("EnemyMovement ì»´í¬ë„ŒíŠ¸ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
         }
     }
 
 
-    // ÀûÀÌ ÇÇÇØ¸¦ ÀÔ¾úÀ» ¶§ È£ÃâµÉ ÇÔ¼ö
+    // ì ì´ í”¼í•´ë¥¼ ì…ì—ˆì„ ë•Œ í˜¸ì¶œë  í•¨ìˆ˜
     public void TakeDamage(float damageAmount)
     {
-        // ±âº» µ¥¹ÌÁö °è»ê
+        // ê¸°ë³¸ ë°ë¯¸ì§€ ê³„ì‚°
         float modifiedDamage = damageAmount;
 
-        // Æ¯¼ö ´É·Â Àû¿ë (¿¹: ¸¶¹ı ÀúÇ×·Â)
-        //modifiedDamage = CalculateDamageAfterResistance(modifiedDamage);
+        // íŠ¹ìˆ˜ ëŠ¥ë ¥ ì ìš© (ì˜ˆ: ë§ˆë²• ì €í•­ë ¥)
+        modifiedDamage = CalculateDamageAfterResistance(modifiedDamage);
 
-        // ÃÖÁ¾ µ¥¹ÌÁö Àû¿ë
+        // ìµœì¢… ë°ë¯¸ì§€ ì ìš©
         currentHealth -= modifiedDamage;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
 
-        // Ã¼·Â ¹Ù ¾÷µ¥ÀÌÆ®
+        // ì²´ë ¥ ë°” ì—…ë°ì´íŠ¸
         UpdateHealthBar();
 
-        // Ã¼·ÂÀÌ 0 ÀÌÇÏ°¡ µÇ¸é Àû Á¦°Å µî Ã³¸®
+        // ì²´ë ¥ì´ 0 ì´í•˜ê°€ ë˜ë©´ ì  ì œê±° ë“± ì²˜ë¦¬
         if (currentHealth <= 0)
         {
             Die();
         }
     }
 
-    // ¸¶¹ı ÀúÇ×·Â¿¡ µû¸¥ µ¥¹ÌÁö °è»ê ÇÔ¼ö
+    // ë§ˆë²• ì €í•­ë ¥ì— ë”°ë¥¸ ë°ë¯¸ì§€ ê³„ì‚° í•¨ìˆ˜
     private float CalculateDamageAfterResistance(float damageAmount)
     {
-        // ¸¶¹ı ÀúÇ×·Â %¸¦ ±âÁØÀ¸·Î µ¥¹ÌÁö °¨¼ÒÀ² °è»ê
+        // ë§ˆë²• ì €í•­ë ¥ %ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ë°ë¯¸ì§€ ê°ì†Œìœ¨ ê³„ì‚°
         float resistanceRatio = magicResistance / 100f;
-        // ÃÖÁ¾ µ¥¹ÌÁö °è»ê (µ¥¹ÌÁö * (1 - ÀúÇ×·Â ºñÀ²))
+        // ìµœì¢… ë°ë¯¸ì§€ ê³„ì‚° (ë°ë¯¸ì§€ * (1 - ì €í•­ë ¥ ë¹„ìœ¨))
         float finalDamage = damageAmount * (1 - resistanceRatio);
         return finalDamage;
     }
 
-    // Á¤½Å·Â¿¡ µû¸¥ CC Áö¼Ó ½Ã°£ °¨¼Ò °è»ê ÇÔ¼ö
+    // ì •ì‹ ë ¥ì— ë”°ë¥¸ CC ì§€ì† ì‹œê°„ ê°ì†Œ ê³„ì‚° í•¨ìˆ˜
     public float CalculateReducedCCDuration(float baseDuration)
     {
-        // Á¤½Å·Â %¸¦ ±âÁØÀ¸·Î Áö¼Ó ½Ã°£ °¨¼ÒÀ² °è»ê
+        // ì •ì‹ ë ¥ %ë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì§€ì† ì‹œê°„ ê°ì†Œìœ¨ ê³„ì‚°
         float tenacityRatio = mentalStrength / 100f;
-        // ÃÖÁ¾ CC Áö¼Ó ½Ã°£ °è»ê (±âº» Áö¼Ó ½Ã°£ * (1 - °¨¼ÒÀ²))
+        // ìµœì¢… CC ì§€ì† ì‹œê°„ ê³„ì‚° (ê¸°ë³¸ ì§€ì† ì‹œê°„ * (1 - ê°ì†Œìœ¨))
         float finalDuration = baseDuration * (1 - tenacityRatio);
         return finalDuration;
     }
 
-    // Ã¼·Â ¹Ù UI¸¦ ¾÷µ¥ÀÌÆ®ÇÏ´Â ÇÔ¼ö
+    // ì²´ë ¥ ë°” UIë¥¼ ì—…ë°ì´íŠ¸í•˜ëŠ” í•¨ìˆ˜
     void UpdateHealthBar()
     {
         if (healthBarFillImage != null)
         {
-            // ÇöÀç Ã¼·Â ºñÀ²¿¡ ¸ÂÃç Ã¼·Â ¹Ù ÀÌ¹ÌÁöÀÇ Fill Amount¸¦ Á¶Àı
+            // í˜„ì¬ ì²´ë ¥ ë¹„ìœ¨ì— ë§ì¶° ì²´ë ¥ ë°” ì´ë¯¸ì§€ì˜ Fill Amountë¥¼ ì¡°ì ˆ
             healthBarFillImage.fillAmount = currentHealth / maxHealth;
         }
     }
 
-    // ÀûÀÌ Á×¾úÀ» ¶§ È£ÃâµÉ ÇÔ¼ö
+    // ì ì´ ì£½ì—ˆì„ ë•Œ í˜¸ì¶œë  í•¨ìˆ˜
     void Die()
     {
-        Debug.Log(gameObject.name + "°¡ Á×¾ú½À´Ï´Ù.");
-        // TODO: ¿©±â¿¡ ÀûÀÌ Á×¾úÀ» ¶§ ¹ß»ıÇÒ ÀÌº¥Æ® (¾Ö´Ï¸ŞÀÌ¼Ç Àç»ı, ¾ÆÀÌÅÛ µå¶ø, ¿ÀºêÁ§Æ® Á¦°Å µî)¸¦ Ãß°¡
-        Destroy(gameObject); // ¿¹½Ã: Àû ¿ÀºêÁ§Æ® Á¦°Å
+        Debug.Log(gameObject.name + "ê°€ ì£½ì—ˆìŠµë‹ˆë‹¤.");
+
+        // ì½”ì¸ ë³´ìƒ
+        int bonus = ResourceManager.Instance.EnemyKillBonusCoin;
+        ResourceManager.Instance.AddCoin(bonus);
+
+        // EnemyMovementì—ê²Œ ì•Œë ¤ì„œ SpawnManagerê¹Œì§€ ì´ë²¤íŠ¸ ì „ë‹¬
+        if (enemyMovement != null)
+        {
+            enemyMovement.Die();
+        }
+        else
+        {
+            Debug.LogError("EnemyMovement ì°¸ì¡° ì—†ìŒ! ì´ë²¤íŠ¸ ì „ë‹¬ ì‹¤íŒ¨");
+        }
+
     }
 
-    // ÀÌµ¿ ¼Óµµ º¯°æ ÇÔ¼ö (Æ¯¼ö ´É·Â Àû¿ë)
+    // ì´ë™ ì†ë„ ë³€ê²½ í•¨ìˆ˜ (íŠ¹ìˆ˜ ëŠ¥ë ¥ ì ìš©)
     public void ApplyMoveSpeedModifier(float modifier)
     {
         moveSpeed += modifier;
-        //moveSpeed = Mathf.Clamp(moveSpeed, 0, maxMoveSpeed); // ÃÖ´ë ÀÌµ¿ ¼Óµµ Á¦ÇÑ
+        //moveSpeed = Mathf.Clamp(moveSpeed, 0, maxMoveSpeed); // ìµœëŒ€ ì´ë™ ì†ë„ ì œí•œ
     }
 }
