@@ -10,15 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2c1dcb257cdf490da3406cbf4966e539, type: 3}
-  m_Name: L1E
+  m_Name: L4E
   m_EditorClassIdentifier: 
-  Name: "\uB3CC"
-  ID: L1E
-  Level: 1
+  Name: "\uC21C\uD658\uC758 \uB300\uC9C0"
+  ID: L4E
+  Level: 4
   ElementType: 2
-  MaxReinforce: 5
-  RequiredTowerIds: []
-  BaseDamage: 20
-  BaseRange: 2.5
-  BaseAttackSpeed: 1
-  BaseCriticalRate: 0
+  MaxReinforce: 0
+  RequiredTowerIds:
+  - L3E
+  - L3VIT
+  - L3ROT
+  BaseDamage: 40
+  BaseRange: 3
+  BaseAttackSpeed: 1.5
+  BaseCriticalRate: 10
+  AttackMode: 0
+  radiant: 0
+  TimeDuration: 0
+  Guided: 0
+  Multi: 0

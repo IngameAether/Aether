@@ -18,7 +18,18 @@ MonoBehaviour:
   ElementType: 2
   MaxReinforce: 10
   RequiredTowerIds: []
-  BaseDamage: 70
+  Damage:
+    baseValue: 70
+    reinforceCoef: 30
+  AttackSpeed:
+    baseValue: 1
+    reinforceCoef: 0.1
+  CriticalRate:
+    baseValue: 10
+    reinforceCoef: 3
   BaseRange: 3
-  BaseAttackSpeed: 1
-  BaseCriticalRate: 10
+  AttackMode: 1
+  radiant: 0.5
+  TimeDuration: 0
+  Guided: 0
+  Multi: 1

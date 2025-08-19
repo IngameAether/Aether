@@ -10,15 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2c1dcb257cdf490da3406cbf4966e539, type: 3}
-  m_Name: L2W
+  m_Name: L1W
   m_EditorClassIdentifier: 
-  Name: "\uBC14\uB78C"
-  ID: L2W
-  Level: 2
+  Name: "\uACF5\uAE30"
+  ID: L1W
+  Level: 1
   ElementType: 3
-  MaxReinforce: 10
+  MaxReinforce: 5
   RequiredTowerIds: []
-  BaseDamage: 25
-  BaseRange: 3.5
-  BaseAttackSpeed: 3
-  BaseCriticalRate: 10
+  Damage:
+    baseValue: 5
+    reinforceCoef: 2
+  AttackSpeed:
+    baseValue: 3
+    reinforceCoef: 0
+  CriticalRate:
+    baseValue: 0
+    reinforceCoef: 2
+  BaseRange: 3
+  AttackMode: 0
+  radiant: 0
+  TimeDuration: 0
+  Guided: 1
+  Multi: 0

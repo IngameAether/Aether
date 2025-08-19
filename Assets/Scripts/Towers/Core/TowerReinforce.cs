@@ -7,6 +7,7 @@ public class TowerReinforce : MonoBehaviour
     protected Tower tower;
     protected TowerSetting towerSetting;
     protected TowerSpriteController towerSpriteController;
+    //private TowerData data;
 
     private void Start()
     {
@@ -78,6 +79,7 @@ public class TowerReinforce : MonoBehaviour
     {
         towerSetting.Rank++;
         if (towerSpriteController != null) towerSpriteController.SetSpritesByLevel(towerSetting.Rank);
+        SetTowerStat();
     }
 
     /// <summary>
@@ -90,6 +92,17 @@ public class TowerReinforce : MonoBehaviour
         {
             if (towerSpriteController != null) towerSpriteController.SetSpriteByReinForce(towerSetting.reinforceLevel);
         }
+        SetTowerStat();
+    }
+
+    /// <summary>
+    /// 레벨별 공격력, 속도, 치명타 조정
+    /// </summary>
+    protected void SetTowerStat()
+    {
+        towerSetting.Damage = tower.towerData.GetDamage(GetReinforceLevel());
+        towerSetting.AttackSpeed = tower.towerData.GetAttackSpeed(GetReinforceLevel());
+        towerSetting.CriticalHit = tower.towerData.GetCriticalRate(GetReinforceLevel());
     }
 
     /// <summary>
