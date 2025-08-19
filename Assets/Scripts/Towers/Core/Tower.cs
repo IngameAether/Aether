@@ -31,6 +31,7 @@ public abstract class Tower : MonoBehaviour
     [Header("Tower Reinforce")]
     public ReinforceType reinforceType;
 
+    public TowerData towerData;
     public string type { get; set; }
 
     protected SpriteRenderer spriteRenderer;
@@ -65,13 +66,14 @@ public abstract class Tower : MonoBehaviour
 
     public void SetTowerSetting(TowerData data)
     {
+        towerData = data;
         towerSetting.Name = data.Name;
         towerSetting.Type = data.ElementType;
         towerSetting.Rank = data.Level;
-        towerSetting.Damage = data.BaseDamage;
+        towerSetting.Damage = data.GetDamage(towerSetting.reinforceLevel);
         towerSetting.Range = data.BaseRange;
-        towerSetting.AttackSpeed = data.BaseAttackSpeed;
-        towerSetting.CriticalHit = data.BaseCriticalRate;
+        towerSetting.AttackSpeed = data.GetAttackSpeed(towerSetting.reinforceLevel);
+        towerSetting.CriticalHit = data.GetCriticalRate(towerSetting.reinforceLevel);
     }
 
     protected virtual void Start()

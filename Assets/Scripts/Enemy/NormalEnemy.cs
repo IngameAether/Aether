@@ -5,6 +5,7 @@ using UnityEngine.UI; // UI 관련 기능을 위해 추가
 
 public class NormalEnemy : MonoBehaviour, IDamageable
 {
+    public int idCode;
     // 적의 최대 체력
     public float maxHealth = 10f;
     // 현재 체력

@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56fd09dc2714ffa4e87d1cf06fee56b4, type: 3}
+  m_Name: B2
+  m_EditorClassIdentifier: 
+  <Name>k__BackingField: "\uB9C8\uBC95\uD559\uAD50 \uAD50\uC7A5"
+  <ID>k__BackingField: B2
+  <HP>k__BackingField: 1000
+  <Speed>k__BackingField: 0.4
+  <DamageReduction>k__BackingField: 5
+  <ControlResistance>k__BackingField: 8
+  <Aether>k__BackingField: 200
+  <Description>k__BackingField: "\uC8FC\uAE30\uC801\uC73C\uB85C \uB9C8\uBC95 \uBCF4\uD638\uB9C9\uC744
+    \uC0AC\uC6A9\uD574 \uB9C8\uBC95 \uB370\uBBF8\uC9C0\uB97C \uB9C9\uC74C"

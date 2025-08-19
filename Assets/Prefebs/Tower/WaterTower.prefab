@@ -145,7 +145,7 @@ MonoBehaviour:
     Description: straight projectile
     Type: 1
     Rank: 1
-    reinforceLevel: 1
+    reinforceLevel: 0
     MaxReinforce: 5
     Damage: 8
     AttackSpeed: 1.5
@@ -250,6 +250,7 @@ MonoBehaviour:
   elementSprites:
   - {fileID: -9212672696627779611, guid: 612a76339249bd741aacdc91beb03ac3, type: 3}
   - {fileID: -1188321544680908049, guid: ead2ec0edf0a34b48926cfca0b4d1ec2, type: 3}
+  - {fileID: -3961584226174127657, guid: 3f5b8cf9631f641428eccf229a5e41a6, type: 3}
   levelSprites:
   - {fileID: -886020809869896292, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
   - {fileID: 711524243418297025, guid: 55aba17817b9fc54b8a426f6d5fe7afc, type: 3}
