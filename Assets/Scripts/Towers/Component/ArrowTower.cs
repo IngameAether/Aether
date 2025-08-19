@@ -6,60 +6,107 @@ using System.Collections;
 /// </summary>
 public class ArrowTower : Tower
 {
-    public GameObject projectilePrefab;
-    public Transform spawnPoint; // 인스펙터에 발사 포인트 연결
-    private float projectileSpeed = 300f;
+    [Header("Projectile Prefabs")]
+    [Tooltip("기본 직선탄 (모든 Rank1 공통, Air/Water Rank2도 사용)")]
+    [SerializeField] private GameObject projectileStraightPrefab;
+
+    [Tooltip("불 타워 Rank2 전용 (화염방사) - Projectile.motionType=None, effectType=FireCone 세팅")]
+    [SerializeField] private GameObject projectileFireConePrefab;
+
+    [Tooltip("땅 타워 Rank2 전용 (포물선 + 폭발) - Projectile.motionType=Parabola, hitType=GroundAoE 세팅")]
+    [SerializeField] private GameObject projectileEarthArcPrefab;
+
+    [Header("Animation Option")]
+    [SerializeField] private bool useAnimation = false;
+
+    protected override void InitializeTower()
+    {
+        base.InitializeTower();
+
+        // firePoint 자동 탐색 (없으면 타워 기준 발사)
+        if (firePoint == null)
+        {
+            var fp = transform.Find("FirePoint");
+            if (fp != null) firePoint = fp;
+        }
+    }
 
     protected override void Attack()
     {
         if (!currentTarget) return;
 
-        Animator mouthAnimator = transform.Find("Mouth")?.GetComponent<Animator>();
-        Animator scaleAnimator = GetComponent<Animator>();
-        if (mouthAnimator != null && scaleAnimator != null)
+        if (useAnimation)
         {
-            mouthAnimator.SetTrigger("CanAttack");
-            scaleAnimator.SetTrigger("CanAttack");
- //           Debug.Log("Animation 실행");
+            // 애니메이션 트리거 → AnimationEvent에서 ThrowProjectile 호출
+            Animator mouthAnimator = transform.Find("Mouth")?.GetComponent<Animator>();
+            Animator scaleAnimator = GetComponent<Animator>();
+            if (mouthAnimator != null) mouthAnimator.SetTrigger("CanAttack");
+            if (scaleAnimator != null) scaleAnimator.SetTrigger("CanAttack");
         }
         else
         {
-            // 애니가 없으면 바로 발사
-            SpawnProjectile();
+            // 애니메이션 안 쓰면 바로 발사
+            FireProjectile();
         }
-    }
-
-    IEnumerator SpawnAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        SpawnProjectile();
     }
 
     public void ThrowProjectile()
     {
         if (!currentTarget) return;
-        SpawnProjectile();
+        FireProjectile();
     }
 
-    // 투사체 생성 및 발사
-    private void SpawnProjectile()
+    private void FireProjectile()
     {
-        if (projectilePrefab == null)
+        // Rank/속성에 맞는 ProjectilePrefab 선택
+        GameObject prefabToFire = SelectProjectilePrefab();
+
+        if (prefabToFire == null)
         {
-            Debug.LogWarning("projectilePrefab이 할당되지 않았습니다.");
+            Debug.LogWarning($"{name}: 발사체 프리팹이 지정되지 않았습니다. (Rank:{towerSetting.Rank}, Type:{towerSetting.Type})");
             return;
         }
 
-        Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : transform.position;
-        GameObject projectile = Instantiate(projectilePrefab, transform.position, Quaternion.identity);
-        var projectileScript = projectile.GetComponent<TowerAttack>();
-        if (projectileScript != null)
+        // 위치/방향 계산
+        Vector3 spawnPos = firePoint != null ? firePoint.position : transform.position;
+        Vector3 dir = (currentTarget.position - spawnPos).normalized;
+
+        // 생성
+        GameObject proj = Instantiate(prefabToFire, spawnPos, Quaternion.identity);
+
+        // 방향 회전
+        if (dir.sqrMagnitude > 0.0001f)
+            proj.transform.right = dir;
+
+        // Projectile 초기화
+        var projectile = proj.GetComponent<Projectile>();
+        if (projectile != null)
         {
-            // 방향은 타겟을 향하도록 계산
-            Vector3 dir = (currentTarget.position - spawnPos).normalized;
-            projectile.transform.right = dir; // 프리팹이 오른쪽을 앞(Forward)으로 본다고 가정
-            // Initialize(데미지, 타겟, 방향, 속도) 시그니처가 다르면 맞춰서 호출하세요
-            projectileScript.Initialize(towerSetting.Damage, currentTarget, dir, projectileSpeed);
+            projectile.Init(currentTarget);
+        }
+        else
+        {
+            Debug.LogWarning($"{name}: 생성된 프리팹에 Projectile 컴포넌트가 없습니다.");
+        }
+    }
+
+    private GameObject SelectProjectilePrefab()
+    {
+        // Rank 1 → 무조건 직선 탄
+        if (towerSetting.Rank <= 1)
+            return projectileStraightPrefab;
+
+        // Rank 2 이상: 원소별 분기
+        switch (towerSetting.Type)
+        {
+            case ElementType.Fire:
+                return projectileFireConePrefab;
+            case ElementType.Earth:
+                return projectileEarthArcPrefab;
+            case ElementType.Air:
+            case ElementType.Water:
+            default:
+                return projectileStraightPrefab;
         }
     }
 }

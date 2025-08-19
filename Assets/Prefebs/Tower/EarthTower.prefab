@@ -68,8 +68,20 @@ MonoBehaviour:
     Range: 2.5
     CriticalHit: 0
   reinforceType: 0
+  firePoint: {fileID: 0}
   projectilePrefab: {fileID: 5458754674072186368, guid: 87be3284f521e3e418640677cd9a39b5, type: 3}
   spawnPoint: {fileID: 0}
+  projectileSpeed: 10
+  defaultMotionType: 1
+  defaultEffectType: 0
+  defaultHitType: 0
+  basicProjectilePrefab: {fileID: 0}
+  fireProjectilePrefab: {fileID: 0}
+  advancedProjectilePrefab: {fileID: 0}
+  projectileStraightPrefab: {fileID: 5458754674072186368, guid: 87be3284f521e3e418640677cd9a39b5, type: 3}
+  projectileFireConePrefab: {fileID: 0}
+  projectileEarthArcPrefab: {fileID: 5458754674072186368, guid: 4e1ae831a98d3854aac102abdb27b411, type: 3}
+  useAnimation: 0
 --- !u!58 &-3339964117942688448
 CircleCollider2D:
   m_ObjectHideFlags: 0

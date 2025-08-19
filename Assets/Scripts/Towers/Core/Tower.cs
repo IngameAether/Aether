@@ -41,6 +41,23 @@ public abstract class Tower : MonoBehaviour
     protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
     protected Vector3 direction; // 적 방향
 
+    [Header("Firing")]
+    [SerializeField] protected Transform firePoint; 
+
+    public Transform FirePoint => firePoint != null ? firePoint : transform;
+
+    [Header("Projectile Settings")]
+    [SerializeField] protected GameObject projectilePrefab;
+    [SerializeField] protected Transform spawnPoint;
+    [SerializeField] protected float projectileSpeed = 10f;
+    [SerializeField] protected ProjectileMotionType defaultMotionType;
+    [SerializeField] protected DamageEffectType defaultEffectType;
+    [SerializeField] protected Projectile.HitType defaultHitType;
+
+    [SerializeField] private GameObject basicProjectilePrefab;
+    [SerializeField] private GameObject fireProjectilePrefab;
+    [SerializeField] private GameObject advancedProjectilePrefab;
+
     public TowerSetting GetTowerSetting()
     {
         return towerSetting;
@@ -80,6 +97,17 @@ public abstract class Tower : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
+        EnsureFirePoint();
+    }
+
+    protected void EnsureFirePoint()
+    {
+        if (firePoint == null)
+        {
+            var found = transform.Find("FirePoint");
+            if (found != null) firePoint = found;
+            else firePoint = transform; // 최후 대체
+        }
     }
 
     /// <summary>
@@ -189,10 +217,40 @@ public abstract class Tower : MonoBehaviour
     /// <summary>
     ///     타워 공격
     /// </summary>
-    protected abstract void Attack();
+    protected virtual void Attack()
+    {
+        if (currentTarget == null) return;
+
+        // 발사체 프리팹 선택
+        GameObject projectilePrefab = null;
+
+        switch (towerSetting.Rank)
+        {
+            case 1:
+                projectilePrefab = basicProjectilePrefab; // 1단계용
+                break;
+            case 2:
+                projectilePrefab = fireProjectilePrefab; // 2단계용 (불타워 효과)
+                break;
+            case 3:
+                projectilePrefab = advancedProjectilePrefab; // 3단계용 (추가 가능)
+                break;
+            default:
+                projectilePrefab = basicProjectilePrefab;
+                break;
+        }
+
+        if (projectilePrefab == null) return;
+
+        // 발사체 생성
+        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
+
+        // 방향 및 초기화
+        Projectile projectile = proj.GetComponent<Projectile>();
+        projectile.Init(currentTarget);
+    }
 
     #endregion
-
     #region Action Handler
 
     /// <summary>
@@ -204,4 +262,23 @@ public abstract class Tower : MonoBehaviour
     }
 
     #endregion
+    protected virtual void SpawnProjectile()
+    {
+        if (projectilePrefab == null)
+        {
+            Debug.LogWarning($"{gameObject.name}에 Projectile Prefab이 할당되지 않았습니다!");
+            return;
+        }
+
+        Vector3 spawnPos = spawnPoint != null ? spawnPoint.position : transform.position;
+        GameObject proj = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
+
+        Projectile projectile = proj.GetComponent<Projectile>();
+        if (projectile != null)
+        {
+            projectile.motionType = defaultMotionType;
+            projectile.SetTypes(defaultHitType, defaultEffectType);
+            projectile.Init(currentTarget);
+        }
+    }
 }

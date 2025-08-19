@@ -152,8 +152,20 @@ MonoBehaviour:
     Range: 3
     CriticalHit: 0
   reinforceType: 0
+  firePoint: {fileID: 0}
   projectilePrefab: {fileID: 4323443502052370822, guid: c247002935a4d0c41a6dfd9c8e656d36, type: 3}
   spawnPoint: {fileID: 0}
+  projectileSpeed: 10
+  defaultMotionType: 1
+  defaultEffectType: 0
+  defaultHitType: 0
+  basicProjectilePrefab: {fileID: 0}
+  fireProjectilePrefab: {fileID: 0}
+  advancedProjectilePrefab: {fileID: 0}
+  projectileStraightPrefab: {fileID: 4323443502052370822, guid: c247002935a4d0c41a6dfd9c8e656d36, type: 3}
+  projectileFireConePrefab: {fileID: 0}
+  projectileEarthArcPrefab: {fileID: 0}
+  useAnimation: 0
 --- !u!58 &35619176347906518
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -272,7 +284,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20edbcd3837c4fb99fa8e32522bad5a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!1 &3810173595613539892
 GameObject:
   m_ObjectHideFlags: 0
