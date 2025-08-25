@@ -5,7 +5,8 @@ using UnityEngine.UI; // UI 관련 기능을 위해 추가
 
 public class NormalEnemy : MonoBehaviour, IDamageable
 {
-    public int idCode;
+    public string idCode;
+    public string GetEnemyId => idCode;
     // 적의 최대 체력
     public float maxHealth = 10f;
     // 현재 체력
@@ -29,6 +30,8 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     // EnemyMovement 컴포넌트 참조
     private EnemyMovement enemyMovement;
 
+    public EnemyData enemyData;
+
     void Start()
     {
         // 게임 시작 시 현재 체력을 최대 체력으로 설정
@@ -44,6 +47,10 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         }
     }
 
+    public void SetEnemyData(EnemyData data)
+    {
+        enemyData = data;
+    }
 
     // 적이 피해를 입었을 때 호출될 함수
     public void TakeDamage(float damageAmount)
@@ -103,9 +110,11 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     {
         Debug.Log(gameObject.name + "가 죽었습니다.");
 
+        int baseReward = enemyData.Aether;
         // 코인 보상
-        int bonus = ResourceManager.Instance.EnemyKillBonusCoin;
-        ResourceManager.Instance.AddCoin(bonus);
+        int bonusReward = ResourceManager.Instance.EnemyKillBonusCoin;
+        int totalReward = baseReward + bonusReward;
+        ResourceManager.Instance.AddCoin(totalReward);
 
         // EnemyMovement에게 알려서 SpawnManager까지 이벤트 전달
         if (enemyMovement != null)
