@@ -7,14 +7,7 @@ public class MagicBookSelectionUI : MonoBehaviour
     [SerializeField] private MagicBookButton[] _bookButtons; // 3개 버튼
 
     public event Action OnBookSelectCompleted;
-
-    private MagicBookManager _bookManager;
     private MagicBookData[] _currentChoices;
-
-    private void Awake()
-    {
-        _bookManager = FindObjectOfType<MagicBookManager>();
-    }
 
     private void Start()
     {
@@ -27,7 +20,18 @@ public class MagicBookSelectionUI : MonoBehaviour
 
     public void ShowBookSelection()
     {
-        _currentChoices = _bookManager.GetRandomBookSelection(3);
+        _currentChoices = MagicBookManager.Instance.GetRandomBookSelection(3);
+        if (_currentChoices == null || _currentChoices.Length == 0)
+        {
+            Debug.LogError("MagicBookSelectionUI: 추천 목록이 비어 있습니다.");
+            return;
+        }
+
+        if (_bookButtons == null || _bookButtons.Length == 0)
+        {
+            Debug.LogError("MagicBookSelectionUI: 버튼 배열이 비어 있습니다.");
+            return;
+        }
 
         // UI 업데이트
         for (int i = 0; i < _bookButtons.Length; i++)
@@ -44,18 +48,18 @@ public class MagicBookSelectionUI : MonoBehaviour
         }
 
         _bookSelectionPanel.SetActive(true);
-        Time.timeScale = 0f;
+        //Time.timeScale = 0f;
         GameTimer.Instance.StopTimer();
     }
 
     private void OnBookSelected(int buttonIndex)
     {
         var bookData = _currentChoices[buttonIndex];
-        _bookManager.SelectBook(bookData.Code);
+        MagicBookManager.Instance.SelectBook(bookData.Code);
 
         _bookSelectionPanel.SetActive(false);
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
         GameTimer.Instance.StartTimer();
         OnBookSelectCompleted?.Invoke();
     }

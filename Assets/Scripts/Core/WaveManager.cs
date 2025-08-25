@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -65,6 +67,36 @@ public class WaveManager : MonoBehaviour
             while (_waitingForEnemies) yield return null; // 적 전멸 기다림
 
             Debug.Log($"--- 웨이브 {waveIndex + 1} 종료 ---");
+
+            if (waveIndex == 0)
+            {
+                // 1) 비동기 저장 작업 시작
+                Task<bool> saveTask = GameSaveManager.Instance.SaveGameAsync(2);
+
+                // 2) 완료까지 코루틴으로 대기 (메인 스레드 프레임은 계속 돎)
+                yield return new WaitUntil(() => saveTask.IsCompleted);
+
+                // 3) 결과 확인 및 예외 처리
+                bool isSave = false;
+                Exception ex = saveTask.Exception;
+                if (saveTask.IsFaulted)
+                {
+                    Debug.LogError(ex);
+                }
+                else if (saveTask.IsCanceled)
+                {
+                    Debug.LogWarning("Save canceled");
+                }
+                else
+                {
+                    isSave = saveTask.Result;
+                }
+
+                // isSave 활용
+                Debug.Log($"Save completed: {isSave}");
+            }
+
+            yield return null;
 
             ResourceManager.Instance.AddCoin(_waveEndBonusCoin);
 

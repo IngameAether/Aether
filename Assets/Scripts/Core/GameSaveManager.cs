@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using UnityEngine;
@@ -15,16 +16,20 @@ public class SaveSlotInfo
 
 public class GameSaveManager : MonoBehaviour
 {
-    [SerializeField] private WaveManager waveManager;
     public static GameSaveManager Instance { get; private set; }
+
+    public GameSaveData CurrentGameData { get; private set; }
 
     private const int MAX_SAVE_SLOTS = 3;
     private const string SAVE_FOLDER = "GameSaves";
     private const string FILE_EXTENSION = ".gamesave";
+    private string _persistentDataPath;
 
-    private GameSaveData _currentGameData;
+    private Transform _towerParent;
+    private MapGenerator _mapGenerate;
+    private WaveManager _waveManager;
 
-    private SpawnManager _spawnManager;
+    public bool save = false;
 
     private void Awake()
     {
@@ -40,15 +45,23 @@ public class GameSaveManager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (save)
+        {
+            _ = SaveGameAsync(0);
+            save = false;
+        }
+    }
+
     private void InitializeSaveSystem()
     {
-        string savePath = GetSaveDirectoryPath();
+        _persistentDataPath = Application.persistentDataPath;
+        string savePath = Path.Combine(_persistentDataPath, SAVE_FOLDER);
         if (!Directory.Exists(savePath))
         {
             Directory.CreateDirectory(savePath);
         }
-
-        _spawnManager = FindObjectOfType<SpawnManager>();
     }
 
     /// <summary>
@@ -65,12 +78,14 @@ public class GameSaveManager : MonoBehaviour
         try
         {
             GameSaveData saveData = CollectCurrentGameData(slotIndex);
-            string jsonData = await Task.Run(() => JsonConvert.SerializeObject(saveData, Formatting.Indented));
+            CurrentGameData = saveData;
 
             string filePath = GetSaveFilePath(slotIndex);
-            await File.WriteAllTextAsync(filePath, jsonData);
 
-            _currentGameData = saveData;
+            string jsonData = await Task.Run(() => JsonConvert.SerializeObject(saveData, Formatting.Indented)).ConfigureAwait(false);
+
+            await File.WriteAllTextAsync(filePath, jsonData).ConfigureAwait(false);
+
             Debug.Log($"GameSaveManager: Game saved successfully to slot {slotIndex}");
             return true;
         }
@@ -88,7 +103,6 @@ public class GameSaveManager : MonoBehaviour
     {
         if (slotIndex < 0 || slotIndex >= MAX_SAVE_SLOTS)
         {
-            Debug.LogError($"GameSaveManager: Invalid save slot: {slotIndex}");
             return null;
         }
 
@@ -106,7 +120,7 @@ public class GameSaveManager : MonoBehaviour
 
             if (ValidateSaveData(loadedData))
             {
-                _currentGameData = loadedData;
+                CurrentGameData = loadedData;
                 Debug.Log($"GameSaveManager: Game loaded successfully from slot {slotIndex}");
                 return loadedData;
             }
@@ -128,18 +142,73 @@ public class GameSaveManager : MonoBehaviour
     /// </summary>
     private GameSaveData CollectCurrentGameData(int slotIndex)
     {
-        // 일단 없는 데이터는 그냥 Empty로 설정
-        GameSaveData saveData = new GameSaveData
+        try
         {
-            saveSlot = slotIndex,
-            currentWave = waveManager.CurrentWaveLevel,
-            playerLife = GameManager.Instance.currentLives,
-            resources = new ResourceData(),
-            currentMapId = SceneManager.GetActiveScene().name,
-            towers = new List<TowerSaveData>()
-        };
+            if (!_towerParent)
+            {
+                var towerCombiner = FindObjectOfType<TowerCombiner>();
+                _towerParent = towerCombiner ? towerCombiner.towerParent : null;
+            }
 
-        return saveData;
+            if (!_waveManager)
+                _waveManager = FindObjectOfType<WaveManager>();
+
+            if (!_mapGenerate)
+                _mapGenerate = FindObjectOfType<MapGenerator>();
+
+            GameSaveData saveData = new GameSaveData
+            {
+                saveSlot = slotIndex,
+                gameVersion = Application.version, // 게임 버전 추가
+                currentWave = _waveManager ? _waveManager.CurrentWaveLevel : 0,
+                playerLife = GameManager.Instance ? GameManager.Instance.currentLives : 0,
+                resources = CollectResourceData(),
+                currentMapSeed = _mapGenerate ? _mapGenerate.CurrentSeed : 0,
+                towers = CollectTowerData(), // 타워 데이터 수집 추가
+            };
+
+            return saveData;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"GameSaveManager: 데이터 수집 실패: {e.Message}");
+            throw;
+        }
+    }
+
+    private ResourceData CollectResourceData()
+    {
+        if (ResourceManager.Instance != null)
+        {
+            return new ResourceData(
+                ResourceManager.Instance.Coin,
+                ResourceManager.Instance.LightElement,
+                ResourceManager.Instance.DarkElement
+            );
+        }
+
+        Debug.LogWarning("GameSaveManager: ResourceManager를 찾을 수 없습니다.");
+        return new ResourceData(0, 0, 0);
+    }
+
+    private List<TowerSetting> CollectTowerData()
+    {
+        var towers = new List<TowerSetting>();
+
+        if (_towerParent != null)
+        {
+            // 타워 자식 오브젝트들에서 데이터 수집
+            foreach (Transform child in _towerParent)
+            {
+                var towerComponent = child.GetComponent<Tower>(); // Tower 컴포넌트가 있다고 가정
+                if (towerComponent != null)
+                {
+                    towers.Add(towerComponent.GetTowerSetting());
+                }
+            }
+        }
+
+        return towers;
     }
 
     /// <summary>
@@ -160,7 +229,7 @@ public class GameSaveManager : MonoBehaviour
     /// </summary>
     private string GetSaveDirectoryPath()
     {
-        return Path.Combine(Application.persistentDataPath, SAVE_FOLDER);
+        return Path.Combine(_persistentDataPath, SAVE_FOLDER);
     }
 
     /// <summary>

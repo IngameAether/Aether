@@ -24,7 +24,7 @@ public class TowerCombiner : MonoBehaviour
     [SerializeField] private GameObject earthPrefab;
     [SerializeField] private GameObject airPrefab;
     [SerializeField] private GameObject firePrefab;
-    [SerializeField] private Transform towerParent;
+    [SerializeField] public Transform towerParent;
 
     private Dictionary<string, TowerData> _towerDataMap;
     private Dictionary<ElementType, GameObject> _elementTowerMap;

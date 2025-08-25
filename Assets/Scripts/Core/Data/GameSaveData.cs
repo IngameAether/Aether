@@ -24,8 +24,8 @@ public class GameSaveData
     public ResourceData resources = new();
 
     // 맵 및 타워 정보
-    public string currentMapId;
-    public List<TowerSaveData> towers = new();
+    public int currentMapSeed;
+    public List<TowerSetting> towers = new();
 
     // 버프관련 정보
     public List<BuffSaveEntry> activeBuffs = new List<BuffSaveEntry>();
@@ -45,13 +45,4 @@ public class ResourceData
         this.lightElement = light;
         this.darkElement = dark;
     }
-}
-
-[Serializable]
-public class TowerSaveData
-{
-    public string towerId;
-    public Vector3 position;
-    public int rank;
-    public ElementType elementType;
 }
