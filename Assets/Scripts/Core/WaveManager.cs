@@ -130,7 +130,7 @@ public class WaveManager : MonoBehaviour
         if (buffChoiceUI != null)
             buffChoiceUI.OnBookSelectCompleted += HandleBookSelectCompleted;
 
-        MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
+        MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
         SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
     }
 
@@ -139,7 +139,7 @@ public class WaveManager : MonoBehaviour
         if (buffChoiceUI != null)
             buffChoiceUI.OnBookSelectCompleted -= HandleBookSelectCompleted;
 
-        MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
+        MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
         SpawnManager.OnAllEnemiesCleared -= HandleWaveCleared;
     }
 

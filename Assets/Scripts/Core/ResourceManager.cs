@@ -29,12 +29,12 @@ public class ResourceManager : MonoBehaviour
 
     private void OnEnable()
     {
-        MagicBookManager.OnBookEffectApplied += HandleBookEffectApplied;
+        MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
     }
 
     private void OnDisable()
     {
-        MagicBookManager.OnBookEffectApplied -= HandleBookEffectApplied;
+        MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
     }
 
     #region Coin Management

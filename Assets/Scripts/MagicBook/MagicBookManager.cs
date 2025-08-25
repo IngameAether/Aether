@@ -5,8 +5,10 @@ using Random = UnityEngine.Random;
 
 public class MagicBookManager : MonoBehaviour
 {
+    public static MagicBookManager Instance { get; private set; }
+
     [SerializeField] private MagicBookData[] _allBooks;
-    public static event Action<EBookEffectType, int> OnBookEffectApplied;
+    public event Action<EBookEffectType, int> OnBookEffectApplied;
 
     private Dictionary<string, MagicBookData> _allBooksDict;
     private Dictionary<string, int> _ownedBooksDict;
@@ -14,6 +16,9 @@ public class MagicBookManager : MonoBehaviour
 
     private void Awake()
     {
+        if (Instance == null) Instance = this;
+        else Destroy(this);
+
         _allBooksDict = new Dictionary<string, MagicBookData>(_allBooks.Length);
         _ownedBooksDict = new Dictionary<string, int>(_allBooks.Length);
         _availableBooks = new List<MagicBookData>();

@@ -6,12 +6,12 @@ public class MapGenerator : MonoBehaviour
 {
     const int SIZE = 8;
     const int PATH_LENGTH = 22;
-    int[,] mapTiles = new int[SIZE, SIZE];  // 1=Àû Áö³ª°¡´Â °æ·Î, 0=Å¸¿ö ¼³Ä¡ °¡´ÉÇÑ °÷
+    int[,] mapTiles = new int[SIZE, SIZE];  // 1=ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½, 0=Å¸ï¿½ï¿½ ï¿½ï¿½Ä¡ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½
     Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
-    Vector2Int startTile, endTile;  // ÀÔ±¸, Ãâ±¸
+    Vector2Int startTile, endTile;  // ï¿½Ô±ï¿½, ï¿½â±¸
 
-    // Çã¿ëµÈ ÀÔ±¸: 1, 2, 3, 5 ¿¡ ÇØ´çÇÏ´Â ÀÎµ¦½º
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½Ô±ï¿½: 1, 2, 3, 5 ï¿½ï¿½ ï¿½Ø´ï¿½ï¿½Ï´ï¿½ ï¿½Îµï¿½ï¿½ï¿½
     private List<Vector2Int> allowedStartIndices = new List<Vector2Int>()
     {
         new Vector2Int(0, 1), new Vector2Int(0, 6), new Vector2Int(1, 0), new Vector2Int(1, 7)
@@ -20,9 +20,17 @@ public class MapGenerator : MonoBehaviour
     private List<Vector2Int> pathTiles = new List<Vector2Int>();
     private HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
 
-    public int[,] generateMap()
+    public int CurrentSeed { get; private set; }
+
+    public int[,] generateMap(int seed = -1)
     {
-        // ÃÊ±âÈ­
+        if (seed == -1)
+            seed = System.Environment.TickCount;
+
+        CurrentSeed = seed;
+        Random.InitState(seed);
+
+        // ï¿½Ê±ï¿½È­
         mapTiles = new int[SIZE, SIZE];
 
         bool successMap = false;
@@ -43,18 +51,18 @@ public class MapGenerator : MonoBehaviour
 
         else
         {
-            Debug.Log("°æ·Î »ý¼º ½ÇÆÐ");
+            Debug.Log("ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½");
             return null;
         }
     }
 
-    // ÀûÇÕÇÑ °æ·Î¸¦ ¸ø Ã£À» °æ¿ì¿¡ ÀÔ,Ãâ±¸ºÎÅÍ ´Ù½Ã ÁöÁ¤ÇÏ°Ô ÇÏ±â À§ÇØ generateMap() ¸Þ¼Òµå¿Í ºÐ¸®
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Î¸ï¿½ ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ì¿¡ ï¿½ï¿½,ï¿½â±¸ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ generateMap() ï¿½Þ¼Òµï¿½ï¿½ ï¿½Ð¸ï¿½
     private bool findvalidTile()
     {
-        // ÃÊ±âÈ­
+        // ï¿½Ê±ï¿½È­
         pathTiles.Clear();
         visited.Clear();
-        // ¸Ê ±×¸²ÀÇ Çã¿ëµÈ ÀÔ±¸ Áß ÇÏ³ª¸¦ ·£´ýÀ¸·Î ¼±ÅÃ
+        // ï¿½ï¿½ ï¿½×¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ô±ï¿½ ï¿½ï¿½ ï¿½Ï³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         //int randomIndex = Random.Range(0, allowedStartIndices.Count);
         //startTile = allowedStartIndices[randomIndex];
 
@@ -81,7 +89,7 @@ public class MapGenerator : MonoBehaviour
 
             if (success)
             {
-                // mapTiles ÃÊ±âÈ­
+                // mapTiles ï¿½Ê±ï¿½È­
                 for (int x = 0; x < SIZE; x++)
                 {
                     for (int y = 0; y < SIZE; y++)
@@ -99,7 +107,7 @@ public class MapGenerator : MonoBehaviour
         return success;
     }
 
-    // ÀÔ±¸, Ãâ±¸ Å¸ÀÏ ·£´ý »ý¼º
+    // ï¿½Ô±ï¿½, ï¿½â±¸ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private Vector2Int generateEdgeTile()
     {
         bool ran = Random.value < 0.5f;
@@ -120,11 +128,11 @@ public class MapGenerator : MonoBehaviour
 
     private bool generatePath(Vector2Int current, Vector2Int end)
     {
-        if (pathTiles.Count == PATH_LENGTH - 1)   // Åë·Î 22Ä­ ¿Ï¼º
+        if (pathTiles.Count == PATH_LENGTH - 1)   // ï¿½ï¿½ï¿½ 22Ä­ ï¿½Ï¼ï¿½
         {
             foreach (var dir in directions)
             {
-                if (current + dir == end) return true;  // ¸¶Áö¸· Åë·Î°¡ Ãâ±¸¿Í ¿¬°áµÇ¾î ÀÖ´ÂÁö È®ÀÎ
+                if (current + dir == end) return true;  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Î°ï¿½ ï¿½â±¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ç¾ï¿½ ï¿½Ö´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
             }
             return false;
         }
@@ -140,36 +148,36 @@ public class MapGenerator : MonoBehaviour
 
                 if (generatePath(next, end)) return true;
 
-                // °æ·Î°¡ ¸·Èù °æ¿ì µÇµ¹¾Æ°¡±â À§ÇØ
+                // ï¿½ï¿½Î°ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Çµï¿½ï¿½Æ°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                 pathTiles.RemoveAt(pathTiles.Count - 1);
                 visited.Remove(next);
             }
         }
-        return false;   // ÀûÇÕÇÑ °æ·Î¸¦ Ã£Áö ¸øÇÑ °æ¿ì
+        return false;   // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Î¸ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
     }
 
-    // Ãâ±¸¿Í °¡±î¿î ¹æÇâÀ» °¡ÁßÄ¡¸¦ ¸Å°Ü Á¤·ÄÇÔ
+    // ï¿½â±¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½Å°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private Vector2Int[] SortedDirections(Vector2Int current, Vector2Int end)
     {
         List<Vector2Int> dirList = new List<Vector2Int>(directions);
-        dirList.Sort((a, b) =>  // Ä¿½ºÅÒ Á¤·Ä
+        dirList.Sort((a, b) =>  // Ä¿ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         {
             Vector2Int next1 = current + a;
             Vector2Int next2 = current + b;
             float dist1 = Vector2Int.Distance(next1, end);
             float dist2 = Vector2Int.Distance(next2, end);
-            return dist1.CompareTo(dist2);  // ¿À¸§Â÷¼ø Á¤·Ä
+            return dist1.CompareTo(dist2);  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         });
-        return dirList.ToArray();   // list¸¦ ¹è¿­·Î º¯È¯ÈÄ ¹ÝÈ¯
+        return dirList.ToArray();   // listï¿½ï¿½ ï¿½è¿­ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ï¿½ ï¿½ï¿½È¯
     }
 
-    // ´ÙÀ½ Å¸ÀÏ À¯È¿¼º °Ë»ç
+    // ï¿½ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½È¿ï¿½ï¿½ ï¿½Ë»ï¿½
     bool isValid(Vector2Int tile)
     {
-        if (tile.x < 1 || tile.x > 6 || tile.y < 1 || tile.y > 6) return false;    // º®ÀÎ °æ¿ì
-        if (visited.Contains(tile)) return false;   // ÀÌ¹Ì °æ·Î¿¡ Æ÷ÇÔµÇ¾î ÀÖ´Â °æ¿ì
+        if (tile.x < 1 || tile.x > 6 || tile.y < 1 || tile.y > 6) return false;    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+        if (visited.Contains(tile)) return false;   // ï¿½Ì¹ï¿½ ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ÔµÇ¾ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½
 
-        // Åë·Î¿¡¼­ 2X2 ±¤ÀåÀÌ »ý¼ºµÇ´ÂÁö È®ÀÎ
+        // ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ 2X2 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ç´ï¿½ï¿½ï¿½ È®ï¿½ï¿½
         int neighbors = 0;
         foreach (var dir in directions)
         {
@@ -179,15 +187,15 @@ public class MapGenerator : MonoBehaviour
         return neighbors <= 1;
     }
 
-    // »ý¼ºµÈ °æ·Î Å¸ÀÏ ÀÎµ¦½º ¸ñ·ÏÀ» ¹ÝÈ¯ÇÏ´Â public ¸Þ¼­µå
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ public ï¿½Þ¼ï¿½ï¿½ï¿½
     public List<Vector2Int> GetPathIndices()
     {
-        // pathTiles ¸®½ºÆ®´Â generateMap ¶Ç´Â findvalidTile ½ÇÇà ÈÄ À¯È¿ÇÕ´Ï´Ù.
-        // generateMapÀÌ false¸¦ ¹ÝÈ¯ÇÏ¸é pathTiles´Â ºñ¾îÀÖ°Å³ª ºÒ¿ÏÀüÇÒ ¼ö ÀÖ½À´Ï´Ù.
+        // pathTiles ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ generateMap ï¿½Ç´ï¿½ findvalidTile ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½È¿ï¿½Õ´Ï´ï¿½.
+        // generateMapï¿½ï¿½ falseï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¸ï¿½ pathTilesï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ö°Å³ï¿½ ï¿½Ò¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö½ï¿½ï¿½Ï´ï¿½.
         return pathTiles;
     }
 
-    // 3X3 ÇüÅÂÀÎ º®ÀÌ ÀÖÀ¸¸é true ¹ÝÈ¯
+    // 3X3 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ true ï¿½ï¿½È¯
     bool has3X3Wall()
     {
         for (int w = 0; w <= SIZE - 3; w++)
