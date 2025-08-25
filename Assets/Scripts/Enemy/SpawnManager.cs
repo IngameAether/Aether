@@ -95,7 +95,6 @@ public class SpawnManager : MonoBehaviour
 
         if (enemyMovement != null)
         {
-            enemyMovement.SetInitialPosition(initialSpawnPosition);
             enemyMovement.SetPath(path);
         }
         else

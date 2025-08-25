@@ -121,7 +121,7 @@ public class PopUpManager : MonoBehaviour
             }
         }
         // 새 팝업 인스턴스 생성 및 준비
-        _currentActivePopUpGameObject = Instantiate(_popUpPrefabs[popUpType], _backgroundOverlayRect, false);
+        _currentActivePopUpGameObject = Instantiate(_popUpPrefabs[popUpType], _currentPopUpUICanvas.transform, false);
         _currentActivePopUpGameObject.name = popUpType;
 
         CanvasGroup canvasGroup = _currentActivePopUpGameObject.GetComponent<CanvasGroup>();

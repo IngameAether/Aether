@@ -908,6 +908,7 @@ GameObject:
   - component: {fileID: 7385733402348695399}
   - component: {fileID: 4606638723527311850}
   - component: {fileID: 6332478396855753646}
+  - component: {fileID: 7743093183753822677}
   m_Layer: 5
   m_Name: SettingMenu
   m_TagString: Untagged
@@ -975,7 +976,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
+  m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -991,6 +992,24 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &7743093183753822677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3631067872346866947}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f92a83543beb9bd4d92ab493bed62c35, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bgmSlider: {fileID: 0}
+  bgmValueText: {fileID: 0}
+  bgmMuteToggle: {fileID: 0}
+  sfxSlider: {fileID: 0}
+  sfxValueText: {fileID: 0}
+  sfxMuteToggle: {fileID: 0}
 --- !u!1 &4278382300755370251
 GameObject:
   m_ObjectHideFlags: 0

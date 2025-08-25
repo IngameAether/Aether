@@ -1,128 +1,126 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI; // UI 관련 기능을 위해 추가
+using UnityEngine.UI;
 
+/// <summary>
+/// 적의 체력, 능력치, 데미지 처리, 사망을 관리합니다.
+/// </summary>
 public class NormalEnemy : MonoBehaviour, IDamageable
 {
+    [Header("기본 정보")]
     public int idCode;
-    // 적의 최대 체력
+
+    [Header("능력치")]
     public float maxHealth = 10f;
-    // 현재 체력
-    private float currentHealth;
-    public float CurrentHealth => currentHealth;
-
-    // 이동 속도
     public float moveSpeed = 2f;
+    [Range(0, 50)] public int magicResistance = 5;
+    [Range(0, 100)] public int mentalStrength = 10;
 
-    // 마법 저항력 (Magic Resistance)
-    [Range(0, 50)] // Inspector 창에서 5~50 사이의 값만 입력 가능하도록 설정
-    public int magicResistance = 5; // 기본 마법 저항력을 5%로 설정
+    [Header("UI")]
+    public Image healthBarFillImage;
 
-    // 정신력 (Mental Strength, 강인함 효과)
-    [Range(0, 100)] // Inspector 창에서 10~100 사이의 값만 입력 가능하도록 설정
-    public int mentalStrength = 10; // 기본 정신력을 10%로 설정
+    // 현재 체력 (외부에서는 읽기만 가능)
+    public float CurrentHealth { get; private set; }
 
-    // 체력 바 이미지를 연결할 변수
-    public Image healthBarFillImage; // 체력 바의 Fill 타입 이미지
-
-    // EnemyMovement 컴포넌트 참조
+    // 컴포넌트 참조
     private EnemyMovement enemyMovement;
+    private EnemyStatusManager statusManager;
 
-    void Start()
+    private void Awake()
     {
-        // 게임 시작 시 현재 체력을 최대 체력으로 설정
-        currentHealth = maxHealth;
-        // 체력 바 초기화
-        UpdateHealthBar();
+        CurrentHealth = maxHealth;
 
-        // EnemyMovement 컴포넌트 참조
+        // 필수 컴포넌트들을 미리 찾아와서 저장합니다.
         enemyMovement = GetComponent<EnemyMovement>();
-        if (enemyMovement == null)
+        statusManager = GetComponent<EnemyStatusManager>();
+
+        if (enemyMovement == null || statusManager == null)
         {
-            Debug.LogError("EnemyMovement 컴포넌트를 찾을 수 없습니다.");
+            Debug.LogError($"{gameObject.name}에서 필수 컴포넌트(EnemyMovement 또는 EnemyStatusManager)를 찾을 수 없습니다.");
         }
     }
 
+    private void Start()
+    {
+        UpdateHealthBar();
+    }
 
-    // 적이 피해를 입었을 때 호출될 함수
+    /// <summary>
+    /// 데미지를 받는 함수. 부패, 마법 저항력 순서로 최종 데미지를 계산합니다.
+    /// </summary>
     public void TakeDamage(float damageAmount)
     {
-        // 기본 데미지 계산
-        float modifiedDamage = damageAmount;
+        float finalDamage = damageAmount;
 
-        // 특수 능력 적용 (예: 마법 저항력)
-        modifiedDamage = CalculateDamageAfterResistance(modifiedDamage);
+        // 1. 부패(Rot) 효과 적용 (StatusManager의 데미지 배율 참조)
+        if (statusManager != null)
+        {
+            finalDamage *= statusManager.DamageTakenMultiplier;
+        }
 
-        // 최종 데미지 적용
-        currentHealth -= modifiedDamage;
-        currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
+        // 2. 마법 저항력 적용
+        finalDamage = CalculateDamageAfterResistance(finalDamage);
 
-        // 체력 바 업데이트
+        // 최종 데미지를 체력에서 차감
+        CurrentHealth -= finalDamage;
+        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
+
         UpdateHealthBar();
 
-        // 체력이 0 이하가 되면 적 제거 등 처리
-        if (currentHealth <= 0)
+        // 체력이 0 이하면 사망 처리
+        if (CurrentHealth <= 0)
         {
             Die();
         }
     }
 
-    // 마법 저항력에 따른 데미지 계산 함수
+    /// <summary>
+    /// 마법 저항력을 기반으로 데미지를 감소시킵니다.
+    /// </summary>
     private float CalculateDamageAfterResistance(float damageAmount)
     {
-        // 마법 저항력 %를 기준으로 데미지 감소율 계산
         float resistanceRatio = magicResistance / 100f;
-        // 최종 데미지 계산 (데미지 * (1 - 저항력 비율))
-        float finalDamage = damageAmount * (1 - resistanceRatio);
-        return finalDamage;
+        return damageAmount * (1 - resistanceRatio);
     }
 
-    // 정신력에 따른 CC 지속 시간 감소 계산 함수
+    /// <summary>
+    /// 정신력(강인함)을 기반으로 CC기(상태 이상)의 지속 시간을 감소시킵니다.
+    /// </summary>
     public float CalculateReducedCCDuration(float baseDuration)
     {
-        // 정신력 %를 기준으로 지속 시간 감소율 계산
         float tenacityRatio = mentalStrength / 100f;
-        // 최종 CC 지속 시간 계산 (기본 지속 시간 * (1 - 감소율))
-        float finalDuration = baseDuration * (1 - tenacityRatio);
-        return finalDuration;
+        return baseDuration * (1 - tenacityRatio);
     }
 
-    // 체력 바 UI를 업데이트하는 함수
-    void UpdateHealthBar()
+    private void UpdateHealthBar()
     {
         if (healthBarFillImage != null)
         {
-            // 현재 체력 비율에 맞춰 체력 바 이미지의 Fill Amount를 조절
-            healthBarFillImage.fillAmount = currentHealth / maxHealth;
+            healthBarFillImage.fillAmount = CurrentHealth / maxHealth;
         }
     }
 
-    // 적이 죽었을 때 호출될 함수
-    void Die()
+    /// <summary>
+    /// 사망 처리 함수. 상태 이상 효과를 먼저 정리하고 오브젝트를 파괴합니다.
+    /// </summary>
+    private void Die()
     {
         Debug.Log(gameObject.name + "가 죽었습니다.");
 
-        // 코인 보상
-        int bonus = ResourceManager.Instance.EnemyKillBonusCoin;
-        ResourceManager.Instance.AddCoin(bonus);
+        // 사망 시 모든 상태 이상 효과를 즉시 정리하여 오류를 방지합니다.
+        statusManager?.ClearAllEffectsOnDeath();
 
-        // EnemyMovement에게 알려서 SpawnManager까지 이벤트 전달
+        // 코인 보상 등 게임 로직 처리
+        // ResourceManager.Instance.AddCoin(ResourceManager.Instance.EnemyKillBonusCoin);
+
+        // EnemyMovement를 통해 오브젝트 파괴 및 이벤트 전파
         if (enemyMovement != null)
         {
             enemyMovement.Die();
         }
         else
         {
-            Debug.LogError("EnemyMovement 참조 없음! 이벤트 전달 실패");
+            // EnemyMovement가 없는 비상 상황을 대비해 직접 파괴
+            Destroy(gameObject);
         }
-
-    }
-
-    // 이동 속도 변경 함수 (특수 능력 적용)
-    public void ApplyMoveSpeedModifier(float modifier)
-    {
-        moveSpeed += modifier;
-        //moveSpeed = Mathf.Clamp(moveSpeed, 0, maxMoveSpeed); // 최대 이동 속도 제한
     }
 }

@@ -205,12 +205,6 @@ MonoBehaviour:
   - waveName: 10wave
     waveImage: {fileID: 0}
     sceneName: GameScene
-  bgmSlider: {fileID: 0}
-  bgmValueText: {fileID: 0}
-  bgmMuteToggle: {fileID: 0}
-  sfxSlider: {fileID: 0}
-  sfxValueText: {fileID: 0}
-  sfxMuteToggle: {fileID: 0}
 --- !u!1 &50688731
 GameObject:
   m_ObjectHideFlags: 0
@@ -2714,6 +2708,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a1f0d514e4f84e0191ef69237c00ebfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  waveManager: {fileID: 0}
 --- !u!1 &1337506650
 GameObject:
   m_ObjectHideFlags: 0

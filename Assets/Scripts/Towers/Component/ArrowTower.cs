@@ -82,11 +82,16 @@ public class ArrowTower : Tower
         var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            projectile.Init(currentTarget);
-        }
-        else
-        {
-            Debug.LogWarning($"{name}: 생성된 프리팹에 Projectile 컴포넌트가 없습니다.");
+            // 1. 적용할 상태 이상 정보를 생성합니다. (부모 클래스에서처럼)
+            var effect = new StatusEffect(
+                towerSetting.effectType,
+                towerSetting.effectDuration,
+                towerSetting.effectValue,
+                transform.position
+            );
+
+            // 2. 새로운 Setup 함수를 호출하여 타겟, 데미지, 상태 이상을 한 번에 전달합니다.
+            projectile.Setup(currentTarget, towerSetting.Damage, effect);
         }
     }
 

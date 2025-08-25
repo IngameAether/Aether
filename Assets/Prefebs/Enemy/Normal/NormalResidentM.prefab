@@ -221,6 +221,7 @@ GameObject:
   - component: {fileID: 7489497750853960891}
   - component: {fileID: 2426596839584739762}
   - component: {fileID: -7791701291589517412}
+  - component: {fileID: 2108443945813615029}
   m_Layer: 6
   m_Name: NormalResidentM
   m_TagString: Enemy
@@ -393,6 +394,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &2108443945813615029
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5417002623811271532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cca1612d19bce2a4b8d2f555183d679b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  statusIconParent: {fileID: 0}
+  statusIconPrefab: {fileID: 0}
 --- !u!1 &5614385505505001528
 GameObject:
   m_ObjectHideFlags: 0
