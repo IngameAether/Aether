@@ -8,5 +8,5 @@ public abstract class SpecialAbility : ScriptableObject
     /// 특수 능력 추상화
     /// </summary>
     /// <param name="normalEnemy"></param>
-    public abstract void ApplySpecialAbility(NormalEnemy normalEnemy);
+    public abstract void ApplySpecialAbility(NormalEnemy enemy);
 }

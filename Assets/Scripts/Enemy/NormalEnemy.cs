@@ -45,6 +45,14 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         {
             Debug.LogError("EnemyMovement 컴포넌트를 찾을 수 없습니다.");
         }
+
+        if (enemyData.abilities.Count > 0)
+        {
+            foreach (var ability in enemyData.abilities)
+            {
+                ability.ApplySpecialAbility(this);
+            }
+        }
     }
 
     public void SetEnemyData(EnemyData data)
@@ -76,7 +84,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     }
 
     // 마법 저항력에 따른 데미지 계산 함수
-    private float CalculateDamageAfterResistance(float damageAmount)
+    public float CalculateDamageAfterResistance(float damageAmount)
     {
         // 마법 저항력 %를 기준으로 데미지 감소율 계산
         float resistanceRatio = magicResistance / 100f;
