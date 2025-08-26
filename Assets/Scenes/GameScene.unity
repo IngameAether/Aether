@@ -3534,35 +3534,35 @@ MonoBehaviour:
       startTime: 1
       endTime: 5
   - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
     - enemyPrefabIndex: 1
       spawnInterval: 0.5
-      startTime: 1
-      endTime: 5
-  - enemies:
-    - enemyPrefabIndex: 0
-      spawnInterval: 1
-      startTime: 1
-      endTime: 15
-    - enemyPrefabIndex: 1
-      spawnInterval: 1
-      startTime: 1
-      endTime: 5
-  - enemies:
-    - enemyPrefabIndex: 0
-      spawnInterval: 1
-      startTime: 1
-      endTime: 15
-    - enemyPrefabIndex: 1
-      spawnInterval: 1
-      startTime: 1
-      endTime: 5
-  - enemies:
-    - enemyPrefabIndex: 0
-      spawnInterval: 1
-      startTime: 1
-      endTime: 15
-    - enemyPrefabIndex: 1
-      spawnInterval: 1
       startTime: 1
       endTime: 5
   - enemies:
