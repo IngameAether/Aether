@@ -12,5 +12,6 @@ public class EnemyData : ScriptableObject
     [field: SerializeField] public float DamageReduction { get; private set; }
     [field: SerializeField] public float ControlResistance { get; private set; }
     [field: SerializeField] public int Aether {  get; private set; }
+    [field: SerializeField] public List<SpecialAbility> abilities { get; private set; }
     [field: SerializeField] public string Description { get; private set; }
 }

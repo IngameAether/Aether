@@ -125,8 +125,17 @@ public class SpawnManager : MonoBehaviour
 
         if (enemyMovement != null)
         {
-            enemyMovement.SetInitialPosition(initialSpawnPosition);
-            enemyMovement.SetPath(path);
+            if (enemyData != null && enemyData.ID == "S2")
+            {
+                Vector3 start = path[0];
+                Vector3 end = path[^1];
+                enemyMovement.SetStraightPath(start, end);
+            }
+            else
+            {
+                enemyMovement.SetInitialPosition(initialSpawnPosition);
+                enemyMovement.SetPath(path);
+            }
         }
         else
         {

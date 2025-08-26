@@ -14,6 +14,8 @@ public class EnemyMovement : MonoBehaviour
     public static event Action OnReachEndPoint;
     public static event Action OnEnemyDestroyed;
 
+    public List<Vector3> points = new List<Vector3>();  // 입구, 출구
+    public bool bypassPath = false;  // 경로 무시 플래그
 
     private void Awake()
     {
@@ -48,10 +50,24 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
+    // 특수 적 S2 능력-경로 무시, 직선 이동
+    public void SetStraightPath(Vector3 start, Vector3 end)
+    {
+        points.Clear();
+        points.Add(start);
+        points.Add(end);
+        currentWaypointIndex = 0;
+        transform.position = start;
+        bypassPath = true;
+    }
+
     private void Update()
     {
+        // 경로 무시 플래그 값에 따라 경로 지정
+        List<Vector3> targetPoints = bypassPath ? points : waypoints;
+
         // 필요한 참조가 없거나 경로가 비어있으면 이동하지 않음
-        if (normalEnemyStats == null || waypoints == null || waypoints.Count == 0)
+        if (normalEnemyStats == null || targetPoints == null || targetPoints.Count == 0)
         {
             return;
         }
@@ -60,15 +76,15 @@ public class EnemyMovement : MonoBehaviour
         currentMoveSpeed = normalEnemyStats.moveSpeed;
 
         // 다음 웨이포인트가 남아있는지 확인
-        if (currentWaypointIndex < waypoints.Count)
+        if (currentWaypointIndex < targetPoints.Count)
         {
             // 현재 목표 웨이포인트 위치
-            Vector3 targetPosition = waypoints[currentWaypointIndex];
+            Vector3 targetPosition = targetPoints[currentWaypointIndex];
             // 목표 위치로 이동
             float step = currentMoveSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
 
-            bool isLastWayPoint = currentWaypointIndex == waypoints.Count - 1;
+            bool isLastWayPoint = currentWaypointIndex == targetPoints.Count - 1;
             // 다음 목표와 얼만큼 도달했는지 체크하는 거리 조정
             float distWayPoint = isLastWayPoint ? 0.5f : 0.05f;
 
@@ -81,7 +97,7 @@ public class EnemyMovement : MonoBehaviour
         else
         {
             // 적이 마지막 타일 바깥을 빠져나가 없어지게 함
-            if (Vector3.Distance(transform.position, waypoints[^1]) < 0.5f) ReachedEndOfPath();
+            if (Vector3.Distance(transform.position, targetPoints[^1]) < 0.5f) ReachedEndOfPath();
         }
     }
 
