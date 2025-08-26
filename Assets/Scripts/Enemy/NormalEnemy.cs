@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class NormalEnemy : MonoBehaviour, IDamageable
 {
     [Header("기본 정보")]
-    public int idCode;
+    public string idCode;
     public string GetEnemyId => idCode;
 
     [Header("능력치")]
@@ -93,7 +93,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     /// <summary>
     /// 마법 저항력을 기반으로 데미지를 감소시킵니다.
     /// </summary>
-    private float CalculateDamageAfterResistance(float damageAmount)
+    public float CalculateDamageAfterResistance(float damageAmount)
     {
         float resistanceRatio = magicResistance / 100f;
         return damageAmount * (1 - resistanceRatio);

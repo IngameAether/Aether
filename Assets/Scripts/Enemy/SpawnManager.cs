@@ -133,7 +133,7 @@ public class SpawnManager : MonoBehaviour
             }
             else
             {
-                enemyMovement.SetInitialPosition(initialSpawnPosition);
+                //enemyMovement.SetInitialPosition(initialSpawnPosition);
                 enemyMovement.SetPath(path);
             }
         }

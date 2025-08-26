@@ -71,7 +71,7 @@ public class EnemyMovement : MonoBehaviour
         if (currentWaypointIndex < targetPoints.Count)
         {
             Vector3 targetPosition = targetPoints[currentWaypointIndex];
-            float step = currentMoveSpeed * Time.deltaTime;
+            float step = finalMoveSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
 
             bool isLastWayPoint = currentWaypointIndex == targetPoints.Count - 1;
