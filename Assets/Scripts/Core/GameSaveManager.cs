@@ -19,6 +19,7 @@ public class GameSaveManager : MonoBehaviour
     public static GameSaveManager Instance { get; private set; }
 
     public GameSaveData CurrentGameData { get; private set; }
+    public int SelectedSlotIndex { get; set; } = -1;
 
     private const int MAX_SAVE_SLOTS = 3;
     private const string SAVE_FOLDER = "GameSaves";

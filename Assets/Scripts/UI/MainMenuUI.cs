@@ -182,6 +182,9 @@ public class MainMenuUI : MonoBehaviour
     // "이 슬롯으로 플레이" 버튼 클릭
     public async void OnSelectSlotButtonClick()
     {
+        // GameSaveManager에 현재 선택한 슬롯의 인덱스를 저장합니다.
+        GameSaveManager.Instance.SelectedSlotIndex = currentSaveSlotIndex;
+
         // 선택한 슬롯의 데이터를 불러오거나, 비어있으면 null
         GameSaveData data = await GameSaveManager.Instance.LoadGameAsync(currentSaveSlotIndex);
 

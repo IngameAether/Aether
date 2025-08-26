@@ -1830,6 +1830,7 @@ GameObject:
   - component: {fileID: 853327479}
   - component: {fileID: 853327481}
   - component: {fileID: 853327480}
+  - component: {fileID: 853327482}
   m_Layer: 5
   m_Name: LevelSelectPanel
   m_TagString: Untagged
@@ -1900,6 +1901,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 853327478}
   m_CullTransparentMesh: 1
+--- !u!114 &853327482
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 853327478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 415401182a4361942aab2ad485c5e6fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  selectedSlotText: {fileID: 1890571737}
 --- !u!1 &898004186
 GameObject:
   m_ObjectHideFlags: 0
