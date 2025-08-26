@@ -8,8 +8,10 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 {
     [Header("기본 정보")]
     public int idCode;
+    public string GetEnemyId => idCode;
 
     [Header("능력치")]
+
     public float maxHealth = 10f;
     public float moveSpeed = 2f;
     [Range(0, 50)] public int magicResistance = 5;
@@ -25,6 +27,8 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     private EnemyMovement enemyMovement;
     private EnemyStatusManager statusManager;
 
+    public EnemyData enemyData;
+    
     private void Awake()
     {
         CurrentHealth = maxHealth;
@@ -42,6 +46,19 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     private void Start()
     {
         UpdateHealthBar();
+        
+        if (enemyData.abilities.Count > 0)
+        {
+            foreach (var ability in enemyData.abilities)
+            {
+                ability.ApplySpecialAbility(this);
+            }
+        }
+    }
+
+    public void SetEnemyData(EnemyData data)
+    {
+        enemyData = data;
     }
 
     /// <summary>
@@ -108,6 +125,12 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 
         // 사망 시 모든 상태 이상 효과를 즉시 정리하여 오류를 방지합니다.
         statusManager?.ClearAllEffectsOnDeath();
+        
+        int baseReward = enemyData.Aether;
+        // 코인 보상
+        int bonusReward = ResourceManager.Instance.EnemyKillBonusCoin;
+        int totalReward = baseReward + bonusReward;
+        ResourceManager.Instance.AddCoin(totalReward);
 
         // 코인 보상 등 게임 로직 처리
         // ResourceManager.Instance.AddCoin(ResourceManager.Instance.EnemyKillBonusCoin);

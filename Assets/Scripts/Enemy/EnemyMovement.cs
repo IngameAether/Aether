@@ -24,6 +24,9 @@ public class EnemyMovement : MonoBehaviour
     public static event Action OnReachEndPoint;
     public static event Action OnEnemyDestroyed;
 
+    public List<Vector3> points = new List<Vector3>();  // 입구, 출구
+    public bool bypassPath = false;  // 경로 무시 플래그
+
     private void Awake()
     {
         normalEnemyStats = GetComponent<NormalEnemy>();
@@ -31,6 +34,17 @@ public class EnemyMovement : MonoBehaviour
         {
             Debug.LogError("EnemyMovement: NormalEnemy 컴포넌트를 찾을 수 없습니다.");
         }
+    }
+
+    // 특수 적 S2 능력-경로 무시, 직선 이동
+    public void SetStraightPath(Vector3 start, Vector3 end)
+    {
+        points.Clear();
+        points.Add(start);
+        points.Add(end);
+        currentWaypointIndex = 0;
+        transform.position = start;
+        bypassPath = true;
     }
 
     private void Update()
@@ -41,8 +55,11 @@ public class EnemyMovement : MonoBehaviour
             return;
         }
 
-        // 필수 정보가 없으면 이동 로직을 실행하지 않음
-        if (normalEnemyStats == null || waypoints == null || waypoints.Count == 0)
+        // 경로 무시 플래그 값에 따라 경로 지정
+        List<Vector3> targetPoints = bypassPath ? points : waypoints;
+
+        // 필요한 참조가 없거나 경로가 비어있으면 이동하지 않음
+        if (normalEnemyStats == null || targetPoints == null || targetPoints.Count == 0)
         {
             return;
         }
@@ -51,21 +68,26 @@ public class EnemyMovement : MonoBehaviour
         float finalMoveSpeed = normalEnemyStats.moveSpeed * speedMultiplier;
 
         // 경로 이동 로직
-        if (currentWaypointIndex < waypoints.Count)
+        if (currentWaypointIndex < targetPoints.Count)
         {
-            Vector3 targetPosition = waypoints[currentWaypointIndex];
-            float step = finalMoveSpeed * Time.deltaTime;
+            Vector3 targetPosition = targetPoints[currentWaypointIndex];
+            float step = currentMoveSpeed * Time.deltaTime;
             transform.position = Vector3.MoveTowards(transform.position, targetPosition, step);
 
-            if (Vector3.Distance(transform.position, targetPosition) < 0.05f)
+            bool isLastWayPoint = currentWaypointIndex == targetPoints.Count - 1;
+            // 다음 목표와 얼만큼 도달했는지 체크하는 거리 조정
+            float distWayPoint = isLastWayPoint ? 0.5f : 0.05f;
+
+            // 목표 위치에 거의 도달했는지 확인 (충분히 가까워지면 다음 웨이포인트로 이동)
+            if (Vector3.Distance(transform.position, targetPosition) < distWayPoint)
             {
                 currentWaypointIndex++;
             }
         }
         else
         {
-            // 경로 끝에 도달
-            ReachedEndOfPath();
+            // 적이 마지막 타일 바깥을 빠져나가 없어지게 함
+            if (Vector3.Distance(transform.position, targetPoints[^1]) < 0.5f) ReachedEndOfPath();
         }
     }
 

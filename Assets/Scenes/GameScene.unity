@@ -3505,6 +3505,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5d26f27856ee105439031e9936ad39f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  allEnemyData:
+  - {fileID: 11400000, guid: 48c55685d58b27e41813923ea147557b, type: 2}
+  - {fileID: 11400000, guid: eabbd98720427614cab04804ee16ec85, type: 2}
+  - {fileID: 11400000, guid: 6ee01afeb3d42af4186342077178b45d, type: 2}
+  - {fileID: 11400000, guid: 528552fabf6d43f43acb633bdce36ac9, type: 2}
+  - {fileID: 11400000, guid: e0a9a27665aacda4e9af09df3d1eda4a, type: 2}
+  - {fileID: 11400000, guid: 6b7753d3178fd5c4bb0fb8cb97489f03, type: 2}
+  - {fileID: 11400000, guid: 196e184ffdc06b949b67ae12aba39ecb, type: 2}
+  - {fileID: 11400000, guid: 96bcc4d242e6c6245aaa9ae27417f2a1, type: 2}
+  - {fileID: 11400000, guid: d26cdfe34b98de044b20c325f8b1337f, type: 2}
+  - {fileID: 11400000, guid: 9089685d4e5063c4686beac73e1ed98f, type: 2}
+  - {fileID: 11400000, guid: 4e31ef8df76786f42a82b9a34252f235, type: 2}
+  - {fileID: 11400000, guid: 328209b8bca66124ab217523261fc4aa, type: 2}
+  - {fileID: 11400000, guid: eb7b8898af8ab1a468cf38ab08c28802, type: 2}
+  - {fileID: 11400000, guid: 65d90b2cb3bd43e478ba4561d684be7e, type: 2}
   enemyPrefabs:
   - {fileID: 5417002623811271532, guid: 27e6441dcf8aa7f45b4b6d3882d5e9c5, type: 3}
   - {fileID: 5417002623811271532, guid: 64482ff3366415342908db4b2e23cc6a, type: 3}
@@ -3539,35 +3554,35 @@ MonoBehaviour:
       startTime: 1
       endTime: 5
   - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
+    - enemyPrefabIndex: 0
+      spawnInterval: 1
+      startTime: 1
+      endTime: 15
+    - enemyPrefabIndex: 1
+      spawnInterval: 1
+      startTime: 1
+      endTime: 5
+  - enemies:
     - enemyPrefabIndex: 1
       spawnInterval: 0.5
-      startTime: 1
-      endTime: 5
-  - enemies:
-    - enemyPrefabIndex: 0
-      spawnInterval: 1
-      startTime: 1
-      endTime: 15
-    - enemyPrefabIndex: 1
-      spawnInterval: 1
-      startTime: 1
-      endTime: 5
-  - enemies:
-    - enemyPrefabIndex: 0
-      spawnInterval: 1
-      startTime: 1
-      endTime: 15
-    - enemyPrefabIndex: 1
-      spawnInterval: 1
-      startTime: 1
-      endTime: 5
-  - enemies:
-    - enemyPrefabIndex: 0
-      spawnInterval: 1
-      startTime: 1
-      endTime: 15
-    - enemyPrefabIndex: 1
-      spawnInterval: 1
       startTime: 1
       endTime: 5
   - enemies:

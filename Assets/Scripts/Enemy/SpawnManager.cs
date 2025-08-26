@@ -5,6 +5,10 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
+    [Header("적 데이터")]
+    [SerializeField] private EnemyData[] allEnemyData;   // 모든 적 데이터
+    private Dictionary<string, EnemyData> _enemyDataMap;
+
     [Header("Enemy Settings")]
     public GameObject[] enemyPrefabs;
     public MapManage mapManage;
@@ -18,6 +22,8 @@ public class SpawnManager : MonoBehaviour
 
     private void Start()
     {
+        BuildEnemyDataMap();
+
         Debug.Log("SpawnManager: 이벤트 구독 시작");
 
         EnemyMovement.OnEnemyDestroyed += HandleEnemyDestroyed;
@@ -30,6 +36,19 @@ public class SpawnManager : MonoBehaviour
 
         EnemyMovement.OnEnemyDestroyed -= HandleEnemyDestroyed;
         EnemyMovement.OnReachEndPoint -= HandleEnemyDestroyed;
+    }
+
+    /// <summary>
+    /// 적 데이터 맵 구성
+    /// </summary>
+    private void BuildEnemyDataMap()
+    {
+        _enemyDataMap = new Dictionary<string, EnemyData>();
+        foreach (var data in allEnemyData)
+        {
+            _enemyDataMap.TryAdd(data.ID, data);
+        }
+        Debug.Log($"적 데이터 맵 구성 완료: {_enemyDataMap.Count}개 적");
     }
 
     public IEnumerator SpawnWaveEnemies(Wave wave)
@@ -93,9 +112,30 @@ public class SpawnManager : MonoBehaviour
         GameObject newEnemy = Instantiate(enemyPrefabs[enemyIndex], initialSpawnPosition, Quaternion.identity);
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
+        NormalEnemy enemy = newEnemy.GetComponent<NormalEnemy>();
+        string enemyId = enemy.GetEnemyId;
+
+        // 적 데이터 검색 후 적용
+        EnemyData enemyData = null;
+        if (!string.IsNullOrEmpty(enemyId) && _enemyDataMap.TryGetValue(enemyId, out var data))
+        {
+            enemyData = data;
+        }
+        enemy.SetEnemyData(enemyData);
+
         if (enemyMovement != null)
         {
-            enemyMovement.SetPath(path);
+            if (enemyData != null && enemyData.ID == "S2")
+            {
+                Vector3 start = path[0];
+                Vector3 end = path[^1];
+                enemyMovement.SetStraightPath(start, end);
+            }
+            else
+            {
+                enemyMovement.SetInitialPosition(initialSpawnPosition);
+                enemyMovement.SetPath(path);
+            }
         }
         else
         {

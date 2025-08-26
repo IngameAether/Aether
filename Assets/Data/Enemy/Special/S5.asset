@@ -14,11 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: "\uB9C8\uBC95\uD559\uAD50 \uAD50\uC218 \uBB3C"
   <ID>k__BackingField: S5
+  <Major>k__BackingField: 2
   <HP>k__BackingField: 10
   <Speed>k__BackingField: 0.5
   <DamageReduction>k__BackingField: 2
   <ControlResistance>k__BackingField: 2
   <Aether>k__BackingField: 10
+  <abilities>k__BackingField:
+  - {fileID: 11400000, guid: 0d782eee97f5c664daa48b4e06b8dc08, type: 2}
   <Description>k__BackingField: "\uD2B9\uC815 \uC18D\uC131\uC744 \uC804\uACF5\uD574\uC11C
     \uD574\uB2F9 \uC18D\uC131\uC5D0 \uB300\uD55C \uB370\uBBF8\uC9C0\uAC10\uC18C\uAC00
     10level\uB85C \uC801\uC6A9"
