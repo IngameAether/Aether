@@ -43,13 +43,6 @@ public class GameManager : MonoBehaviour
     {
         InitializeLives();
         IsGameOver = false; // <- 게임 시작 시 게임 오버 아님으로 초기화
-        //Test();
-    }
-
-    private async void Test()
-    {
-        var data = await GameSaveManager.Instance.LoadGameAsync(0);
-        Debug.Log(data.towers.Count);
     }
 
     private void OnEnable()
