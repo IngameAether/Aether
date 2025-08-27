@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using System.Threading.Tasks;
 
 // Wave 데이터를 관리할 구조체 정의
 [System.Serializable]
@@ -18,14 +19,14 @@ public enum UIPanelState
     None,
     MainMenu,
     LevelSelect,
-    LoadSave
+    SaveSlotSelect
 }
 
 public class MainMenuUI : MonoBehaviour
 {
     [Header("UI 패널")]
     public GameObject levelSelectPanel;
-    public GameObject loadSavePanel;
+    public GameObject saveSlotSelectPanel;
     public GameObject blurBackgroundImage;
 
     [Header("레벨 선택 UI")]
@@ -34,6 +35,14 @@ public class MainMenuUI : MonoBehaviour
     public Button leftArrowButton;
     public Button rightArrowButton;
     public Button playLevelButton;
+
+    [Header("저장 슬롯 선택 UI")] 
+    public Button saveSlotLeftArrow;
+    public Button saveSlotRightArrow;
+    public Button selectSlotButton; // 슬롯 선택(플레이) 버튼
+    public SaveSlotUI[] saveSlotUIs; // 슬롯 3개의 UI 스크립트 배열
+    public TMP_Text slotIndicatorText;
+    private int currentSaveSlotIndex = 0;
 
     [Header("레벨 데이터")]
     public WaveData[] waveDatas;
@@ -54,17 +63,25 @@ public class MainMenuUI : MonoBehaviour
             rightArrowButton.onClick.AddListener(OnRightArrowButtonClick);
         if (playLevelButton != null)
             playLevelButton.onClick.AddListener(OnPlayLevelButtonClick);
+
+        // 저장된 게임
+        if (saveSlotLeftArrow != null)
+            saveSlotLeftArrow.onClick.AddListener(OnSaveSlotLeftArrowClick);
+        if (saveSlotRightArrow != null)
+            saveSlotRightArrow.onClick.AddListener(OnSaveSlotRightArrowClick);
+        if (selectSlotButton != null)
+            selectSlotButton.onClick.AddListener(OnSelectSlotButtonClick);
     }
 
     // 특정 패널만 활성화하고 다른 패널은 비활성화하는 함수
-    void ShowPanel(UIPanelState targetPanel)
+    async void ShowPanel(UIPanelState targetPanel)
     {
         // 모든 패널 비활성화
         if (levelSelectPanel != null) levelSelectPanel.SetActive(false);
-        if (loadSavePanel != null) loadSavePanel.SetActive(false);
+        if (saveSlotSelectPanel != null) saveSlotSelectPanel.SetActive(false);
 
         // 블러 배경 이미지 활성화/비활성화
-        bool needsBlurBackground = (targetPanel == UIPanelState.LoadSave || targetPanel == UIPanelState.LevelSelect);
+        bool needsBlurBackground = (targetPanel == UIPanelState.SaveSlotSelect || targetPanel == UIPanelState.LevelSelect);
         if (blurBackgroundImage != null)
         {
             blurBackgroundImage.SetActive(needsBlurBackground);
@@ -80,8 +97,13 @@ public class MainMenuUI : MonoBehaviour
                     UpdateLevelDisplay();
                 }
                 break;
-            case UIPanelState.LoadSave:
-                if (loadSavePanel != null) loadSavePanel.SetActive(true);
+            case UIPanelState.SaveSlotSelect: 
+                if (saveSlotSelectPanel != null)
+                {
+                    saveSlotSelectPanel.SetActive(true);
+                    await UpdateAllSaveSlotsUI(); // <--- 비동기로 슬롯 정보 업데이트 함수 호출
+                    UpdateCarouselVisuals();      // <--- 캐러셀 시각 효과 업데이트 함수 호출
+                }
                 break;
         }
 
@@ -94,7 +116,7 @@ public class MainMenuUI : MonoBehaviour
 
     public void OnStartButtonClick()
     {
-        ShowPanel(UIPanelState.LevelSelect);
+        ShowPanel(UIPanelState.SaveSlotSelect);
     }
 
     // '설정' 버튼 클릭 시 (가장 큰 변화)
@@ -106,7 +128,8 @@ public class MainMenuUI : MonoBehaviour
 
     public void OnPlayLevelButtonClick()
     {
-        ShowPanel(UIPanelState.LoadSave);
+        // 현재 선택된 웨이브로 게임 시작 (저장 파일 불러오지 않음)
+        StartGame(currentSelectedWaveIndex, false);
     }
 
     public void OnLeftArrowButtonClick()
@@ -134,33 +157,86 @@ public class MainMenuUI : MonoBehaviour
         StartGame(currentSelectedWaveIndex, false);
     }
 
-    public void OnLoadGameButtonClick()
+    // 저장 슬롯 선택 패널의 왼쪽 화살표 클릭
+    void OnSaveSlotLeftArrowClick()
     {
-        if (waveDatas.Length > 0)
+        currentSaveSlotIndex--;
+        if (currentSaveSlotIndex < 0)
         {
-            bool saveFileExists = CheckSaveFile(currentSelectedWaveIndex);
-            StartGame(currentSelectedWaveIndex, saveFileExists);
+            currentSaveSlotIndex = saveSlotUIs.Length - 1;
         }
-        else
+        UpdateCarouselVisuals();
+    }
+
+    // 저장 슬롯 선택 패널의 오른쪽 화살표 클릭
+    void OnSaveSlotRightArrowClick()
+    {
+        currentSaveSlotIndex++;
+        if (currentSaveSlotIndex >= saveSlotUIs.Length)
         {
-            Debug.LogError("Wave 데이터가 설정되지 않았습니다!");
-            ShowPanel(UIPanelState.MainMenu);
+            currentSaveSlotIndex = 0;
         }
+        UpdateCarouselVisuals();
+    }
+
+    // "이 슬롯으로 플레이" 버튼 클릭
+    public async void OnSelectSlotButtonClick()
+    {
+        // GameSaveManager에 현재 선택한 슬롯의 인덱스를 저장합니다.
+        GameSaveManager.Instance.SelectedSlotIndex = currentSaveSlotIndex;
+
+        // 선택한 슬롯의 데이터를 불러오거나, 비어있으면 null
+        GameSaveData data = await GameSaveManager.Instance.LoadGameAsync(currentSaveSlotIndex);
+
+        ShowPanel(UIPanelState.LevelSelect);
     }
 
     public void OnBackButtonClick()
     {
         switch (currentPanelState)
         {
-            case UIPanelState.LevelSelect:
+            case UIPanelState.SaveSlotSelect: 
                 ShowPanel(UIPanelState.MainMenu);
                 break;
-            case UIPanelState.LoadSave:
-                ShowPanel(UIPanelState.LevelSelect);
+            case UIPanelState.LevelSelect:
+                ShowPanel(UIPanelState.SaveSlotSelect);
                 break;
             default:
                 Debug.LogWarning("현재 패널에서 '뒤로가기' 동작이 정의되지 않았습니다: " + currentPanelState);
                 break;
+        }
+    }
+
+    // 모든 저장 슬롯 UI의 정보를 업데이트
+    async Task UpdateAllSaveSlotsUI()
+    {
+        for (int i = 0; i < saveSlotUIs.Length; i++)
+        {
+            GameSaveData data = await GameSaveManager.Instance.LoadGameAsync(i);
+            saveSlotUIs[i].UpdateUI(data);
+        }
+    }
+
+    // 캐러셀의 시각적 표현을 업데이트 (크기 조절로 선택된 슬롯 강조)
+    void UpdateCarouselVisuals()
+    {
+        // 슬롯 번호 텍스트 업데이트 (1부터 시작하도록 +1)
+        if (slotIndicatorText != null)
+        {
+            slotIndicatorText.text = $"Slot {currentSaveSlotIndex + 1}";
+        }
+
+        // 기존의 크기 조절 로직은 그대로 둡니다.
+        for (int i = 0; i < saveSlotUIs.Length; i++)
+        {
+            if (i == currentSaveSlotIndex)
+            {
+                saveSlotUIs[i].transform.localScale = Vector3.one * 1.2f;
+            }
+            else
+            {
+                saveSlotUIs[i].transform.localScale = Vector3.one;
+            }
         }
     }
 
