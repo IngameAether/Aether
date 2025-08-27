@@ -19,6 +19,7 @@ public class SpawnManager : MonoBehaviour
     public static event Action OnAllEnemiesCleared;
 
     private int _aliveEnemies;
+    private bool _isSpawningWave;
 
     private void Start()
     {
@@ -53,11 +54,14 @@ public class SpawnManager : MonoBehaviour
 
     public IEnumerator SpawnWaveEnemies(Wave wave)
     {
+        _isSpawningWave = true;
+
         List<Vector3> path = mapManage.GetPathWorldPositions();
         if (path == null || path.Count == 0)
         {
             Debug.LogError("SpawnManager: 경로가 없습니다.");
-            yield break;
+            _isSpawningWave = false;
+            if (_aliveEnemies <= 0) OnAllEnemiesCleared?.Invoke();
         }
 
         // 마지막 방향 타일 하나 추가
@@ -70,6 +74,8 @@ public class SpawnManager : MonoBehaviour
         if (wave.enemies == null || wave.enemies.Count == 0)
         {
             Debug.LogWarning("웨이브에 적 데이터가 없습니다");
+            _isSpawningWave = false;
+            if (_aliveEnemies <= 0) OnAllEnemiesCleared?.Invoke(); // 빈 웨이브 처리
             yield break;
         }
 
@@ -98,6 +104,13 @@ public class SpawnManager : MonoBehaviour
             }
 
             yield return null;
+        }
+
+        _isSpawningWave = false;
+        if (_aliveEnemies <= 0)
+        {
+            Debug.Log("SpawnManager: Spawning complete and no alive enemies -> 이벤트 호출");
+            OnAllEnemiesCleared?.Invoke();
         }
     }
 

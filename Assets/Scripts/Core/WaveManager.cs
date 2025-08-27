@@ -46,7 +46,6 @@ public class WaveManager : MonoBehaviour
         // 첫 시작 버프 선택
         yield return StartCoroutine(HandleBuffChoice());
 
-        GameTimer.Instance.StartTimer();
         yield return new WaitForSeconds(initialDelay);
 
         for (int waveIndex = 0; waveIndex < spawnManager.waves.Count; waveIndex++)
@@ -61,9 +60,11 @@ public class WaveManager : MonoBehaviour
             }
 
             Debug.Log($"--- 웨이브 {waveIndex + 1} 시작 ---");
-            yield return StartCoroutine(spawnManager.SpawnWaveEnemies(spawnManager.waves[waveIndex]));
 
             _waitingForEnemies = true;
+
+            yield return StartCoroutine(spawnManager.SpawnWaveEnemies(spawnManager.waves[waveIndex]));
+
             while (_waitingForEnemies) yield return null; // 적 전멸 기다림
 
             Debug.Log($"--- 웨이브 {waveIndex + 1} 종료 ---");

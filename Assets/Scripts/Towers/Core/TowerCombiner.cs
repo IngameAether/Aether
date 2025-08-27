@@ -215,7 +215,7 @@ private void TryCombination()
             towerData = value;
         }
 
-        Debug.LogError($"ElementType: {elementType}, level: {targetLevel}, towerId: {towerId}, towerData Level: {towerData.Level}");
+        // Debug.LogError($"ElementType: {elementType}, level: {targetLevel}, towerId: {towerId}, towerData Level: {towerData.Level}");
 
         // 프리팹은 _elementTowerMap에서 가져오기
         if (!_elementTowerMap.TryGetValue(elementType, out var towerPrefab))

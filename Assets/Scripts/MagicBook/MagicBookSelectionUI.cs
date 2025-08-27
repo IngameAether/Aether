@@ -54,6 +54,12 @@ public class MagicBookSelectionUI : MonoBehaviour
 
     private void OnBookSelected(int buttonIndex)
     {
+        if (_currentChoices == null || _currentChoices.Length == 0)
+        {
+            Debug.LogError("MagicBookSelectionUI OnBookSelected: 추천 목록이 비어 있습니다.");
+            return;
+        }
+
         var bookData = _currentChoices[buttonIndex];
         MagicBookManager.Instance.SelectBook(bookData.Code);
 
