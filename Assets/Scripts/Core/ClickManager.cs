@@ -1,13 +1,14 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 /// <summary>
 /// 클릭 관리 매니저
 /// </summary>
-public class InputManager : MonoBehaviour
+public class ClickManager : MonoBehaviour
 {
-    public static InputManager Instance { get; private set; }
+    public static ClickManager Instance { get; private set; }
 
     [Header("Double Click Settings")]
     [SerializeField] private float doubleClickTime = 0.3f;
@@ -15,10 +16,11 @@ public class InputManager : MonoBehaviour
     public event Action<Tower> OnTowerDoubleClicked;
     public event Action OnClickOutside; // 빈 공간 클릭 (UI숨김용)
 
+    private readonly RaycastHit2D[] _hits = new RaycastHit2D[5];
     private Camera _camera;
     private float _lastClickTime = 0f;
     private Tower _lastClickedTower = null;
-    private readonly RaycastHit2D[] _hits = new RaycastHit2D[5];
+    private Coroutine _singleClickRoutine;
 
     private void Awake()
     {
@@ -87,31 +89,60 @@ public class InputManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 타워 클릭 처리 (단일클릭 = 조합선택, 더블클릭 = UI표시)
+    /// 타워 클릭 처리 (단일클릭은 지연, 더블클릭 시 단일클릭 예약 취소)
     /// </summary>
     private void HandleTowerClick(Tower tower, TowerSelectable towerSelectable)
     {
         float currentTime = Time.time;
 
-        // 같은 타워를 더블클릭 간격 내에 클릭했는지 확인
+        // 같은 타워로 더블클릭인지 판정
         if (_lastClickedTower == tower && (currentTime - _lastClickTime) <= doubleClickTime)
         {
+            // 이미 예약된 단일클릭 취소 -> 더블클릭만 실행
+            if (_singleClickRoutine != null)
+            {
+                StopCoroutine(_singleClickRoutine);
+                _singleClickRoutine = null;
+            }
+
             OnTowerDoubleClicked?.Invoke(tower);
             ResetDoubleClickState();
             Debug.Log($"타워 더블클릭: {tower.name} - UI 표시");
         }
         else
         {
-            towerSelectable.OnClick();
+            // 기존 예약 단일클릭이 있다면 취소(타워 전환 등)
+            if (_singleClickRoutine != null)
+            {
+                StopCoroutine(_singleClickRoutine);
+                _singleClickRoutine = null;
+            }
 
-            // 더블클릭 상태 업데이트
+            // 더블클릭 대기 상태 업데이트
             _lastClickedTower = tower;
             _lastClickTime = currentTime;
 
-            Debug.Log($"타워 단일클릭: {tower.name} - 조합 선택");
+            // 단일클릭은 doubleClickTime 뒤로 지연 예약
+            _singleClickRoutine = StartCoroutine(DelayedSingleClick(towerSelectable));
+            Debug.Log($"타워 단일클릭 대기: {tower.name}");
         }
     }
 
+    /// <summary>
+    /// 단일클릭은 doubleClickTime만큼 대기 후 실행(그 사이 더블클릭 오면 취소됨)
+    /// </summary>
+    private IEnumerator DelayedSingleClick(TowerSelectable towerSelectable)
+    {
+        // 대기 시간은 doubleClickTime과 동일하게 유지
+        yield return new WaitForSeconds(doubleClickTime); // WaitForSeconds는 지정 시간 경과 후 다음 프레임에 재개됨
+
+        // 더블클릭이 오지 않았으면 단일클릭 수행
+        towerSelectable.OnClick();
+
+        // 상태 정리
+        _singleClickRoutine = null;
+        ResetDoubleClickState();
+    }
     /// <summary>
     /// 더블클릭 상태 리셋
     /// </summary>
