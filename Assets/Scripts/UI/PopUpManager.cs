@@ -135,7 +135,7 @@ public class PopUpManager : MonoBehaviour
         RectTransform rectTransform = _currentActivePopUpGameObject.GetComponent<RectTransform>();
         if (rectTransform != null)
         {
-            rectTransform.sizeDelta = new Vector2(900, 1100); // 원하는 설정창 크기 조절
+            rectTransform.sizeDelta = new Vector2(324, 324); // 원하는 설정창 크기 조절
             rectTransform.anchoredPosition = Vector2.zero; // 위치를 (0,0)으로 초기화
             rectTransform.localScale = Vector3.one; // 스케일을 (1,1,1)로 초기화
             rectTransform.localRotation = Quaternion.identity; // 회전 초기화
