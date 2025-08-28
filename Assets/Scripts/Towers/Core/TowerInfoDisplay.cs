@@ -17,7 +17,7 @@ public class TowerInfoDisplay : MonoBehaviour
     [SerializeField] private Button darkButton;
     [SerializeField] private Button reinforceButton;
     [SerializeField] private TMP_Text reinforceText;
-    [SerializeField] private Button sellButton;
+    [SerializeField] private Button hideButton;
     [SerializeField] private GameObject towerIndicateImg;
 
     [Header("Position Settings")]
@@ -37,16 +37,16 @@ public class TowerInfoDisplay : MonoBehaviour
 
     private void OnEnable()
     {
-        InputManager.Instance.OnTowerDoubleClicked += ShowTowerInfoAndRange;
-        InputManager.Instance.OnClickOutside += HideUI;
+        ClickManager.Instance.OnTowerDoubleClicked += ShowTowerInfoAndRange;
+        ClickManager.Instance.OnClickOutside += HideUI;
 
         Tower.OnTowerDestroyed += HideUI;
     }
 
     private void OnDisable()
     {
-        InputManager.Instance.OnTowerDoubleClicked -= ShowTowerInfoAndRange;
-        InputManager.Instance.OnClickOutside -= HideUI;
+        ClickManager.Instance.OnTowerDoubleClicked -= ShowTowerInfoAndRange;
+        ClickManager.Instance.OnClickOutside -= HideUI;
 
         Tower.OnTowerDestroyed -= HideUI;
     }
@@ -63,6 +63,7 @@ public class TowerInfoDisplay : MonoBehaviour
         lightButton.onClick.AddListener(LightReinforce);
         darkButton.onClick.AddListener(DarkReinforce);
         reinforceButton.onClick.AddListener(ReinforceLevelUpgrade);
+        hideButton.onClick.AddListener(HideUI);
 
         _infoPanelRect = infoPanelUI.GetComponent<RectTransform>();
     }
