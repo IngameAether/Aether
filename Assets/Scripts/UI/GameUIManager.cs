@@ -5,7 +5,9 @@ using UnityEngine.UI;
 
 public class GameSceneUIManager : MonoBehaviour
 {
+    [Header("UI Buttons")]
     [SerializeField] private Button settingsButton; // 게임 씬의 설정 버튼 (Inspector에서 연결)
+    [SerializeField] private Button showBuffsButton;  // 현재 버프 목록을 보여주는 버튼 (Inspector에서 연결)
 
     void Start()
     {
@@ -15,6 +17,20 @@ public class GameSceneUIManager : MonoBehaviour
             settingsButton.onClick.RemoveAllListeners(); // 혹시 모를 에디터 연결을 제거
             settingsButton.onClick.AddListener(OnSettingsButtonClicked); // 버튼에 코드 리스너 추가
         }
+        else
+        {
+            Debug.LogWarning("settingsButton이 GameSceneUIManager에 연결되지 않았습니다.");
+        }
+        // 버프 목록 버튼 연결 ---
+        if (showBuffsButton != null)
+        {
+            showBuffsButton.onClick.RemoveAllListeners();
+            showBuffsButton.onClick.AddListener(OnShowBuffsButtonClicked);
+        }
+        else
+        {
+            Debug.LogWarning("showBuffsButton이 GameSceneUIManager에 연결되지 않았습니다.");
+        }
     }
 
     private void OnSettingsButtonClicked()
@@ -23,6 +39,20 @@ public class GameSceneUIManager : MonoBehaviour
         if (PopUpManager.Instance != null)
         {
             PopUpManager.Instance.OpenPopUpInGame("Settings");
+        }
+        else
+        {
+            Debug.LogError("PopUpManager.Instance가 게임 씬에서 null입니다. 심각한 오류!");
+        }
+    }
+
+    // 버프 목록 버튼 클릭 시 호출될 함수 ▼▼▼
+    private void OnShowBuffsButtonClicked()
+    {
+        if (PopUpManager.Instance != null)
+        {
+            // "OwnedBooks"는 PopUpManager에 등록한 버프 목록 팝업의 이름입니다.
+            PopUpManager.Instance.OpenPopUpInGame("OwnedBooks");
         }
         else
         {

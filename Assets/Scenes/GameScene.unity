@@ -5442,6 +5442,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   settingsButton: {fileID: 110662240}
+  showBuffsButton: {fileID: 553150746}
 --- !u!1 &1653403417
 GameObject:
   m_ObjectHideFlags: 0

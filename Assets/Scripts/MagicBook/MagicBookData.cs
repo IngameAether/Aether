@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "MagicBook", menuName = "TowerDefense/MagicBook")]
 public class MagicBookData : ScriptableObject
@@ -10,6 +10,7 @@ public class MagicBookData : ScriptableObject
     [field: SerializeField] public EBookEffectType EffectType { get; private set; }
     [field: SerializeField] public int[] EffectValue { get; private set; }
     [field: SerializeField] public string Description { get; private set; }
+    [field: SerializeField] public Sprite Icon { get; private set; } 
 }
 
 public enum EBookRank
