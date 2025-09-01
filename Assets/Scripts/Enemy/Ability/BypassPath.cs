@@ -7,6 +7,8 @@ public class BypassPath : SpecialAbility
 {
     public override void ApplySpecialAbility(NormalEnemy enemy)
     {
-        
+        var movement = enemy.GetComponent<EnemyMovement>();
+        if (movement != null)
+            movement.bypassPath = true;
     }
 }

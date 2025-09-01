@@ -14,9 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Name>k__BackingField: "\uB5A0\uB3CC\uC774 \uAC1C"
   <ID>k__BackingField: N3
+  <Major>k__BackingField: 4
   <HP>k__BackingField: 5
   <Speed>k__BackingField: 1
   <DamageReduction>k__BackingField: 0
   <ControlResistance>k__BackingField: 0
   <Aether>k__BackingField: 2
+  <abilities>k__BackingField: []
   <Description>k__BackingField: 

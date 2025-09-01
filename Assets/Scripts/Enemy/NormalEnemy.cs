@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,11 +12,10 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     public string GetEnemyId => idCode;
 
     [Header("능력치")]
-
     public float maxHealth = 10f;
     public float moveSpeed = 2f;
-    [Range(0, 50)] public int magicResistance = 5;
-    [Range(0, 100)] public int mentalStrength = 10;
+    [Range(0, 50)] private int magicResistance = 5;
+    [Range(0, 100)] private int mentalStrength = 10;
 
     [Header("UI")]
     public Image healthBarFillImage;
@@ -28,7 +28,9 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     private EnemyStatusManager statusManager;
 
     public EnemyData enemyData;
-    
+
+    public bool finalDamageReduction = false;
+
     private void Awake()
     {
         CurrentHealth = maxHealth;
@@ -46,7 +48,13 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     private void Start()
     {
         UpdateHealthBar();
-        
+    }
+
+    public void SetEnemyData(EnemyData data)
+    {
+        enemyData = data;
+
+        // 특수 능력 적용
         if (enemyData.abilities.Count > 0)
         {
             foreach (var ability in enemyData.abilities)
@@ -56,9 +64,16 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         }
     }
 
-    public void SetEnemyData(EnemyData data)
+    /// <summary>
+    /// 특수 능력: 전공 속성과 일치하는 속성의 공격 대미지 감소 적용
+    /// </summary>
+    /// <param name="towerElementType"></param>
+    public void SetResistance(ElementType towerElementType)
     {
-        enemyData = data;
+        if (enemyData.Major == towerElementType)
+        {
+            CalculateDamageAfterResistance(10f);
+        }
     }
 
     /// <summary>
@@ -76,6 +91,12 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 
         // 2. 마법 저항력 적용
         finalDamage = CalculateDamageAfterResistance(finalDamage);
+
+        if (finalDamageReduction)
+        {
+            if (SpawnManager._aliveS3Enemies > 0)
+                finalDamage *= 0.5f;
+        }
 
         // 최종 데미지를 체력에서 차감
         CurrentHealth -= finalDamage;
@@ -96,7 +117,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     public float CalculateDamageAfterResistance(float damageAmount)
     {
         float resistanceRatio = magicResistance / 100f;
-        return damageAmount * (1 - resistanceRatio);
+        return damageAmount * resistanceRatio;
     }
 
     /// <summary>
@@ -105,7 +126,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     public float CalculateReducedCCDuration(float baseDuration)
     {
         float tenacityRatio = mentalStrength / 100f;
-        return baseDuration * (1 - tenacityRatio);
+        return baseDuration *  tenacityRatio;
     }
 
     private void UpdateHealthBar()
@@ -121,6 +142,8 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     /// </summary>
     private void Die()
     {
+        if (GetEnemyId == "S3") SpawnManager._aliveS3Enemies--;
+
         Debug.Log(gameObject.name + "가 죽었습니다.");
 
         // 사망 시 모든 상태 이상 효과를 즉시 정리하여 오류를 방지합니다.

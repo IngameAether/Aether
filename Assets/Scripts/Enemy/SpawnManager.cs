@@ -21,6 +21,8 @@ public class SpawnManager : MonoBehaviour
     private int _aliveEnemies;
     private bool _isSpawningWave;
 
+    public static int _aliveS3Enemies = 0;
+
     private void Start()
     {
         BuildEnemyDataMap();
@@ -128,6 +130,8 @@ public class SpawnManager : MonoBehaviour
         NormalEnemy enemy = newEnemy.GetComponent<NormalEnemy>();
         string enemyId = enemy.GetEnemyId;
 
+        if (enemyId == "S3") _aliveS3Enemies++;
+
         // 적 데이터 검색 후 적용
         EnemyData enemyData = null;
         if (!string.IsNullOrEmpty(enemyId) && _enemyDataMap.TryGetValue(enemyId, out var data))
@@ -138,7 +142,7 @@ public class SpawnManager : MonoBehaviour
 
         if (enemyMovement != null)
         {
-            if (enemyData != null && enemyData.ID == "S2")
+            if (enemyData != null && enemyData.HasAbility<BypassPath>())  // 특수 능력 체크
             {
                 Vector3 start = path[0];
                 Vector3 end = path[^1];

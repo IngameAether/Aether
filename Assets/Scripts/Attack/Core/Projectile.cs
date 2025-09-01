@@ -6,6 +6,8 @@ public enum HitType { Direct, Explosive, GroundAoE }
 
 public class Projectile : MonoBehaviour
 {
+    public ElementType elementType;
+
     [Header("Motion")]
     public ProjectileMotionType motionType = ProjectileMotionType.Straight;
     public float speed = 10f;
@@ -110,7 +112,8 @@ public class Projectile : MonoBehaviour
                 _target,
                 radius,
                 coneAngle,
-                forward
+                forward,
+                elementType
             );
         }
         else

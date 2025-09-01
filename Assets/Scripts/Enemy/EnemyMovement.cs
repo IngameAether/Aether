@@ -36,17 +36,6 @@ public class EnemyMovement : MonoBehaviour
         }
     }
 
-    // 특수 적 S2 능력-경로 무시, 직선 이동
-    public void SetStraightPath(Vector3 start, Vector3 end)
-    {
-        points.Clear();
-        points.Add(start);
-        points.Add(end);
-        currentWaypointIndex = 0;
-        transform.position = start;
-        bypassPath = true;
-    }
-
     private void Update()
     {
         // 기절 또는 공포 상태일 때는 모든 이동 로직을 정지
@@ -89,6 +78,42 @@ public class EnemyMovement : MonoBehaviour
             // 적이 마지막 타일 바깥을 빠져나가 없어지게 함
             if (Vector3.Distance(transform.position, targetPoints[^1]) < 0.5f) ReachedEndOfPath();
         }
+    }
+
+    // 특수 적 S2 능력-경로 무시, 직선 이동
+    public void SetStraightPath(Vector3 start, Vector3 end)
+    {
+        points.Clear();
+        points.Add(start);
+        points.Add(end);
+        currentWaypointIndex = 0;
+        transform.position = start;
+        bypassPath = true;
+    }
+
+    // 경로 설정 (외부 SpawnManager에서 호출)
+    public void SetPath(List<Vector3> pathPoints)
+    {
+        if (pathPoints != null && pathPoints.Count > 0)
+        {
+            waypoints = pathPoints;
+            currentWaypointIndex = 0;
+            transform.position = waypoints[0];
+        }
+    }
+
+    // 경로 이탈 및 사망 처리
+    private void ReachedEndOfPath()
+    {
+        // GameManager.Instance?.LoseLife();
+        OnReachEndPoint?.Invoke();
+        Destroy(gameObject);
+    }
+
+    public void Die()
+    {
+        OnEnemyDestroyed?.Invoke();
+        Destroy(gameObject);
     }
 
     #region Public API for EnemyStatusManager
@@ -140,30 +165,5 @@ public class EnemyMovement : MonoBehaviour
         }
 
         isFeared = false;
-    }
-
-    // 경로 설정 (외부 SpawnManager에서 호출)
-    public void SetPath(List<Vector3> pathPoints)
-    {
-        if (pathPoints != null && pathPoints.Count > 0)
-        {
-            waypoints = pathPoints;
-            currentWaypointIndex = 0;
-            transform.position = waypoints[0];
-        }
-    }
-
-    // 경로 이탈 및 사망 처리
-    private void ReachedEndOfPath()
-    {
-        // GameManager.Instance?.LoseLife();
-        OnReachEndPoint?.Invoke();
-        Destroy(gameObject);
-    }
-
-    public void Die()
-    {
-        OnEnemyDestroyed?.Invoke();
-        Destroy(gameObject);
     }
 }
