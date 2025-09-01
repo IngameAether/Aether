@@ -22,7 +22,7 @@ public class GameSceneUIManager : MonoBehaviour
         // 여기에서 PopUpManager.Instance에 접근합니다.
         if (PopUpManager.Instance != null)
         {
-            PopUpManager.Instance.OpenPopUp("Settings");
+            PopUpManager.Instance.OpenPopUpInGame("Settings");
         }
         else
         {

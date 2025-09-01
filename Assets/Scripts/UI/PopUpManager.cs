@@ -14,15 +14,17 @@ public class PopUpManager : MonoBehaviour
     private RectTransform _backgroundOverlayRect;
     private Button _backgroundOverlayButton;
 
-    private GameObject _currentActivePopUpGameObject = null; // 현재 활성화된 팝업 UI 오브젝트
-    private CanvasGroup _currentActivePopUpCanvasGroup = null; // 현재 활성화된 팝업의 CanvasGroup
+    private GameObject _currentActivePopUpGameObject = null;
+    private CanvasGroup _currentActivePopUpCanvasGroup = null;
 
     [Header("PopUp Settings")]
-    [SerializeField] private float _animationDuration = 0.3f; // 팝업 애니메이션 시간 (조금 줄여서 더 빠른 느낌을 줌)
+    [SerializeField] private float _animationDuration = 0.3f;
     [SerializeField] private AnimationCurve _openAnimationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
-    [SerializeField] private AnimationCurve _closeAnimationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1); // 닫기 애니메이션 커브
+    [SerializeField] private AnimationCurve _closeAnimationCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    private bool _isAnimating = false; // 애니메이션 중복 실행 방지 플래그
+    private bool _isAnimating = false;
+    // 메인 메뉴 등 게임을 멈추면 안 되는 씬을 위한 변수
+    private bool _shouldPauseGame = true;
 
     [Header("Registered PopUps")]
     public List<PopUpData> popUpList = new List<PopUpData>();
@@ -90,13 +92,29 @@ public class PopUpManager : MonoBehaviour
         }
     }
 
-    public void OpenPopUp(string popUpType)
+    // 인게임용 함수: 인게임 설정 버튼에 이 함수를 연결하세요.
+    public void OpenPopUpInGame(string popUpType)
     {
-        if (_currentActivePopUpGameObject != null || _isAnimating) // [수정] 애니메이션 중이면 실행 안 함
+        // 게임을 항상 멈추도록(true) 내부 함수를 호출합니다.
+        OpenPopUpInternal(popUpType, true);
+    }
+
+    // 메인 메뉴용 함수: 메인 메뉴 설정 버튼에 이 함수를 연결하세요.
+    public void OpenPopUpMainMenu(string popUpType)
+    {
+        // 게임을 멈추지 않도록(false) 내부 함수를 호출합니다.
+        OpenPopUpInternal(popUpType, false);
+    }
+    // 이 함수는 인스펙터에 노출되지 않고 위 두 함수에 의해서만 호출됩니다.
+    private void OpenPopUpInternal(string popUpType, bool pauseGame)
+    {
+        if (_currentActivePopUpGameObject != null || _isAnimating)
         {
             Debug.LogWarning("이미 팝업이 열려있거나 애니메이션이 진행 중입니다.");
             return;
         }
+
+        _shouldPauseGame = pauseGame;
 
         if (!_popUpPrefabs.ContainsKey(popUpType))
         {
@@ -120,7 +138,7 @@ public class PopUpManager : MonoBehaviour
         if (_currentActivePopUpCanvasGroup == null)
         {
             Debug.LogError($"팝업 '{popUpType}'에 CanvasGroup 컴포넌트가 없습니다. 추가해주세요.");
-            Destroy(_currentActivePopUpGameObject); // [수정] 즉시 닫는 대신 정리
+            Destroy(_currentActivePopUpGameObject);
             _currentPopUpUICanvas.SetActive(false);
             return;
         }
@@ -138,41 +156,45 @@ public class PopUpManager : MonoBehaviour
         Debug.Log($"팝업 '{popUpType}'이(가) 열립니다.");
     }
 
-    // 닫기 메서드
     public void CloseCurrentPopUp()
     {
-        if (_currentActivePopUpGameObject == null || _isAnimating) // 애니메이션 중이면 실행 안 함
+        if (_currentActivePopUpGameObject == null || _isAnimating)
         {
             return;
         }
 
-        // 모든 코루틴을 중지하는 대신 닫기 애니메이션을 시작합니다.
         StartCoroutine(AnimatePopUpOut(_currentActivePopUpCanvasGroup, _currentActivePopUpGameObject.transform));
         Debug.Log("현재 팝업을 닫기 시작합니다.");
     }
 
     private IEnumerator AnimatePopUpIn(CanvasGroup canvasGroup, Transform targetTransform)
     {
-        _isAnimating = true; // 애니메이션 시작
+        _isAnimating = true;
+
+        // 팝업이 열리기 시작할 때 게임을 멈춤
+        if (_shouldPauseGame)
+        {
+            Time.timeScale = 0f;
+        }
 
         float timer = 0f;
         Vector3 startScale = Vector3.one * 0.5f;
         Vector3 endScale = Vector3.one;
 
-        // 초기 상태 설정
         canvasGroup.alpha = 0f;
         targetTransform.localScale = startScale;
-        canvasGroup.blocksRaycasts = false; // 애니메이션 중에는 클릭 방지
+        canvasGroup.blocksRaycasts = false;
         canvasGroup.interactable = false;
 
         while (timer < _animationDuration)
         {
-            timer += Time.deltaTime;
+            // Time.deltaTime 대신 Time.unscaledDeltaTime 사용
+            timer += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(timer / _animationDuration);
             float curveValue = _openAnimationCurve.Evaluate(t);
 
             canvasGroup.alpha = curveValue;
-            targetTransform.localScale = Vector3.LerpUnclamped(startScale, endScale, curveValue); // LerpUnclamped로 더 탄력있는 느낌 가능
+            targetTransform.localScale = Vector3.LerpUnclamped(startScale, endScale, curveValue);
 
             yield return null;
         }
@@ -182,39 +204,34 @@ public class PopUpManager : MonoBehaviour
         canvasGroup.blocksRaycasts = true;
         canvasGroup.interactable = true;
 
-        _isAnimating = false; // 애니메이션 종료
+        _isAnimating = false;
         Debug.Log("팝업 열기 애니메이션 완료.");
     }
 
-    // 닫기 애니메이션 코루틴
     private IEnumerator AnimatePopUpOut(CanvasGroup canvasGroup, Transform targetTransform)
     {
-        _isAnimating = true; // 애니메이션 시작
+        _isAnimating = true;
 
         float timer = 0f;
         Vector3 startScale = Vector3.one;
-        Vector3 endScale = Vector3.zero; // 점으로 작아지도록 목표 크기를 0으로 설정
+        Vector3 endScale = Vector3.zero;
 
-        // 닫기 시작할 때 상호작용 비활성화
         canvasGroup.blocksRaycasts = false;
         canvasGroup.interactable = false;
 
         while (timer < _animationDuration)
         {
-            timer += Time.deltaTime;
+            // Time.deltaTime 대신 Time.unscaledDeltaTime 사용
+            timer += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(timer / _animationDuration);
             float curveValue = _closeAnimationCurve.Evaluate(t);
 
-            // 알파 값 (투명도) 조정: 1에서 0으로
             canvasGroup.alpha = 1f - curveValue;
-
-            // 스케일 (크기) 조정: 1에서 0으로
             targetTransform.localScale = Vector3.LerpUnclamped(startScale, endScale, curveValue);
 
             yield return null;
         }
 
-        // 애니메이션이 끝난 후 정리 작업
         Debug.Log("팝업 닫기 애니메이션 완료. 오브젝트를 파괴합니다.");
         Destroy(_currentActivePopUpGameObject);
         _currentActivePopUpGameObject = null;
@@ -225,6 +242,12 @@ public class PopUpManager : MonoBehaviour
             _currentPopUpUICanvas.SetActive(false);
         }
 
-        _isAnimating = false; // 애니메이션 및 정리 작업 종료
+        // 팝업이 완전히 닫힌 후 게임 시간을 되돌림
+        if (_shouldPauseGame)
+        {
+            Time.timeScale = 1f;
+        }
+
+        _isAnimating = false;
     }
 }

@@ -388,14 +388,14 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 176472002}
         m_TargetAssemblyTypeName: PopUpManager, Assembly-CSharp
-        m_MethodName: OpenPopUp
+        m_MethodName: OpenPopUpMainMenu
         m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: SettingPanel
+          m_StringArgument: Settings
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &50688734
@@ -762,6 +762,30 @@ MonoBehaviour:
   _popUpUICanvasPrefab: {fileID: 1903093609183415614, guid: 9aa822ead1e88e34391dc695de508ca5, type: 3}
   _animationDuration: 1
   _openAnimationCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _closeAnimationCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
@@ -2211,7 +2235,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78cfdda339444bfeb2397fc3360d9f82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  initialLives: 5
+  initialLives: 3
   livesText: {fileID: 0}
 --- !u!4 &1008119479
 Transform:

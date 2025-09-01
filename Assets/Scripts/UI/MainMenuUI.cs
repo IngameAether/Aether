@@ -123,7 +123,7 @@ public class MainMenuUI : MonoBehaviour
     public void OnSettingsButtonClick()
     {
         // PopUpManager를 통해 "Settings" 팝업을 열도록 요청
-        PopUpManager.Instance.OpenPopUp("Settings");
+        PopUpManager.Instance.OpenPopUpMainMenu("Settings");
     }
 
     public void OnPlayLevelButtonClick()
