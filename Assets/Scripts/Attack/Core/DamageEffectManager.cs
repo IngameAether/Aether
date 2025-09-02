@@ -23,9 +23,15 @@ public class DamageEffectManager : MonoBehaviour
         Transform target = null,
         float radius = 2f,
         float coneAngle = 60f,
-        Vector3 coneForward = default
+        Vector3 coneForward = default,
+        ElementType elementType = ElementType.None
     )
+
     {
+        // 타워 투사체 ElementType enemy에게 넘겨줌
+        target.TryGetComponent<NormalEnemy>(out var enemy);
+        enemy.SetResistance(elementType);
+
         switch (type)
         {
             case DamageEffectType.SingleTarget:

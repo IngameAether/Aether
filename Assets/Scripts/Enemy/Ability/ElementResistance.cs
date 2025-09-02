@@ -6,9 +6,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ElementResistance", menuName = "TowerDefense/Ability/ElementResistance")]
 public class ElementResistance : SpecialAbility
 {
-    public MajorElement major;
+    public ElementType major;
     public override void ApplySpecialAbility(NormalEnemy enemy)
     {
-        enemy.CalculateDamageAfterResistance(10);
+        //enemy.SetEnemyResistance(major, 10f);
     }
 }

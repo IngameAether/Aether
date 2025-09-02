@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
@@ -20,6 +21,9 @@ public class SpawnManager : MonoBehaviour
 
     private int _aliveEnemies;
     private bool _isSpawningWave;
+
+    List<Vector3> _path;
+    public static int _aliveS3Enemies = 0;
 
     private void Start()
     {
@@ -70,6 +74,7 @@ public class SpawnManager : MonoBehaviour
             Vector3 dir = (path[^1] - path[^2]).normalized;
             path.Add(path[^1] + dir);
         }
+        _path = path;
 
         if (wave.enemies == null || wave.enemies.Count == 0)
         {
@@ -128,17 +133,21 @@ public class SpawnManager : MonoBehaviour
         NormalEnemy enemy = newEnemy.GetComponent<NormalEnemy>();
         string enemyId = enemy.GetEnemyId;
 
+        if (enemyId == "S3") _aliveS3Enemies++;
+
         // 적 데이터 검색 후 적용
         EnemyData enemyData = null;
         if (!string.IsNullOrEmpty(enemyId) && _enemyDataMap.TryGetValue(enemyId, out var data))
         {
             enemyData = data;
         }
-        enemy.SetEnemyData(enemyData);
+        enemy.SetEnemyData(enemyData, enemyIndex);
+
 
         if (enemyMovement != null)
         {
-            if (enemyData != null && enemyData.ID == "S2")
+            // 특수 능력 체크
+            if (enemyData != null && enemyData.HasAbility<BypassPath>())  
             {
                 Vector3 start = path[0];
                 Vector3 end = path[^1];
@@ -154,6 +163,27 @@ public class SpawnManager : MonoBehaviour
         {
             Debug.LogError("SpawnManager: EnemyMovement 컴포넌트가 없습니다.");
         }
+
+        _aliveEnemies++;
+    }
+
+    // B3: 2마리로 분할
+    public void SpawnSplitEnemy(Vector3 initialSpawnPosition, int enemyIndex = 0)
+    {
+        GameObject newEnemy = Instantiate(enemyPrefabs[enemyIndex], initialSpawnPosition, Quaternion.identity);
+        EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
+        NormalEnemy enemy = newEnemy.GetComponent<NormalEnemy>();
+        string enemyId = enemy.GetEnemyId;
+
+        // 적 데이터 검색 후 적용
+        EnemyData enemyData = null;
+        if (!string.IsNullOrEmpty(enemyId) && _enemyDataMap.TryGetValue(enemyId, out var data))
+        {
+            enemyData = data;
+        }
+        enemy.SetEnemyData(enemyData, enemyIndex);
+
+        if (enemyMovement != null) enemyMovement.SetPath(_path);
 
         _aliveEnemies++;
     }

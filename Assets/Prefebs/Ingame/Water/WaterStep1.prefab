@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: -6219741489165354469}
   - component: {fileID: -5109320735070293147}
   - component: {fileID: -2036864915437606956}
+  - component: {fileID: -2907448935027357877}
   m_Layer: 0
   m_Name: WaterStep1
   m_TagString: Untagged
@@ -161,3 +162,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1040827a23f3db4a8c07f2277431550, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-2907448935027357877
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4766331063098911513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f623bd0702b20a54f89c335167e10fb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  elementType: 1
+  motionType: 1
+  speed: 10
+  arcHeight: 2
+  arriveDistance: 0.3
+  radius: 2
+  coneAngle: 60
+  hitType: 0
+  effectType: 0
