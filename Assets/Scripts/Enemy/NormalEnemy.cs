@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 /// <summary>
@@ -22,12 +23,14 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 
     // 현재 체력 (외부에서는 읽기만 가능)
     public float CurrentHealth { get; private set; }
+    private float currentShield;    // 보호막 값
 
     // 컴포넌트 참조
     private EnemyMovement enemyMovement;
     private EnemyStatusManager statusManager;
 
     public EnemyData enemyData;
+    public int curEnemyIndex;
 
     public bool finalDamageReduction = false;
 
@@ -47,12 +50,14 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 
     private void Start()
     {
+        currentShield = 0;
         UpdateHealthBar();
     }
 
-    public void SetEnemyData(EnemyData data)
+    public void SetEnemyData(EnemyData data, int enemyIndex)
     {
         enemyData = data;
+        curEnemyIndex = enemyIndex;
 
         // 특수 능력 적용
         if (enemyData.abilities.Count > 0)
@@ -77,32 +82,38 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     }
 
     /// <summary>
+    /// 특수 능력: 3초마다 보호막 생성
+    /// </summary>
+    /// <param name="amount"></param>
+    public void SetShield(float amount)
+    {
+        currentShield = amount;   // 갱신형
+        Debug.Log($"{gameObject.name} 보호막 갱신: {currentShield}");
+    }
+
+    /// <summary>
     /// 데미지를 받는 함수. 부패, 마법 저항력 순서로 최종 데미지를 계산합니다.
     /// </summary>
     public void TakeDamage(float damageAmount)
     {
         float finalDamage = damageAmount;
 
-        // 1. 부패(Rot) 효과 적용 (StatusManager의 데미지 배율 참조)
-        if (statusManager != null)
-        {
-            finalDamage *= statusManager.DamageTakenMultiplier;
-        }
+        // 1. 상태 이상 효과 적용
+        finalDamage = ApplyStatusEffects(finalDamage);
 
         // 2. 마법 저항력 적용
         finalDamage = CalculateDamageAfterResistance(finalDamage);
 
-        if (finalDamageReduction)
+        // 3. 특수 능력 적용
+        finalDamage = ApplySpecialAbilities(finalDamage);
+
+        // 최종 대미지를 체력에서 차감
+        if (finalDamage > 0)
         {
-            if (SpawnManager._aliveS3Enemies > 0)
-                finalDamage *= 0.5f;
+            CurrentHealth -= finalDamage;
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
+            UpdateHealthBar();
         }
-
-        // 최종 데미지를 체력에서 차감
-        CurrentHealth -= finalDamage;
-        CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
-
-        UpdateHealthBar();
 
         // 체력이 0 이하면 사망 처리
         if (CurrentHealth <= 0)
@@ -127,6 +138,40 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     {
         float tenacityRatio = mentalStrength / 100f;
         return baseDuration *  tenacityRatio;
+    }
+
+    /// <summary>
+    /// 상태 이상 처리
+    /// </summary>
+    /// <param name="damage"></param>
+    /// <returns></returns>
+    private float ApplyStatusEffects(float damage)
+    {
+        // 1. 부패(Rot) 효과 적용 (StatusManager의 데미지 배율 참조)
+        if (statusManager != null)
+            damage *= statusManager.DamageTakenMultiplier;
+        return damage;
+    }
+
+    /// <summary>
+    /// 특수 능력 처리
+    /// </summary>
+    /// <param name="damage"></param>
+    /// <returns></returns>
+    private float ApplySpecialAbilities(float damage)
+    {
+        // B1: 특수 능력
+        if (finalDamageReduction && SpawnManager._aliveS3Enemies > 0)
+            damage *= 0.5f;
+
+        // B2: 보호막 계산
+        if (currentShield > 0)
+        {
+            float shield = Mathf.Min(currentShield, damage);
+            currentShield -= shield;
+            damage -= shield;
+        }
+        return damage;
     }
 
     private void UpdateHealthBar()
