@@ -19,5 +19,6 @@ MonoBehaviour:
   <EffectType>k__BackingField: 3
   <EffectValue>k__BackingField: 0200000005000000
   <Description>k__BackingField: "\uC801 \uACA9\uD1F4 \uC2DC \uC5B4\uB460 \uC6D0\uC18C
-    +1 \uC5BB\uC744 \uD655\uB960 **{0}%**"
+    +1 \uC5BB\uC744 \uD655\uB960 {0}"
   <Icon>k__BackingField: {fileID: 21300000, guid: 234a02a47a55c82458b188c161ccfe21, type: 3}
+  <ValueType>k__BackingField: 1

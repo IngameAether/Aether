@@ -3,11 +3,14 @@ using UnityEngine;
 [System.Serializable] // 이 어트리뷰트가 있어야 인스펙터에 보입니다.
 public struct BookEffect
 {
-    public EBookEffectType EffectType; // 어떤 종류의 효과인지
-    public EValueType ValueType;      // 고정값인지, 퍼센트인지
-    public int Value;                // 효과 수치
+    public EBookEffectType EffectType;
+    public EValueType ValueType;
+    public int Value;
+    public EElement TargetElement;
+    public string TargetTowerCode;
 }
 
+public enum EElement { None, Fire, Water, Air, Earth }
 [CreateAssetMenu(fileName = "MagicBook", menuName = "TowerDefense/MagicBook")]
 public class MagicBookData : ScriptableObject
 {
