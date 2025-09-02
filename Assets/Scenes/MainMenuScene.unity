@@ -816,6 +816,8 @@ MonoBehaviour:
     popUpPrefabs: {fileID: 2124913558715490437, guid: 7f1326858d71d404f871d235705c9743, type: 3}
   - popUpName: OwnedBooks
     popUpPrefabs: {fileID: 8925491688803399385, guid: 0f02919c17cbc2e49ad6f42ed8bebecd, type: 3}
+  - popUpName: Help
+    popUpPrefabs: {fileID: 2197662090280688562, guid: 2d4c9c16ffab10d4f85df3301e37b83b, type: 3}
 --- !u!4 &176472003
 Transform:
   m_ObjectHideFlags: 0

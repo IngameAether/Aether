@@ -8,6 +8,7 @@ public class GameSceneUIManager : MonoBehaviour
     [Header("UI Buttons")]
     [SerializeField] private Button settingsButton; // 게임 씬의 설정 버튼 (Inspector에서 연결)
     [SerializeField] private Button showBuffsButton;  // 현재 버프 목록을 보여주는 버튼 (Inspector에서 연결)
+    [SerializeField] private Button showHelpButton; // 도움말 버튼 (Inspector에서 연결)
 
     void Start()
     {
@@ -21,7 +22,8 @@ public class GameSceneUIManager : MonoBehaviour
         {
             Debug.LogWarning("settingsButton이 GameSceneUIManager에 연결되지 않았습니다.");
         }
-        // 버프 목록 버튼 연결 ---
+
+        // 버프 목록 버튼 연결 
         if (showBuffsButton != null)
         {
             showBuffsButton.onClick.RemoveAllListeners();
@@ -31,8 +33,16 @@ public class GameSceneUIManager : MonoBehaviour
         {
             Debug.LogWarning("showBuffsButton이 GameSceneUIManager에 연결되지 않았습니다.");
         }
+
+        // 도움말 버튼 연결 
+        if (showHelpButton != null)
+        {
+            showHelpButton.onClick.RemoveAllListeners();
+            showHelpButton.onClick.AddListener(OnShowHelpButtonClicked);
+        }
     }
 
+    // 세팅 목록 버튼 클릭 시 호출
     private void OnSettingsButtonClicked()
     {
         // 여기에서 PopUpManager.Instance에 접근합니다.
@@ -46,7 +56,7 @@ public class GameSceneUIManager : MonoBehaviour
         }
     }
 
-    // 버프 목록 버튼 클릭 시 호출될 함수 ▼▼▼
+    // 버프 목록 버튼 클릭 시 호출
     private void OnShowBuffsButtonClicked()
     {
         if (PopUpManager.Instance != null)
@@ -57,6 +67,20 @@ public class GameSceneUIManager : MonoBehaviour
         else
         {
             Debug.LogError("PopUpManager.Instance가 게임 씬에서 null입니다. 심각한 오류!");
+        }
+    }
+
+    // 도움말 버튼 클릭 시 호출
+    private void OnShowHelpButtonClicked()
+    {
+        if (PopUpManager.Instance != null)
+        {
+            // PopUpManager에 등록한 이름("Help")을 사용합니다.
+            PopUpManager.Instance.OpenPopUpInGame("Help");
+        }
+        else
+        {
+            Debug.LogError("PopUpManager.Instance가 게임 씬에서 null입니다!");
         }
     }
 }
