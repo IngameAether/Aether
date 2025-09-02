@@ -156,7 +156,7 @@ public class EnemyMovement : MonoBehaviour
     // 경로 이탈 및 사망 처리
     private void ReachedEndOfPath()
     {
-        // GameManager.Instance?.LoseLife();
+        GameManager.Instance?.LoseLife();
         OnReachEndPoint?.Invoke();
         Destroy(gameObject);
     }
