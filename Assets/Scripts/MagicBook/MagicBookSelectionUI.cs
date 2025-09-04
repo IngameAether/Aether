@@ -3,70 +3,53 @@ using UnityEngine;
 
 public class MagicBookSelectionUI : MonoBehaviour
 {
-    [SerializeField] private GameObject _bookSelectionPanel;
-    [SerializeField] private MagicBookButton[] _bookButtons; // 3개 버튼
-
-    public event Action OnBookSelectCompleted;
+    [SerializeField] private MagicBookButton[] _bookButtons;
     private MagicBookData[] _currentChoices;
 
-    private void Start()
+    // 팝업이 활성화될 때 자동으로 호출됩니다.
+    private void OnEnable()
     {
-        for (int i = 0; i < _bookButtons.Length; i++)
-        {
-            int index = i;
-            _bookButtons[i].OnButtonClick += () => OnBookSelected(index);
-        }
+        // MagicBookManager에게 미리 준비된 선택지를 요청합니다.
+        // 일반, 보스, 조합 보상 등 모든 경우를 이 한 줄로 처리합니다.
+        _currentChoices = MagicBookManager.Instance.GetPreparedSelection();
+        UpdateUI();
     }
 
-    public void ShowBookSelection()
+    // UI를 현재 선택지 데이터로 업데이트합니다.
+    public void UpdateUI()
     {
-        _currentChoices = MagicBookManager.Instance.GetRandomBookSelection(3);
         if (_currentChoices == null || _currentChoices.Length == 0)
         {
-            Debug.LogError("MagicBookSelectionUI: 추천 목록이 비어 있습니다.");
+            Debug.LogError("표시할 책이 없습니다. MagicBookManager를 확인하세요.");
             return;
         }
 
-        if (_bookButtons == null || _bookButtons.Length == 0)
+        // 모든 버튼을 일단 끈 상태로 시작 (선택지가 1개일 경우를 대비)
+        foreach (var button in _bookButtons)
         {
-            Debug.LogError("MagicBookSelectionUI: 버튼 배열이 비어 있습니다.");
-            return;
+            button.gameObject.SetActive(false);
         }
 
-        // UI 업데이트
-        for (int i = 0; i < _bookButtons.Length; i++)
+        // 선택지 개수만큼 버튼을 켜고 데이터를 할당합니다.
+        for (int i = 0; i < _currentChoices.Length; i++)
         {
-            if (i < _currentChoices.Length)
+            if (i < _bookButtons.Length)
             {
                 _bookButtons[i].SetBookData(_currentChoices[i].Description);
                 _bookButtons[i].gameObject.SetActive(true);
             }
-            else
-            {
-                _bookButtons[i].gameObject.SetActive(false);
-            }
         }
-
-        _bookSelectionPanel.SetActive(true);
-        //Time.timeScale = 0f;
-        GameTimer.Instance.StopTimer();
     }
 
-    private void OnBookSelected(int buttonIndex)
+    // 버튼의 OnClick() 이벤트에서 호출할 수 있도록 'public'으로 선언합니다.
+    public void OnBookSelected(int buttonIndex)
     {
-        if (_currentChoices == null || _currentChoices.Length == 0)
-        {
-            Debug.LogError("MagicBookSelectionUI OnBookSelected: 추천 목록이 비어 있습니다.");
-            return;
-        }
+        if (_currentChoices == null || buttonIndex >= _currentChoices.Length) return;
 
         var bookData = _currentChoices[buttonIndex];
         MagicBookManager.Instance.SelectBook(bookData.Code);
 
-        _bookSelectionPanel.SetActive(false);
-
-        //Time.timeScale = 1f;
-        GameTimer.Instance.StartTimer();
-        OnBookSelectCompleted?.Invoke();
+        // 팝업 닫기는 PopUpManager에게 맡깁니다.
+        PopUpManager.Instance.CloseCurrentPopUp();
     }
 }
