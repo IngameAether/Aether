@@ -20,6 +20,8 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private string bossRewardBookCode = "YourBossRewardBookCode";
 
     private int currentWaveLevel = 0;
+    public int CurrentWaveLevel => currentWaveLevel;
+
     private int _waveEndBonusCoin = 0;
     private bool _isWaitingForChoice = false;
     private bool _waitingForEnemies = false;

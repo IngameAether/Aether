@@ -24,6 +24,12 @@ public class MagicBookManager : MonoBehaviour
     private BookRequestType _nextRequestType = BookRequestType.Regular;
     private string _specificBookCode;
 
+    /// 저장용으로 현재 소유한 책 목록(코드, 스택)을 반환합니다.
+    public Dictionary<string, int> GetOwnedBooksDataForSave()
+    {
+        return _ownedBooksDict;
+    }
+
     /// 다음에 보여줄 매직북 선택의 종류를 미리 준비시킵니다. WaveManager가 호출합니다.
     public void PrepareSelection(BookRequestType type, string specificCode = null)
     {

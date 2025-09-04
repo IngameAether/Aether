@@ -18,7 +18,7 @@ public class GameSaveManager : MonoBehaviour
 {
     public static GameSaveManager Instance { get; private set; }
 
-    public GameSaveData CurrentGameData { get; private set; }
+    public GameSaveDataInfo CurrentGameData { get; private set; }
     public int SelectedSlotIndex { get; set; } = -1;
 
     private const int MAX_SAVE_SLOTS = 3;
@@ -78,7 +78,7 @@ public class GameSaveManager : MonoBehaviour
 
         try
         {
-            GameSaveData saveData = CollectCurrentGameData(slotIndex);
+            GameSaveDataInfo saveData = CollectCurrentGameData(slotIndex);
             CurrentGameData = saveData;
 
             string filePath = GetSaveFilePath(slotIndex);
@@ -100,7 +100,7 @@ public class GameSaveManager : MonoBehaviour
     /// <summary>
     /// 비동기 게임 로드
     /// </summary>
-    public async Task<GameSaveData> LoadGameAsync(int slotIndex)
+    public async Task<GameSaveDataInfo> LoadGameAsync(int slotIndex)
     {
         if (slotIndex < 0 || slotIndex >= MAX_SAVE_SLOTS)
         {
@@ -117,7 +117,7 @@ public class GameSaveManager : MonoBehaviour
         try
         {
             string jsonData = await File.ReadAllTextAsync(filePath);
-            GameSaveData loadedData = await Task.Run(() => JsonConvert.DeserializeObject<GameSaveData>(jsonData));
+            GameSaveDataInfo loadedData = await Task.Run(() => JsonConvert.DeserializeObject<GameSaveDataInfo>(jsonData));
 
             if (ValidateSaveData(loadedData))
             {
@@ -141,7 +141,7 @@ public class GameSaveManager : MonoBehaviour
     /// <summary>
     /// 현재 게임 상태를 SaveData로 수집
     /// </summary>
-    private GameSaveData CollectCurrentGameData(int slotIndex)
+    private GameSaveDataInfo CollectCurrentGameData(int slotIndex)
     {
         try
         {
@@ -157,15 +157,17 @@ public class GameSaveManager : MonoBehaviour
             if (!_mapGenerate)
                 _mapGenerate = FindObjectOfType<MapGenerator>();
 
-            GameSaveData saveData = new GameSaveData
+            GameSaveDataInfo saveData = new GameSaveDataInfo
             {
                 saveSlot = slotIndex,
-                gameVersion = Application.version, // 게임 버전 추가
+                gameVersion = Application.version,
                 currentWave = _waveManager ? _waveManager.CurrentWaveLevel : 0,
                 playerLife = GameManager.Instance ? GameManager.Instance.currentLives : 0,
                 resources = CollectResourceData(),
                 currentMapSeed = _mapGenerate ? _mapGenerate.CurrentSeed : 0,
-                towers = CollectTowerData(), // 타워 데이터 수집 추가
+                towers = CollectTowerData(),
+                // 획득한 마법책 목록을 MagicBookManager로부터 가져와서 저장 데이터에 추가합니다.
+                ownedMagicBooks = MagicBookManager.Instance.GetOwnedBooksDataForSave()
             };
 
             return saveData;
@@ -198,10 +200,9 @@ public class GameSaveManager : MonoBehaviour
 
         if (_towerParent != null)
         {
-            // 타워 자식 오브젝트들에서 데이터 수집
             foreach (Transform child in _towerParent)
             {
-                var towerComponent = child.GetComponent<Tower>(); // Tower 컴포넌트가 있다고 가정
+                var towerComponent = child.GetComponent<Tower>();
                 if (towerComponent != null)
                 {
                     towers.Add(towerComponent.GetTowerSetting());
@@ -215,12 +216,13 @@ public class GameSaveManager : MonoBehaviour
     /// <summary>
     /// 저장 데이터 유효성 검증
     /// </summary>
-    private bool ValidateSaveData(GameSaveData data)
+    private bool ValidateSaveData(GameSaveDataInfo data)
     {
         if (data == null) return false;
         if (string.IsNullOrEmpty(data.gameVersion)) return false;
-        if (data.resources == null) return false;
+        // 따라서 null 검사가 필요합니다.
         if (data.towers == null) return false;
+        if (data.ownedMagicBooks == null) return false;
 
         return true;
     }
@@ -236,8 +238,6 @@ public class GameSaveManager : MonoBehaviour
     /// <summary>
     /// 저장 파일 경로 반환
     /// </summary>
-    /// <param name="slotIndex"></param>
-    /// <returns></returns>
     private string GetSaveFilePath(int slotIndex)
     {
         return Path.Combine(GetSaveDirectoryPath(), $"slot_{slotIndex}{FILE_EXTENSION}");
@@ -246,23 +246,32 @@ public class GameSaveManager : MonoBehaviour
     /// <summary>
     /// 저장 슬롯 정보 조회
     /// </summary>
-    public SaveSlotInfo GetSaveSlotInfo(int slotIndex)
+    public SaveSlot GetSaveSlot(int slotIndex)
     {
         string filePath = GetSaveFilePath(slotIndex);
-        if (!File.Exists(filePath)) return new SaveSlotInfo { isEmpty = true };
+        if (!File.Exists(filePath))
+        {
+            return new SaveSlot { isEmpty = true };
+        }
 
         try
         {
+            // 전체 데이터를 불러오긴 하지만, UI 표시용이므로 동기 방식으로 간단히 처리합니다.
+            string jsonData = File.ReadAllText(filePath);
+            GameSaveDataInfo loadedData = JsonConvert.DeserializeObject<GameSaveDataInfo>(jsonData);
+
             FileInfo fileInfo = new FileInfo(filePath);
-            return new SaveSlotInfo
+            return new SaveSlot
             {
                 isEmpty = false,
                 lastModified = fileInfo.LastWriteTime,
+                currentWave = loadedData.currentWave // <- ★★★ 불러온 데이터에서 웨이브 정보 추가 ★★★
             };
         }
-        catch
+        catch (Exception e)
         {
-            return new SaveSlotInfo { isEmpty = true };
+            Debug.LogError($"슬롯 {slotIndex} 정보 읽기 실패: {e.Message}");
+            return new SaveSlot { isEmpty = true };
         }
     }
 }
