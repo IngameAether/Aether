@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
@@ -10,41 +9,35 @@ public class WaveManager : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private SpawnManager spawnManager;
-    [SerializeField] private MagicBookSelectionUI buffChoiceUI;
     [SerializeField] private TMP_Text waveText;
 
     [Header("Config")]
-    [SerializeField] private float initialDelay = 1f; // 첫 번째 웨이브 대기 시간
-    [SerializeField] private float nextWaveDelay = 3f; // 다음 웨이브 대기 시간
+    [SerializeField] private float initialDelay = 1f;
+    [SerializeField] private float nextWaveDelay = 3f;
+
+    [Header("Boss Config")]
+    [SerializeField] private int bossWaveIndex = 29;
+    [SerializeField] private string bossRewardBookCode = "YourBossRewardBookCode";
 
     private int currentWaveLevel = 0;
     public int CurrentWaveLevel => currentWaveLevel;
-    private int _waveEndBonusCoin = 0;
-    private bool _isWaitingForMagicBook = false;
-    private bool _waitingForEnemies = false;
 
+    private int _waveEndBonusCoin = 0;
+    private bool _isWaitingForChoice = false;
+    private bool _waitingForEnemies = false;
 
     private void Start()
     {
         spawnManager ??= FindObjectOfType<SpawnManager>();
-        Debug.Log($"WaveManager: SpawnManager 연결됨? {(spawnManager != null)}");
-
         StartCoroutine(WaveRoutine());
-    }
-
-    private IEnumerator HandleBuffChoice()
-    {
-        _isWaitingForMagicBook = true;
-        buffChoiceUI.ShowBookSelection();
-
-        while (_isWaitingForMagicBook)
-            yield return null;
     }
 
     private IEnumerator WaveRoutine()
     {
-        // 첫 시작 버프 선택
-        yield return StartCoroutine(HandleBuffChoice());
+        // 1. MagicBookManager에게 '일반 선택'을 준비시킴
+        MagicBookManager.Instance.PrepareSelection(BookRequestType.Regular);
+        // 2. PopUpManager를 호출하고 선택을 기다림
+        yield return StartCoroutine(WaitForChoice());
 
         yield return new WaitForSeconds(initialDelay);
 
@@ -53,57 +46,35 @@ public class WaveManager : MonoBehaviour
             currentWaveLevel = waveIndex;
             waveText.text = $"{waveIndex + 1} wave";
 
-            // 10웨이브마다 버프 선택
-            if ((waveIndex + 1) % 10 == 0 && buffChoiceUI != null)
+            if ((waveIndex + 1) % 10 == 0)
             {
-                yield return StartCoroutine(HandleBuffChoice());
+                MagicBookManager.Instance.PrepareSelection(BookRequestType.Regular);
+                yield return StartCoroutine(WaitForChoice());
             }
 
-            Debug.Log($"--- 웨이브 {waveIndex + 1} 시작 ---");
-
             _waitingForEnemies = true;
-
             yield return StartCoroutine(spawnManager.SpawnWaveEnemies(spawnManager.waves[waveIndex]));
+            while (_waitingForEnemies) yield return null;
 
-            while (_waitingForEnemies) yield return null; // 적 전멸 기다림
-
-            Debug.Log($"--- 웨이브 {waveIndex + 1} 종료 ---");
+            if (waveIndex == bossWaveIndex)
+            {
+                Debug.Log("보스 처치! 특별 보상을 제공합니다.");
+                MagicBookManager.Instance.PrepareSelection(BookRequestType.Specific, bossRewardBookCode);
+                yield return StartCoroutine(WaitForChoice());
+            }
 
             if (waveIndex == 0)
             {
-                // 1) 비동기 저장 작업 시작
                 Task<bool> saveTask = GameSaveManager.Instance.SaveGameAsync(2);
-
-                // 2) 완료까지 코루틴으로 대기 (메인 스레드 프레임은 계속 돎)
                 yield return new WaitUntil(() => saveTask.IsCompleted);
-
-                // 3) 결과 확인 및 예외 처리
-                bool isSave = false;
-                Exception ex = saveTask.Exception;
-                if (saveTask.IsFaulted)
-                {
-                    Debug.LogError(ex);
-                }
-                else if (saveTask.IsCanceled)
-                {
-                    Debug.LogWarning("Save canceled");
-                }
-                else
-                {
-                    isSave = saveTask.Result;
-                }
-
-                // isSave 활용
-                Debug.Log($"Save completed: {isSave}");
+                if (saveTask.IsFaulted) Debug.LogError(saveTask.Exception);
+                else Debug.Log($"Save completed: {saveTask.Result}");
             }
-
-            yield return null;
 
             ResourceManager.Instance.AddCoin(_waveEndBonusCoin);
 
             if (waveIndex < spawnManager.waves.Count - 1)
             {
-                Debug.Log($"{nextWaveDelay}초 후 다음 웨이브 시작");
                 yield return new WaitForSeconds(nextWaveDelay);
             }
             else
@@ -114,41 +85,56 @@ public class WaveManager : MonoBehaviour
         }
     }
 
-    #region Action Handlers
-    private void HandleBookSelectCompleted()
+    // 팝업을 띄우고 닫힐 때까지 기다리는 단일 코루틴
+    private IEnumerator WaitForChoice()
     {
-        _isWaitingForMagicBook = false;
+        _isWaitingForChoice = true;
+        PopUpManager.Instance.OpenPopUpInGame("MagicBookPopup");
+        while (_isWaitingForChoice)
+            yield return null;
     }
 
-    private void HandleBookEffectApplied(EBookEffectType bookEffectType, int value)
+    #region Action Handlers
+    // PopUpManager의 OnPopUpClosed 이벤트에 연결될 핸들러
+    private void OnPopupClosed()
     {
-        if (bookEffectType != EBookEffectType.WaveAether) return;
-        _waveEndBonusCoin = value;
+        _isWaitingForChoice = false;
+    }
+
+    // 조합 완성 이벤트 핸들러
+    private void HandleCombinationCompleted(string rewardBookCode)
+    {
+        Debug.Log($"WaveManager: 조합 완성 이벤트 수신! 보상({rewardBookCode})을 즉시 제공합니다.");
+        MagicBookManager.Instance.PrepareSelection(BookRequestType.Specific, rewardBookCode);
+        StartCoroutine(WaitForChoice());
     }
 
     private void OnEnable()
     {
-        if (buffChoiceUI != null)
-            buffChoiceUI.OnBookSelectCompleted += HandleBookSelectCompleted;
+        // PopUpManager의 팝업 닫기 이벤트에 구독하여 선택 완료 시점을 감지
+        PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
 
         MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        MagicBookManager.Instance.OnCombinationCompleted += HandleCombinationCompleted;
+
         SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
     }
 
     private void OnDisable()
     {
-        if (buffChoiceUI != null)
-            buffChoiceUI.OnBookSelectCompleted -= HandleBookSelectCompleted;
+        if (PopUpManager.Instance != null)
+            PopUpManager.Instance.OnPopUpClosed -= OnPopupClosed;
 
-        MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+            MagicBookManager.Instance.OnCombinationCompleted -= HandleCombinationCompleted;
+        }
+
         SpawnManager.OnAllEnemiesCleared -= HandleWaveCleared;
     }
 
-    // ❗여기서 코루틴 시작 X. 플래그만 끕니다.
-    private void HandleWaveCleared()
-    {
-        Debug.Log("WaveManager: 웨이브 클리어됨 (이벤트 수신) — 다음 루프 진행");
-        _waitingForEnemies = false;
-    }
+    private void HandleWaveCleared() { _waitingForEnemies = false; }
+    private void HandleBookEffectApplied(EBookEffectType type, int val) { _waveEndBonusCoin = val; }
     #endregion
 }

@@ -709,7 +709,6 @@ MonoBehaviour:
   bgmAudioSource: {fileID: 244516266}
   sfxAudioSource: {fileID: 1062207627}
   normalSnapshot: {fileID: 1306489911301437520, guid: 498a788a68b0d484fba3b30f717d948b, type: 2}
-  pausedSnapshot: {fileID: -851703316626733940, guid: 498a788a68b0d484fba3b30f717d948b, type: 2}
   mutedSnapshot: {fileID: -606081815152100503, guid: 498a788a68b0d484fba3b30f717d948b, type: 2}
   bgmClips: []
   sfxClips: []
@@ -818,6 +817,8 @@ MonoBehaviour:
     popUpPrefabs: {fileID: 8925491688803399385, guid: 0f02919c17cbc2e49ad6f42ed8bebecd, type: 3}
   - popUpName: Help
     popUpPrefabs: {fileID: 2197662090280688562, guid: 2d4c9c16ffab10d4f85df3301e37b83b, type: 3}
+  - popUpName: MagicBookPopup
+    popUpPrefabs: {fileID: 4946536349807685874, guid: ac3f2f4c35d1ed244b09fa17d894abb4, type: 3}
 --- !u!4 &176472003
 Transform:
   m_ObjectHideFlags: 0

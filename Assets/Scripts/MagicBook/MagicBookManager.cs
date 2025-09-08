@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+public enum BookRequestType { Regular, Specific }
+
 public class MagicBookManager : MonoBehaviour
 {
     public static MagicBookManager Instance { get; private set; }
@@ -14,6 +16,40 @@ public class MagicBookManager : MonoBehaviour
     private Dictionary<string, int> _ownedBooksDict;
     private List<MagicBookData> _availableBooks;
 
+    [Header("Combinations")]
+    [SerializeField] private List<MagicBookCombinationSO> _combinations; // 모든 조합법 SO 리스트
+    // 조합 완성 시 WaveManager에 "보상 줄 시간이야!" 라고 알리기 위한 이벤트
+    public event Action<string> OnCombinationCompleted;
+
+    private BookRequestType _nextRequestType = BookRequestType.Regular;
+    private string _specificBookCode;
+
+    /// 저장용으로 현재 소유한 책 목록(코드, 스택)을 반환합니다.
+    public Dictionary<string, int> GetOwnedBooksDataForSave()
+    {
+        return _ownedBooksDict;
+    }
+
+    /// 다음에 보여줄 매직북 선택의 종류를 미리 준비시킵니다. WaveManager가 호출합니다.
+    public void PrepareSelection(BookRequestType type, string specificCode = null)
+    {
+        _nextRequestType = type;
+        _specificBookCode = specificCode;
+    }
+
+    /// 준비된 요청에 따라 실제 매직북 데이터를 반환합니다. MagicBookSelectionUI가 호출합니다.
+    public MagicBookData[] GetPreparedSelection()
+    {
+        if (_nextRequestType == BookRequestType.Specific)
+        {
+            return GetSpecificBookChoice(_specificBookCode);
+        }
+        else // BookRequestType.Regular
+        {
+            return GetRandomBookSelection(3);
+        }
+    }
+
     private void Awake()
     {
         if (Instance == null) Instance = this;
@@ -24,6 +60,12 @@ public class MagicBookManager : MonoBehaviour
         _availableBooks = new List<MagicBookData>();
 
         foreach (var book in _allBooks) _allBooksDict[book.Code] = book;
+
+        // 게임 시작 시 모든 조합의 완료 상태를 리셋
+        foreach (var combo in _combinations)
+        {
+            combo.Reset();
+        }
     }
 
     /// <summary>
@@ -58,6 +100,32 @@ public class MagicBookManager : MonoBehaviour
         {
             _ownedBooksDict[bookCode] = currentStack + 1;
             ApplyBookEffect(bookData, currentStack + 1);
+            // 책을 선택할 때마다 조합 완성 여부를 체크하는 로직 호출
+            CheckForCombinations();
+        }
+    }
+
+    // 조합 완성 여부를 체크하는 메서드
+    private void CheckForCombinations()
+    {
+        // 현재 내가 가진 모든 책 코드 목록 (탐색 속도를 위해 HashSet 사용)
+        var ownedBookCodes = new HashSet<string>(_ownedBooksDict.Keys);
+
+        foreach (var combo in _combinations)
+        {
+            // 아직 완성되지 않은 조합이고, 보상 책을 아직 받지 않은 경우에만 체크
+            if (!combo.isCompleted && !_ownedBooksDict.ContainsKey(combo.rewardBookCode))
+            {
+                // 조합에 필요한 모든 책을 내가 가지고 있는지 확인
+                if (ownedBookCodes.IsSupersetOf(combo.requiredBookCodes))
+                {
+                    Debug.Log($"조합 [{combo.name}] 완성! 보상: {combo.rewardBookCode}");
+                    combo.isCompleted = true; // 이 조합은 이번 게임에서 다시 발동하지 않도록 처리
+
+                    // WaveManager에 이벤트 발송!
+                    OnCombinationCompleted?.Invoke(combo.rewardBookCode);
+                }
+            }
         }
     }
 
@@ -77,11 +145,23 @@ public class MagicBookManager : MonoBehaviour
 
     private void ApplyBookEffect(MagicBookData bookData, int stack)
     {
-        OnBookEffectApplied?.Invoke(bookData.EffectType, bookData.EffectValue[stack - 1]);
+        // 현재 스택(레벨)에 맞는 최종 효과 값을 가져옵니다.
+        int stackIndex = Mathf.Clamp(stack - 1, 0, bookData.EffectValuesByStack.Count - 1);
+        int stackValue = bookData.EffectValuesByStack[stackIndex];
+
+        // 책이 가진 모든 효과(Effects) 목록을 순회합니다.
+        foreach (var effect in bookData.Effects)
+        {
+            // 각 효과의 기본값과 스택별 값을 곱해 최종 수치를 계산합니다.
+            int finalValue = effect.Value * stackValue;
+
+            // OnBookEffectApplied 이벤트를 각 효과(EffectType)에 대해 개별적으로 호출합니다.
+            OnBookEffectApplied?.Invoke(effect.EffectType, finalValue);
+        }
     }
 
     // 어떤 마법책을 가지고 있는지 띄우는 메소드들
-    // 1. 소유한 책의 정보를 담아 전달할 간단한 구조체 추가
+    // 소유한 책의 정보를 담아 전달할 간단한 구조체 추가
     [System.Serializable]
     public struct OwnedBookInfo
     {
@@ -89,7 +169,7 @@ public class MagicBookManager : MonoBehaviour
         public int CurrentStack;       // 현재 소유한 중첩(레벨)
     }
 
-    // 2. 현재 소유한 모든 책의 정보를 List로 반환하는 public 메서드 추가
+    // 현재 소유한 모든 책의 정보를 List로 반환하는 public 메서드 추가
     public List<OwnedBookInfo> GetOwnedBookInfos()
     {
         var ownedBookInfos = new List<OwnedBookInfo>();
@@ -113,5 +193,17 @@ public class MagicBookManager : MonoBehaviour
         }
 
         return ownedBookInfos;
+    }
+
+    /// 특정 책 코드 하나만 선택지로 반환합니다. (보스 보상, 조합 보상용)
+    public MagicBookData[] GetSpecificBookChoice(string bookCode)
+    {
+        if (_allBooksDict.TryGetValue(bookCode, out var bookData))
+        {
+            // 책 데이터 하나만 들어있는 배열을 만들어 반환
+            return new MagicBookData[] { bookData };
+        }
+        Debug.LogWarning($"요청한 책 코드 '{bookCode}'를 찾을 수 없습니다.");
+        return null;
     }
 }
