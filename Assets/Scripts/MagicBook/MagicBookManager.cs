@@ -145,11 +145,23 @@ public class MagicBookManager : MonoBehaviour
 
     private void ApplyBookEffect(MagicBookData bookData, int stack)
     {
-        OnBookEffectApplied?.Invoke(bookData.EffectType, bookData.EffectValue[stack - 1]);
+        // 현재 스택(레벨)에 맞는 최종 효과 값을 가져옵니다.
+        int stackIndex = Mathf.Clamp(stack - 1, 0, bookData.EffectValuesByStack.Count - 1);
+        int stackValue = bookData.EffectValuesByStack[stackIndex];
+
+        // 책이 가진 모든 효과(Effects) 목록을 순회합니다.
+        foreach (var effect in bookData.Effects)
+        {
+            // 각 효과의 기본값과 스택별 값을 곱해 최종 수치를 계산합니다.
+            int finalValue = effect.Value * stackValue;
+
+            // OnBookEffectApplied 이벤트를 각 효과(EffectType)에 대해 개별적으로 호출합니다.
+            OnBookEffectApplied?.Invoke(effect.EffectType, finalValue);
+        }
     }
 
     // 어떤 마법책을 가지고 있는지 띄우는 메소드들
-    // 1. 소유한 책의 정보를 담아 전달할 간단한 구조체 추가
+    // 소유한 책의 정보를 담아 전달할 간단한 구조체 추가
     [System.Serializable]
     public struct OwnedBookInfo
     {
@@ -157,7 +169,7 @@ public class MagicBookManager : MonoBehaviour
         public int CurrentStack;       // 현재 소유한 중첩(레벨)
     }
 
-    // 2. 현재 소유한 모든 책의 정보를 List로 반환하는 public 메서드 추가
+    // 현재 소유한 모든 책의 정보를 List로 반환하는 public 메서드 추가
     public List<OwnedBookInfo> GetOwnedBookInfos()
     {
         var ownedBookInfos = new List<OwnedBookInfo>();

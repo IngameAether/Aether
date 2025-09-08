@@ -6,6 +6,15 @@ public class MagicBookSelectionUI : MonoBehaviour
     [SerializeField] private MagicBookButton[] _bookButtons;
     private MagicBookData[] _currentChoices;
 
+    private void Awake()
+    {
+        // 각 버튼에게 "너는 이 UI에 속해있고, 너의 번호는 i번이야" 라고 알려줌
+        for (int i = 0; i < _bookButtons.Length; i++)
+        {
+            _bookButtons[i].Initialize(this, i);
+        }
+    }
+
     // 팝업이 활성화될 때 자동으로 호출됩니다.
     private void OnEnable()
     {

@@ -11,6 +11,7 @@ public enum EBookEffectType
     KillAetherBonus,
     ElementMaxUpgrade,
     DirectTowerPlace,
+    ExtraLife,
 
     // Battle 관련 타입
     // --- 기본 & 범용 효과 ---
