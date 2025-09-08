@@ -12,11 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
   m_Name: GR3
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: "\uC5B4\uB460\uC758 \uAD8C\uC18D"
-  <Code>k__BackingField: GR3
-  <MaxStack>k__BackingField: 1
-  <Rank>k__BackingField: 1
-  <EffectType>k__BackingField: 6
-  <EffectValue>k__BackingField: 4b000000
-  <Description>k__BackingField: "\uC5B4\uB460 \uC6D0\uC18C \uB4F1\uC7A5\uD655\uB960
-    75% (\uBE5B \uC6D0\uC18C 25%)"
+  Name: "\uBE5B\uC758 \uAD8C\uC18D"
+  Code: GR3
+  Description: "\uBE5B \uC6D0\uC18C \uB4F1\uC7A5\uD655\uB960 {0}%(\uC5B4\uB460\uC6D0\uC18C\uAC00
+    {0}% \uB428)"
+  Icon: {fileID: 0}
+  Rank: 1
+  MaxStack: 1
+  Effects:
+  - EffectType: 5
+    ValueType: 1
+    Value: 1
+    TargetElement: 4
+    TargetTowerCode: 
+  - EffectType: 6
+    ValueType: 1
+    Value: 1
+    TargetElement: 4
+    TargetTowerCode: 
+  EffectValuesByStack: 4b00000019000000

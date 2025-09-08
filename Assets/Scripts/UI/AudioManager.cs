@@ -1,7 +1,35 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
-using System.Collections.Generic;
 
+// 추가할 소리는 여기에
+public enum SfxType
+{
+    // 공격 사운드
+    L1E_attack,
+    L1F_attack,
+    L1W_attack,
+    L2A_attack,
+    L2E_attack_Fly,
+    L2E_attack_Impact,
+    L2W_attack,
+    L3E_attack_Impact,
+    L3GLA_attack_Impact,
+    L3LIF_attack,
+    L3LIG_attack,
+    L3MET_attack,
+    L3W_attack,
+
+    // UI 사운드
+    Magicbook_get,
+    PopUp_close,
+    PopUp_open,
+
+    // 플레이 사운드
+    Screen_touch,
+    Tower_combination
+}
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
@@ -19,10 +47,18 @@ public class AudioManager : MonoBehaviour
 
     [Header("오디오 클립")]
     public AudioClip[] bgmClips;
-    public AudioClip[] sfxClips;
+
+    [System.Serializable]
+    public class SfxEntry
+    {
+        public SfxType type;
+        public AudioClip clip;
+    }
+
+    [SerializeField] private List<SfxEntry> sfxList; 
 
     private Dictionary<string, AudioClip> bgmClipDictionary = new Dictionary<string, AudioClip>();
-    private Dictionary<string, AudioClip> sfxClipDictionary = new Dictionary<string, AudioClip>();
+    private Dictionary<SfxType, AudioClip> sfxClipDictionary = new Dictionary<SfxType, AudioClip>();
 
     private void Awake()
     {
@@ -36,15 +72,17 @@ public class AudioManager : MonoBehaviour
             DontDestroyOnLoad(gameObject);
         }
 
+        // BGM 처리
         foreach (AudioClip clip in bgmClips)
         {
             if (clip != null && !bgmClipDictionary.ContainsKey(clip.name))
                 bgmClipDictionary.Add(clip.name, clip);
         }
-        foreach (AudioClip clip in sfxClips)
+        // SFX 처리
+        foreach (SfxEntry entry in sfxList)
         {
-            if (clip != null && !sfxClipDictionary.ContainsKey(clip.name))
-                sfxClipDictionary.Add(clip.name, clip);
+            if (!sfxClipDictionary.ContainsKey(entry.type))
+                sfxClipDictionary.Add(entry.type, entry.clip);
         }
     }
 
@@ -97,27 +135,18 @@ public class AudioManager : MonoBehaviour
     // 사운드 설정 로드
     public void LoadSoundSettings()
     {
-        // 볼륨 로드
         float bgmVolume = PlayerPrefs.GetFloat("BGMVolume", 5f);
-        bool bgmMute = PlayerPrefs.GetInt("BGMMute", 0) == 1;
         SetGroupVolume("BGMVolume", bgmVolume);
-        SetGroupMute("BGMMute", bgmMute);
 
         float sfxVolume = PlayerPrefs.GetFloat("SFXVolume", 5f);
-        bool sfxMute = PlayerPrefs.GetInt("SFXMute", 0) == 1;
         SetGroupVolume("SFXVolume", sfxVolume);
-        SetGroupMute("SFXMute", sfxMute);
-
-        Debug.Log("사운드 설정 로드 및 믹서 적용 완료.");
     }
 
     // 현재 UI 값들을 PlayerPrefs에 저장하는 기능
     public void SaveSoundSettings(float bgmVal, bool bgmMuteVal, float sfxVal, bool sfxMuteVal)
     {
         PlayerPrefs.SetFloat("BGMVolume", bgmVal);
-        PlayerPrefs.SetInt("BGMMute", bgmMuteVal ? 1 : 0);
         PlayerPrefs.SetFloat("SFXVolume", sfxVal);
-        PlayerPrefs.SetInt("SFXMute", sfxMuteVal ? 1 : 0);
         PlayerPrefs.Save();
     }
 
@@ -132,11 +161,39 @@ public class AudioManager : MonoBehaviour
         bgmAudioSource.Play();
     }
 
-    public void PlaySFX(string sfxName)
+    public void PlaySFX(SfxType sfxType)
     {
-        if (sfxAudioSource == null) return;
-        if (!sfxClipDictionary.ContainsKey(sfxName)) return;
-        sfxAudioSource.PlayOneShot(sfxClipDictionary[sfxName]);
+        if (sfxAudioSource == null || !sfxClipDictionary.ContainsKey(sfxType))
+        {
+            Debug.LogWarning(sfxType + " 타입에 해당하는 SFX 클립이 없습니다.");
+            return;
+        }
+        sfxAudioSource.PlayOneShot(sfxClipDictionary[sfxType]);
+    }
+
+    public void StopBGM(float fadeDuration = 1.0f)
+    {
+        if (bgmAudioSource != null && bgmAudioSource.isPlaying)
+        {
+            StartCoroutine(FadeOutBGM(fadeDuration));
+        }
+    }
+    private IEnumerator FadeOutBGM(float duration)
+    {
+        float startVolume = bgmAudioSource.volume;
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            // 시간이 지남에 따라 볼륨을 0으로 서서히 줄입니다.
+            bgmAudioSource.volume = Mathf.Lerp(startVolume, 0, timer / duration);
+            timer += Time.unscaledDeltaTime; // Time.timeScale의 영향을 받지 않음
+            yield return null;
+        }
+
+        bgmAudioSource.volume = 0;
+        bgmAudioSource.Stop();
+        bgmAudioSource.volume = startVolume; // 원래 볼륨으로 복구 (나중에 다시 재생할 때를 위해)
     }
 
     public void TransitionToSnapshot(AudioMixerSnapshot snapshot, float timeToReach)
@@ -147,4 +204,15 @@ public class AudioManager : MonoBehaviour
         }
     }
     #endregion
+
+    // 포물선 공격용 (날아가는 소리, 부딧히는 소리 나눠주는 함수)
+    public void PlaySFXAtPoint(SfxType sfxType, Vector3 position)
+    {
+        if (!sfxClipDictionary.ContainsKey(sfxType))
+        {
+            Debug.LogWarning(sfxType + " 타입에 해당하는 SFX 클립이 없습니다.");
+            return;
+        }
+        AudioSource.PlayClipAtPoint(sfxClipDictionary[sfxType], position);
+    }
 }

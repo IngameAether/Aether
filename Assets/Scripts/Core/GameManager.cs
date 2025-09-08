@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     [Header("UI에 목숨을 표시")]
     [SerializeField] private TextMeshProUGUI livesText; // 텍스트로 남은 목숨을 표시
 
+    private string BGM_main;
+
     private void Awake()
     {
         if (Instance == null)
@@ -43,6 +45,7 @@ public class GameManager : MonoBehaviour
     {
         InitializeLives();
         IsGameOver = false; // <- 게임 시작 시 게임 오버 아님으로 초기화
+        PlayBgmIfNotPlaying("BGM_main");
     }
 
     private void OnEnable()
@@ -55,32 +58,38 @@ public class GameManager : MonoBehaviour
     }
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "GameScene") // 실제 게임 씬 이름들을 여기에 추가
+        if (scene.name == "GameScene") // 실제 게임 씬 이름
         {
-            // 목숨 텍스트 UI를 씬에서 찾습니다.
-            // 1. 오브젝트 이름으로 찾기
+            // 인게임 BGM 재생
+            PlayBgmIfNotPlaying("BGM_InGame"); // 인게임 BGM 이름
+
             GameObject livesTextObj = GameObject.Find("LivesCountText");
             if (livesTextObj != null)
-            {
                 livesText = livesTextObj.GetComponent<TextMeshProUGUI>();
-                if (livesText == null)
-                {
-                    Debug.LogError("GameManager: 'LivesCountText' 오브젝트에서 TextMeshProUGUI 컴포넌트를 찾을 수 없습니다.");
-                }
-            }
-            else
-            {
-                Debug.LogError("GameManager: 씬에서 'LivesCountText'라는 이름의 오브젝트를 찾을 수 없습니다.");
-            }
 
-            // 씬이 로드될 때마다 목숨을 초기화 (게임 시작)
             InitializeLives();
         }
-        else if (scene.name == "MainMenuScene") // 메인 메뉴 씬에서는 목숨 UI를 비웁니다.
+        else if (scene.name == "MainMenuScene") // 실제 메인 메뉴 씬 이름
         {
-            livesText = null; // 참조 해제
-            Time.timeScale = 1f; // 혹시 게임 오버 후 메인 메뉴로 돌아왔다면 타임스케일 정상화
+            // 메인 메뉴 BGM 재생
+            PlayBgmIfNotPlaying("BGM_main"); // 메인 메뉴 BGM 이름
+
+            livesText = null;
+            Time.timeScale = 1f;
             IsGameOver = false;
+        }
+    }
+
+    private void PlayBgmIfNotPlaying(string bgmName)
+    {
+        // 재생하려는 BGM이 이미 재생 중이라면 아무것도 하지 않음
+        if (BGM_main == bgmName) return;
+
+        // AudioManager가 준비되었다면 BGM 재생
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlayBGM(bgmName);
+            BGM_main = bgmName; // 현재 재생 중인 BGM 이름 기록
         }
     }
 
@@ -125,17 +134,17 @@ public class GameManager : MonoBehaviour
         IsGameOver = true; // <- 게임 오버 상태로 설정
         Time.timeScale = 0f; // <- 게임 시간 정지
 
-        if (FadeManager.Instance != null)
+        if (AudioManager.Instance != null)
         {
-            FadeManager.Instance.GameOver();
+            // BGM 정지
+            AudioManager.Instance.StopBGM();
         }
-        else
-        {
-            Debug.LogError("GameManager: FadeManager 인스턴스를 찾을 수 없습니다. 게임 오버 UI를 표시할 수 없습니다.");
-            SceneManager.LoadScene("MainMenuscene");
-        }
-    }
 
+        if (FadeManager.Instance != null)
+            FadeManager.Instance.GameOver();
+        else
+            SceneManager.LoadScene("MainMenuScene");
+    }
     public void ChangeScene(EScene scene)
     {
         SceneManager.LoadScene((int)scene);

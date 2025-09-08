@@ -30,6 +30,9 @@ public class TowerData : ScriptableObject
     public float TimeDuration;
     public bool Guided;
     public bool Multi;
+
+    [Header("사운드 설정")]
+    public SfxType attackSound; // 이 타워가 사용할 공격 사운드
 }
 
 public enum AttackMode

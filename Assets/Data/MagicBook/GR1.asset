@@ -12,11 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
   m_Name: GR1
   m_EditorClassIdentifier: 
-  <Name>k__BackingField: "\uACC4\uB2E8\uC2DD \uC131\uC7A5"
-  <Code>k__BackingField: GR1
-  <MaxStack>k__BackingField: 1
-  <Rank>k__BackingField: 1
-  <EffectType>k__BackingField: 4
-  <EffectValue>k__BackingField: 01000000
-  <Description>k__BackingField: "\uBCF4\uC2A4 \uACA9\uD1F4 \uC2DC \uBAA8\uB4E0 \uBCF4\uC0C1
-    2\uBC30"
+  Name: "\uC131\uC120\uC124"
+  Code: GR1
+  Description: "\uC801 \uACA9\uD1F4 \uC2DC \uBE5B \uC6D0\uC18C +1 \uC5BB\uC744 \uD655\uB960
+    {0}"
+  Icon: {fileID: 0}
+  Rank: 1
+  MaxStack: 2
+  Effects:
+  - EffectType: 2
+    ValueType: 1
+    Value: 1
+    TargetElement: 4
+    TargetTowerCode: 
+  EffectValuesByStack: 0200000005000000
