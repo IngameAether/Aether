@@ -86,11 +86,13 @@ public class PopUpManager : MonoBehaviour
     public void OpenPopUpInGame(string popUpType)
     {
         OpenPopUpInternal(popUpType, true);
+        AudioManager.Instance.PlaySFX(SfxType.PopUp_open);
     }
 
     public void OpenPopUpMainMenu(string popUpType)
     {
         OpenPopUpInternal(popUpType, false);
+        AudioManager.Instance.PlaySFX(SfxType.PopUp_open);
     }
 
     private void OpenPopUpInternal(string popUpType, bool pauseGame)
@@ -129,12 +131,14 @@ public class PopUpManager : MonoBehaviour
         }
 
         StartCoroutine(AnimatePopUpIn(_currentActivePopUpCanvasGroup, _currentActivePopUpGameObject.transform));
+        AudioManager.Instance.PlaySFX(SfxType.PopUp_open);
     }
 
     public void CloseCurrentPopUp()
     {
         if (_currentActivePopUpGameObject == null || _isAnimating) return;
         StartCoroutine(AnimatePopUpOut(_currentActivePopUpCanvasGroup, _currentActivePopUpGameObject.transform));
+        AudioManager.Instance.PlaySFX(SfxType.PopUp_close);
     }
 
     private IEnumerator AnimatePopUpIn(CanvasGroup canvasGroup, Transform targetTransform)

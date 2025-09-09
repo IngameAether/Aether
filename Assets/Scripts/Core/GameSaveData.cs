@@ -24,7 +24,7 @@ public class GameSaveDataInfo
     public int playerLife;
     public int currentMapSeed;
     public ResourceData resources;
-    public List<TowerSetting> towers;
+    public List<TowerSaveInfo> towers;
     public Dictionary<string, int> ownedMagicBooks; // 획득한 마법책 목록 (코드, 스택)
 }
 

@@ -6,6 +6,8 @@ using UnityEngine.Audio;
 // 추가할 소리는 여기에
 public enum SfxType
 {
+    None,
+
     // 공격 사운드
     L1E_attack,
     L1F_attack,

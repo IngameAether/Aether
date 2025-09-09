@@ -5,15 +5,14 @@ using UnityEngine;
 public class TowerReinforce : MonoBehaviour
 {
     protected Tower tower;
-    protected TowerSetting towerSetting;
+    protected TowerInformation TowerInformation;
     protected TowerSpriteController towerSpriteController;
-    //private TowerData data;
+    // protected TowerData towerData;
 
     private void Start()
     {
         towerSpriteController = GetComponent<TowerSpriteController>();
         tower = GetComponent<Tower>();
-        towerSetting = tower.GetTowerSetting();
     }
 
     /// <summary>
@@ -33,14 +32,14 @@ public class TowerReinforce : MonoBehaviour
     /// </summary>
     public void ReinforceTower()
     {
-        if (towerSetting.Rank == 4)
+        if (TowerInformation.Rank == 4)
         {
             Debug.Log("Level 4 Tower can't reinforce!");
             return;
         }
 
         int bonusReinforce = ResourceManager.Instance.MaxElementUpgrade;
-        if (towerSetting.reinforceLevel >= towerSetting.MaxReinforce + bonusReinforce)
+        if (TowerInformation.reinforceLevel >= TowerInformation.MaxReinforce + bonusReinforce)
         {
             Debug.Log("Tower reinforce level is too high!");
             return;
@@ -48,7 +47,7 @@ public class TowerReinforce : MonoBehaviour
 
         if (tower.reinforceType != ReinforceType.None)
         {
-            towerSetting.reinforceLevel++;
+            TowerInformation.reinforceLevel++;
             TowerReinforceUpgrade();
             CheckLevelUpgrade();
         }
@@ -59,14 +58,14 @@ public class TowerReinforce : MonoBehaviour
     /// </summary>
     private void CheckLevelUpgrade()
     {
-        if (towerSetting.Rank == 2 && towerSetting.reinforceLevel == 10)
+        if (TowerInformation.Rank == 2 && TowerInformation.reinforceLevel == 10)
         {
-            towerSetting.Rank++;
+            TowerInformation.Rank++;
             TowerLevelUpgrade();
             Debug.Log($"{gameObject.name} lv.3으로 레벨업");
         }
 
-        if (towerSetting.Rank == 3 && towerSetting.reinforceLevel == 20)
+        if (TowerInformation.Rank == 3 && TowerInformation.reinforceLevel == 20)
         {
             // 추가적인 능력 부여
         }
@@ -77,8 +76,8 @@ public class TowerReinforce : MonoBehaviour
     /// </summary>
     public void TowerLevelUpgrade()
     {
-        towerSetting.Rank++;
-        if (towerSpriteController != null) towerSpriteController.SetSpritesByLevel(towerSetting.Rank);
+        TowerInformation.Rank++;
+        if (towerSpriteController != null) towerSpriteController.SetSpritesByLevel(TowerInformation.Rank);
         SetTowerStat();
     }
 
@@ -88,9 +87,9 @@ public class TowerReinforce : MonoBehaviour
     public void TowerReinforceUpgrade()
     {
         // 강화 레벨이 5,10,15,20이 되면 마법진 변화
-        if (towerSetting.reinforceLevel % 5 == 0)
+        if (TowerInformation.reinforceLevel % 5 == 0)
         {
-            if (towerSpriteController != null) towerSpriteController.SetSpriteByReinForce(towerSetting.reinforceLevel);
+            if (towerSpriteController != null) towerSpriteController.SetSpriteByReinForce(TowerInformation.reinforceLevel);
         }
         SetTowerStat();
     }
@@ -100,14 +99,14 @@ public class TowerReinforce : MonoBehaviour
     /// </summary>
     protected void SetTowerStat()
     {
-        towerSetting.Damage = tower.towerData.GetDamage(GetReinforceLevel());
-        towerSetting.AttackSpeed = tower.towerData.GetAttackSpeed(GetReinforceLevel());
-        towerSetting.CriticalHit = tower.towerData.GetCriticalRate(GetReinforceLevel());
+        TowerInformation.Damage = tower.towerData.GetDamage(GetReinforceLevel());
+        TowerInformation.AttackSpeed = tower.towerData.GetAttackSpeed(GetReinforceLevel());
+        TowerInformation.CriticalHit = tower.towerData.GetCriticalRate(GetReinforceLevel());
     }
 
     /// <summary>
     /// 강화 레벨 읽기
     /// </summary>
     /// <returns></returns>
-    public int GetReinforceLevel() => towerSetting.reinforceLevel;
+    public int GetReinforceLevel() => TowerInformation.reinforceLevel;
 }

@@ -110,23 +110,18 @@ public class TowerInfoDisplay : MonoBehaviour
     /// </summary>
     private void ShowTowerInfo(Tower tower)
     {
-        var towerSetting = tower.GetTowerSetting();
-
-        towerStatsText.text = $"Rank: {towerSetting.Rank}\n" +
-                              $"Attack: {towerSetting.Damage}\n" +
-                              $"Atk Range: {towerSetting.Range}\n" +
-                              $"Atk Speed: {towerSetting.AttackSpeed}\n" +
-                              $"Critical Hit: {towerSetting.CriticalHit}";
+        towerStatsText.text = $"Rank: {tower.Rank}\n" +
+                              $"Attack: {tower.Damage}\n" +
+                              $"Atk Range: {tower.Range}\n" +
+                              $"Atk Speed: {tower.AttackSpeed}\n" +
+                              $"Critical Hit: {tower.CriticalHit}";
 
         UpdateReinforceUI(tower);
         infoPanelUI.SetActive(true);
     }
-
     // 타워 강화 타입에 따라 UI 조정
     private void UpdateReinforceUI(Tower tower)
-    {
-        var towerSetting = tower.GetTowerSetting();
-
+    { 
         if (tower.reinforceType == ReinforceType.None)
         {
             lightButton.gameObject.SetActive(true);
@@ -146,7 +141,7 @@ public class TowerInfoDisplay : MonoBehaviour
         cb.normalColor = reinforceBtnColor;
         reinforceButton.colors = cb;
 
-        reinforceText.text = $"{currentSelectedTower.type} + {towerSetting.reinforceLevel}";
+        reinforceText.text = $"{tower.TowerName} + {tower.CurrentReinforceLevel}";
     }
 
     // 타워 가리키는 원 표시

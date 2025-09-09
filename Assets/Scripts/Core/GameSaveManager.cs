@@ -32,6 +32,15 @@ public class GameSaveManager : MonoBehaviour
 
     public bool save = false;
 
+    [System.Serializable]
+    public class TowerSaveData
+    {
+        public string towerDataID;
+        public int reinforceLevel;
+        public float positionX;
+        public float positionY;
+    }
+
     private void Awake()
     {
         if (Instance == null)
@@ -194,9 +203,9 @@ public class GameSaveManager : MonoBehaviour
         return new ResourceData(0, 0, 0);
     }
 
-    private List<TowerSetting> CollectTowerData()
+    private List<TowerSaveInfo> CollectTowerData()
     {
-        var towers = new List<TowerSetting>();
+        var towerSaveInfoList = new List<TowerSaveInfo>();
 
         if (_towerParent != null)
         {
@@ -205,12 +214,22 @@ public class GameSaveManager : MonoBehaviour
                 var towerComponent = child.GetComponent<Tower>();
                 if (towerComponent != null)
                 {
-                    towers.Add(towerComponent.GetTowerSetting());
+                    TowerData data = towerComponent.GetTowerData();
+                    if (data == null) continue;
+
+                    // 이제 TowerSaveData가 아닌 TowerSaveInfo 구조체를 사용합니다.
+                    TowerSaveInfo saveData = new TowerSaveInfo
+                    {
+                        towerId = data.name, // TowerSaveInfo의 필드 이름에 맞게 수정
+                        level = towerComponent.CurrentReinforceLevel // TowerSaveInfo의 필드 이름에 맞게 수정
+                    };
+
+                    towerSaveInfoList.Add(saveData);
                 }
             }
         }
 
-        return towers;
+        return towerSaveInfoList;
     }
 
     /// <summary>

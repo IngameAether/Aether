@@ -33,6 +33,12 @@ public class TowerData : ScriptableObject
 
     [Header("사운드 설정")]
     public SfxType attackSound; // 이 타워가 사용할 공격 사운드
+    public SfxType impactSound; // 적과 부딪힐 때 나는 소리
+
+    [Header("상태 이상 설정")]
+    public StatusEffectType effectType; // <-- 이 부분이 필요합니다.
+    public float effectDuration;      // <-- 이 부분이 필요합니다.
+    public float effectValue;         // <-- 이 부분이 필요합니다.
 }
 
 public enum AttackMode

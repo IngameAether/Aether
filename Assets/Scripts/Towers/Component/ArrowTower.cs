@@ -63,7 +63,7 @@ public class ArrowTower : Tower
 
         if (prefabToFire == null)
         {
-            Debug.LogWarning($"{name}: 발사체 프리팹이 지정되지 않았습니다. (Rank:{towerSetting.Rank}, Type:{towerSetting.Type})");
+            Debug.LogWarning($"{name}: 발사체 프리팹이 지정되지 않았습니다. (Rank:{this.Rank}, Type:{towerData.ElementType})");
             return;
         }
 
@@ -82,27 +82,27 @@ public class ArrowTower : Tower
         var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            // 1. 적용할 상태 이상 정보를 생성합니다. (부모 클래스에서처럼)
+            // 적용할 상태 이상 정보를 생성합니다. (부모 클래스에서처럼)
             var effect = new StatusEffect(
-                towerSetting.effectType,
-                towerSetting.effectDuration,
-                towerSetting.effectValue,
+                towerData.effectType,
+                towerData.effectDuration,
+                towerData.effectValue,
                 transform.position
             );
 
-            // 2. 새로운 Setup 함수를 호출하여 타겟, 데미지, 상태 이상을 한 번에 전달합니다.
-            projectile.Setup(currentTarget, towerSetting.Damage, effect);
+            // 새로운 Setup 함수를 호출하여 타겟, 데미지, 상태 이상을 한 번에 전달합니다.
+            projectile.Setup(currentTarget, this.Damage, effect, towerData.impactSound);
         }
     }
 
     private GameObject SelectProjectilePrefab()
     {
-        // Rank 1 → 무조건 직선 탄
-        if (towerSetting.Rank <= 1)
+        // 수정된 부분: TowerInformation.Rank -> this.Rank
+        if (this.Rank <= 1)
             return projectileStraightPrefab;
 
-        // Rank 2 이상: 원소별 분기
-        switch (towerSetting.Type)
+        // 수정된 부분: TowerInformation.Type -> towerData.ElementType
+        switch (towerData.ElementType)
         {
             case ElementType.Fire:
                 return projectileFireConePrefab;

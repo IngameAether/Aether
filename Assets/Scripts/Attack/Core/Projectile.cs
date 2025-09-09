@@ -29,6 +29,8 @@ public class Projectile : MonoBehaviour
 
     // 타워로부터 전달받을 상태 이상 정보 변수
     private StatusEffect _effectToApply;
+    // 충돌음 정보 저장 변수
+    private SfxType _impactSound;
 
     /// <summary>
     /// 타워에서 발사체를 생성할 때 호출할 단일 초기화 함수입니다.
@@ -36,11 +38,12 @@ public class Projectile : MonoBehaviour
     /// <param name="target">목표 대상</param>
     /// <param name="damage">적용할 데미지</param>
     /// <param name="effect">적용할 상태 이상 정보</param>
-    public void Setup(Transform target, float damage, StatusEffect effect)
+    public void Setup(Transform target, float damage, StatusEffect effect, SfxType impactSound)
     {
         _target = target;
         _damage = damage;
         _effectToApply = effect;
+        _impactSound = impactSound; // 전달받은 충돌음 정보를 변수에 저장
 
         _startPos = transform.position;
         _t = 0f;
@@ -48,24 +51,31 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        // 목표가 사라졌을 경우 (이미 죽었을 경우)
         if (_target == null)
         {
-            // 현재 위치에 효과를 적용하고 소멸 (예: 범위 공격)
-            ApplyDamageAndEffect(transform.position);
-            Destroy(gameObject);
+            ApplyEffectAndDestroy(transform.position);
             return;
         }
 
-        // 목표를 향해 이동
         MoveTowardsTarget();
 
-        // 목표에 도달했을 경우
         if (Vector3.Distance(transform.position, _target.position) <= arriveDistance)
         {
-            ApplyDamageAndEffect(_target.position);
-            Destroy(gameObject);
+            ApplyEffectAndDestroy(_target.position);
         }
+    }
+
+    private void ApplyEffectAndDestroy(Vector3 hitPosition)
+    {
+        // 저장해 둔 충돌음을 재생하는 코드를 추가합니다.
+        // 재생할 충돌음이 있는지 확인 ('None'이 아니면 재생)
+        if (_impactSound != SfxType.None)
+        {
+            AudioManager.Instance.PlaySFXAtPoint(_impactSound, hitPosition);
+        }
+
+        ApplyDamageAndEffect(hitPosition);
+        Destroy(gameObject);
     }
 
     private void MoveTowardsTarget()

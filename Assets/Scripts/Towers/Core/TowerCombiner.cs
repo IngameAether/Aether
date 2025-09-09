@@ -259,7 +259,7 @@ private void TryCombination()
 
             // 타워 스탯 설정 (데이터가 있는 경우)
             var towerComponent = newTower.GetComponent<Tower>();
-            towerComponent.SetTowerSetting(towerData);
+            towerComponent.Setup(towerData);
             Debug.Log($"towerData: {towerData.Level}");
 
             TileInteraction.isTowerJustCreated = true;
@@ -316,7 +316,7 @@ private void TryCombination()
     {
         var towerComponent = createdTower.GetComponent<Tower>();
         if (towerComponent != null)
-            Debug.Log($"타워 컴포넌트 설정 완료: {towerComponent.GetTowerSetting().Name}");
+            Debug.Log($"타워 컴포넌트 설정 완료: {towerComponent.TowerName}");
 
         _towerSpriteController = createdTower.GetComponent<TowerSpriteController>();
     }

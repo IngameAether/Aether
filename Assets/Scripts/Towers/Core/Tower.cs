@@ -6,8 +6,10 @@ public enum ReinforceType { None, Light, Dark };
 
 public abstract class Tower : MonoBehaviour
 {
+    private TowerInformation towerInformation;
+
     [Header("Tower Configuration")]
-    [SerializeField] protected TowerData towerData;
+    [SerializeField] public TowerData towerData; // protected를 public으로 변경했음. 도저히 오류를 잡을 수가 없었음.
 
     public static event Action<Tower> OnTowerClicked;
     public static event Action OnTowerDestroyed;
@@ -15,7 +17,6 @@ public abstract class Tower : MonoBehaviour
     [Header("Tower Reinforce")]
     public ReinforceType reinforceType;
 
-    public TowerData towerData;
     public string type { get; set; }
 
     protected SpriteRenderer spriteRenderer;
@@ -42,22 +43,19 @@ public abstract class Tower : MonoBehaviour
     [SerializeField] private GameObject fireProjectilePrefab;
     [SerializeField] private GameObject advancedProjectilePrefab;
 
-    public TowerSetting GetTowerSetting()
-    {
-        return towerSetting;
-    }
+    // 초기화 완료 상태를 저장할 변수
+    private bool _isInitialized = false;
 
-    public void SetTowerSetting(TowerData data)
-    {
-        towerData = data;
-        towerSetting.Name = data.Name;
-        towerSetting.Type = data.ElementType;
-        towerSetting.Rank = data.Level;
-        towerSetting.Damage = data.GetDamage(towerSetting.reinforceLevel);
-        towerSetting.Range = data.BaseRange;
-        towerSetting.AttackSpeed = data.GetAttackSpeed(towerSetting.reinforceLevel);
-        towerSetting.CriticalHit = data.GetCriticalRate(towerSetting.reinforceLevel);
-    }
+    [Header("Tower Data")]
+    private int reinforceLevel = 0;
+    public string TowerName => towerData.Name;
+    public float Damage => towerData.GetDamage(reinforceLevel);
+    public float AttackSpeed => towerData.GetAttackSpeed(reinforceLevel);
+    public float Range => towerData.BaseRange;
+    public int Rank => towerData.Level; // <-- 이 코드가 없으면 this.Rank 에서 CS1061 오류 발생
+    public float CriticalHit => towerData.GetCriticalRate(reinforceLevel);
+    public int CurrentReinforceLevel => reinforceLevel;
+    public int MaxReinforce => towerData.MaxReinforce;
 
     protected virtual void Start()
     {
@@ -66,13 +64,38 @@ public abstract class Tower : MonoBehaviour
 
     protected virtual void Update()
     {
-        // 타겟 찾기 및 공격
+        if (!_isInitialized)
+        {
+            return;
+        }
+
+        // 타겟 찾기 및 공격 
         FindAndAttackTarget();
     }
 
     protected virtual void OnDestroy()
     {
         OnTowerDestroyed?.Invoke();
+    }
+
+    public void Setup(TowerData data)
+    {
+        if (data == null)
+        {
+            Debug.LogError($"{this.name}: 유효하지 않은 TowerData(null)로 Setup을 시도했습니다. 타워를 비활성화합니다.");
+            _isInitialized = false;
+            gameObject.SetActive(false); // 문제가 생긴 타워는 비활성화 처리
+            return;
+        }
+
+        this.towerData = data;
+        this.reinforceLevel = 0;
+        _isInitialized = true;
+    }
+
+    public TowerData GetTowerData()
+    {
+        return towerData;
     }
 
     /// <summary>
@@ -136,7 +159,7 @@ public abstract class Tower : MonoBehaviour
     protected virtual bool IsTargetInRange(Transform target)
     {
         if (target == null) return false;
-        return Vector2.Distance(transform.position, target.position) <= towerSetting.Range;
+        return Vector2.Distance(transform.position, target.position) <= towerInformation.Range;
     }
 
     /// <summary>
@@ -148,7 +171,7 @@ public abstract class Tower : MonoBehaviour
 
         var enemiesInRange = Physics2D.OverlapCircleAll(
             transform.position,
-            towerSetting.Range,
+            towerInformation.Range,
             enemyLayerMask
         );
 
@@ -183,8 +206,8 @@ public abstract class Tower : MonoBehaviour
     /// </summary>
     protected virtual bool CanAttack()
     {
-        if (towerSetting.AttackSpeed <= 0f) return false;
-        float attackInterval = 1f / towerSetting.AttackSpeed;
+        if (towerInformation.AttackSpeed <= 0f) return false;
+        float attackInterval = 1f / towerInformation.AttackSpeed;
         return Time.time >= lastAttackTime + attackInterval;
     }
 
@@ -198,7 +221,7 @@ public abstract class Tower : MonoBehaviour
         // 발사체 프리팹 선택
         GameObject projectilePrefab = null;
 
-        switch (towerSetting.Rank)
+        switch (towerInformation.Rank)
         {
             case 1:
                 projectilePrefab = basicProjectilePrefab; // 1단계용
@@ -224,14 +247,14 @@ public abstract class Tower : MonoBehaviour
         {
             // 1. 적용할 상태 이상 객체 생성
             var effect = new StatusEffect(
-                towerSetting.effectType,
-                towerSetting.effectDuration,
-                towerSetting.effectValue,
+                towerInformation.effectType,
+                towerInformation.effectDuration,
+                towerInformation.effectValue,
                 transform.position
             );
 
             // 2. 발사체에 타겟, 데미지, 상태 이상 정보를 한 번에 전달
-            projectile.Setup(currentTarget, towerSetting.Damage, effect);
+            projectile.Setup(currentTarget, this.Damage, effect, towerData.impactSound);
         }
     }
 

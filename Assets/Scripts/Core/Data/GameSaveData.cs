@@ -25,7 +25,7 @@ public class GameSaveData
 
     // 맵 및 타워 정보
     public int currentMapSeed;
-    public List<TowerSetting> towers = new();
+    public List<TowerInformation> towers = new();
 
     // 버프관련 정보
     public List<BuffSaveEntry> activeBuffs = new List<BuffSaveEntry>();

@@ -170,7 +170,7 @@ MonoBehaviour:
   saveSlotSelectPanel: {fileID: 821370945}
   blurBackgroundImage: {fileID: 2031103838}
   levelNameText: {fileID: 971103571}
-  waveImageDisplay: {fileID: 0}
+  waveImageDisplay: {fileID: 1655087414}
   leftArrowButton: {fileID: 1405775999}
   rightArrowButton: {fileID: 1018521911}
   playLevelButton: {fileID: 1655087416}
@@ -3476,7 +3476,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f4a90b4581b38ad4aab9cc2930039464, type: 3}
+  m_Sprite: {fileID: 21300000, guid: b949bbff7c51ce943950fec472f31456, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

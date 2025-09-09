@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 /// <summary>
 /// 타워를 선택 가능하게 만드는 컴포넌트
@@ -43,12 +43,12 @@ public class TowerSelectable : MonoBehaviour, ISelectable
 
     public ElementType GetElementType()
     {
-        return tower?.GetTowerSetting().Type ?? ElementType.None;
+        return tower?.towerData?.ElementType ?? ElementType.None;
     }
 
     public int GetLevel()
     {
-        return tower?.GetTowerSetting().Rank ?? 1;
+        return tower?.Rank ?? 1;
     }
 
     public Tile GetTile()
