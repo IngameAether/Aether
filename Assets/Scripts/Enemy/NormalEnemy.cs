@@ -55,7 +55,6 @@ public class NormalEnemy : MonoBehaviour, IDamageable
             // maxHealth = enemyInfo.Hp;
             // CurrentHealth = maxHealth;
             moveSpeed = enemyInfo.Speed;
-            Debug.Log(moveSpeed);
             // magicResistance
             // mentalStrength
         }
