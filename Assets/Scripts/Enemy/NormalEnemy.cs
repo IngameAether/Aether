@@ -30,6 +30,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     private EnemyStatusManager statusManager;
 
     public EnemyData enemyData;
+    public EnemyInfoData enemyInfo;
     public int curEnemyIndex;
 
     public bool finalDamageReduction = false;
@@ -45,6 +46,18 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         if (enemyMovement == null || statusManager == null)
         {
             Debug.LogError($"{gameObject.name}에서 필수 컴포넌트(EnemyMovement 또는 EnemyStatusManager)를 찾을 수 없습니다.");
+        }
+
+        // idCode를 기반으로 CSV에서 데이터 받기
+        enemyInfo = EnemyDatabase.GetEnemyInfoData(idCode);
+        if (enemyInfo != null)
+        {
+            // maxHealth = enemyInfo.Hp;
+            // CurrentHealth = maxHealth;
+            moveSpeed = enemyInfo.Speed;
+            Debug.Log(moveSpeed);
+            // magicResistance
+            // mentalStrength
         }
     }
 
@@ -194,7 +207,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         // 사망 시 모든 상태 이상 효과를 즉시 정리하여 오류를 방지합니다.
         statusManager?.ClearAllEffectsOnDeath();
         
-        int baseReward = enemyData.Aether;
+        int baseReward = enemyInfo.Aether;
         // 코인 보상
         int bonusReward = ResourceManager.Instance.EnemyKillBonusCoin;
         int totalReward = baseReward + bonusReward;
