@@ -26,6 +26,7 @@ public class PopUpManager : MonoBehaviour
 
     private bool _isAnimating = false;
     private bool _shouldPauseGame = true;
+    private static bool _initialBookShown = false;
 
     [Header("Registered PopUps")]
     public List<PopUpData> popUpList = new List<PopUpData>();
@@ -36,6 +37,11 @@ public class PopUpManager : MonoBehaviour
     {
         public string popUpName;
         public GameObject popUpPrefabs;
+    }
+
+    public static void ResetInitialBookFlag()
+    {
+        _initialBookShown = false;
     }
 
     private void Awake()
@@ -97,6 +103,13 @@ public class PopUpManager : MonoBehaviour
 
     private void OpenPopUpInternal(string popUpType, bool pauseGame)
     {
+        if (popUpType == "MagicBookPopup" && _initialBookShown)
+        {
+            // 함수를 즉시 종료하여 두 번째 팝업이 열리는 것을 원천 차단합니다.
+            Debug.LogWarning("중복된 MagicBookPopup 호출을 차단했습니다.");
+            return;
+        }
+
         if (_currentActivePopUpGameObject != null || _isAnimating) return;
 
         _shouldPauseGame = pauseGame;

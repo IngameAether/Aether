@@ -39,6 +39,11 @@ public class WaveManager : MonoBehaviour
         // 2. PopUpManager를 호출하고 선택을 기다림
         yield return StartCoroutine(WaitForChoice());
 
+        if (GameTimer.Instance != null)
+        {
+            GameTimer.Instance.StartTimer();
+        }
+
         yield return new WaitForSeconds(initialDelay);
 
         for (int waveIndex = 0; waveIndex < spawnManager.waves.Count; waveIndex++)
@@ -111,27 +116,17 @@ public class WaveManager : MonoBehaviour
 
     private void OnEnable()
     {
-        // PopUpManager의 팝업 닫기 이벤트에 구독하여 선택 완료 시점을 감지
-        PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
-
-        MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
-        MagicBookManager.Instance.OnCombinationCompleted += HandleCombinationCompleted;
-
-        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
-    }
-
-    private void OnDisable()
-    {
+        // PopUpManager는 DontDestroyOnLoad 객체일 수 있으므로 null 체크 후 구독
         if (PopUpManager.Instance != null)
-            PopUpManager.Instance.OnPopUpClosed -= OnPopupClosed;
+            PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
 
         if (MagicBookManager.Instance != null)
         {
-            MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
-            MagicBookManager.Instance.OnCombinationCompleted -= HandleCombinationCompleted;
+            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+            MagicBookManager.Instance.OnCombinationCompleted += HandleCombinationCompleted;
         }
 
-        SpawnManager.OnAllEnemiesCleared -= HandleWaveCleared;
+        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
     }
 
     private void HandleWaveCleared() { _waitingForEnemies = false; }

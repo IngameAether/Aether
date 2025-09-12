@@ -56,9 +56,11 @@ public class MagicBookSelectionUI : MonoBehaviour
         if (_currentChoices == null || buttonIndex >= _currentChoices.Length) return;
 
         var bookData = _currentChoices[buttonIndex];
-        MagicBookManager.Instance.SelectBook(bookData.Code);
 
-        // 팝업 닫기는 PopUpManager에게 맡깁니다.
+        // 팝업부터 먼저 닫아서 UI 상호작용을 완전히 끝냅니다.
         PopUpManager.Instance.CloseCurrentPopUp();
+
+        // 그 다음에 선택한 책에 대한 게임 로직을 처리합니다.
+        MagicBookManager.Instance.SelectBook(bookData.Code);
     }
 }

@@ -62,6 +62,9 @@ public class MainMenuUI : MonoBehaviour
         saveSlotLeftArrow?.onClick.AddListener(OnSaveSlotLeftArrowClick);
         saveSlotRightArrow?.onClick.AddListener(OnSaveSlotRightArrowClick);
         selectSlotButton?.onClick.AddListener(OnSelectSlotButtonClick);
+
+        // 다음 게임을 위해 PopUpManager의 상태를 리셋합니다.
+        PopUpManager.ResetInitialBookFlag();
     }
 
     // 특정 패널만 활성화하고 다른 패널은 비활성화하는 함수
