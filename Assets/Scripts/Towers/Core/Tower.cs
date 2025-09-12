@@ -159,7 +159,7 @@ public abstract class Tower : MonoBehaviour
     protected virtual bool IsTargetInRange(Transform target)
     {
         if (target == null) return false;
-        return Vector2.Distance(transform.position, target.position) <= towerInformation.Range;
+        return Vector2.Distance(transform.position, target.position) <= this.Range;
     }
 
     /// <summary>
@@ -171,7 +171,7 @@ public abstract class Tower : MonoBehaviour
 
         var enemiesInRange = Physics2D.OverlapCircleAll(
             transform.position,
-            towerInformation.Range,
+            this.Range,
             enemyLayerMask
         );
 
@@ -206,8 +206,8 @@ public abstract class Tower : MonoBehaviour
     /// </summary>
     protected virtual bool CanAttack()
     {
-        if (towerInformation.AttackSpeed <= 0f) return false;
-        float attackInterval = 1f / towerInformation.AttackSpeed;
+        if (this.AttackSpeed <= 0f) return false;
+        float attackInterval = 1f / this.AttackSpeed;
         return Time.time >= lastAttackTime + attackInterval;
     }
 

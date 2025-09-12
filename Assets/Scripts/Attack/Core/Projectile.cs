@@ -26,6 +26,8 @@ public class Projectile : MonoBehaviour
     private Vector3 _startPos;
     private float _t;
     private float _damage; // 타워가 설정해줄 데미지
+    private Vector3 _lastKnownPosition; // 타겟의 마지막 위치를 저장할 변수
+    private bool _targetIsLost = false; // 타겟을 잃어버렸는지 확인하는 플래그
 
     // 타워로부터 전달받을 상태 이상 정보 변수
     private StatusEffect _effectToApply;
@@ -38,6 +40,8 @@ public class Projectile : MonoBehaviour
     /// <param name="target">목표 대상</param>
     /// <param name="damage">적용할 데미지</param>
     /// <param name="effect">적용할 상태 이상 정보</param>
+
+
     public void Setup(Transform target, float damage, StatusEffect effect, SfxType impactSound)
     {
         _target = target;
@@ -51,17 +55,20 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        if (_target == null)
+        // 타겟이 사라졌는지 확인
+        if (!_targetIsLost && _target == null)
         {
-            ApplyEffectAndDestroy(transform.position);
-            return;
+            _targetIsLost = true; // 타겟을 잃어버렸다고 표시
         }
 
+        // 목표 지점을 향해 이동
         MoveTowardsTarget();
 
-        if (Vector3.Distance(transform.position, _target.position) <= arriveDistance)
+        // 목표 지점 도착 여부 확인
+        Vector3 targetPosition = _targetIsLost ? _lastKnownPosition : _target.position;
+        if (Vector3.Distance(transform.position, targetPosition) <= arriveDistance)
         {
-            ApplyEffectAndDestroy(_target.position);
+            ApplyEffectAndDestroy(targetPosition);
         }
     }
 
@@ -80,14 +87,23 @@ public class Projectile : MonoBehaviour
 
     private void MoveTowardsTarget()
     {
+        // 이동 전에 항상 마지막 위치를 갱신
+        if (!_targetIsLost)
+        {
+            _lastKnownPosition = _target.position;
+        }
+
+        // 목표 위치 설정
+        Vector3 targetPosition = _lastKnownPosition;
+
         switch (motionType)
         {
             case ProjectileMotionType.Straight:
-                transform.position = Vector3.MoveTowards(transform.position, _target.position, speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
                 break;
             case ProjectileMotionType.Parabola:
-                _t += Time.deltaTime * speed / Mathf.Max(0.001f, Vector3.Distance(_startPos, _target.position));
-                var pos = Vector3.Lerp(_startPos, _target.position, Mathf.Clamp01(_t));
+                _t += Time.deltaTime * speed / Mathf.Max(0.001f, Vector3.Distance(_startPos, targetPosition));
+                var pos = Vector3.Lerp(_startPos, targetPosition, Mathf.Clamp01(_t));
                 pos.y += arcHeight * Mathf.Sin(Mathf.Clamp01(_t) * Mathf.PI);
                 transform.position = pos;
                 break;
@@ -101,25 +117,27 @@ public class Projectile : MonoBehaviour
     {
         // 상태 이상 효과 적용 로직 
         // 목표가 아직 살아있고, 적용할 효과가 있을 경우에만 실행
-        if (_target != null && _effectToApply != null && _effectToApply.Type != StatusEffectType.None)
+        if (!_targetIsLost && _target != null && _effectToApply != null && _effectToApply.Type != StatusEffectType.None)
         {
             EnemyStatusManager statusManager = _target.GetComponent<EnemyStatusManager>();
             if (statusManager != null)
             {
-                // 적의 상태 이상 매니저에게 효과 적용을 요청
                 statusManager.ApplyStatusEffect(_effectToApply);
             }
         }
 
-        // 기존의 데미지 효과 적용 로직 (DamageEffectManager 호출)
         if (DamageEffectManager.Instance != null)
         {
             var forward = transform.right;
+
+            // 타겟이 사라졌다면 null을, 아니라면 _target을 넘겨준다.
+            Transform targetToSend = _targetIsLost ? null : _target;
+
             DamageEffectManager.Instance.ApplyEffect(
                 effectType,
                 hitPosition,
-                _damage, // 타워에서 설정해준 데미지 사용
-                _target,
+                _damage,
+                targetToSend, // 수정된 targetToSend 변수를 사용
                 radius,
                 coneAngle,
                 forward,

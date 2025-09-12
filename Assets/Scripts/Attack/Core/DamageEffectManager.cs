@@ -28,9 +28,15 @@ public class DamageEffectManager : MonoBehaviour
     )
 
     {
-        // 타워 투사체 ElementType enemy에게 넘겨줌
-        target.TryGetComponent<NormalEnemy>(out var enemy);
-        enemy.SetResistance(elementType);
+        // target이 유효한지
+        if (target != null)
+        {
+            // 유효한 타겟이 있을 때만 저항력 관련 로직을 실행합니다.
+            if (target.TryGetComponent<NormalEnemy>(out var enemy))
+            {
+                enemy.SetResistance(elementType);
+            }
+        }
 
         switch (type)
         {
