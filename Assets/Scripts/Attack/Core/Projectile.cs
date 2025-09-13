@@ -33,6 +33,8 @@ public class Projectile : MonoBehaviour
     private StatusEffect _effectToApply;
     // 충돌음 정보 저장 변수
     private SfxType _impactSound;
+    // 상태이상 확률 저장 변수
+    private float _effectChance;
 
     /// <summary>
     /// 타워에서 발사체를 생성할 때 호출할 단일 초기화 함수입니다.
@@ -41,13 +43,13 @@ public class Projectile : MonoBehaviour
     /// <param name="damage">적용할 데미지</param>
     /// <param name="effect">적용할 상태 이상 정보</param>
 
-
-    public void Setup(Transform target, float damage, StatusEffect effect, SfxType impactSound)
+    public void Setup(Transform target, float damage, StatusEffect effect, float effectChance, SfxType impactSound)
     {
         _target = target;
         _damage = damage;
         _effectToApply = effect;
-        _impactSound = impactSound; // 전달받은 충돌음 정보를 변수에 저장
+        _effectChance = effectChance; // 전달받은 확률 정보 저장
+        _impactSound = impactSound; 
 
         _startPos = transform.position;
         _t = 0f;
@@ -68,11 +70,11 @@ public class Projectile : MonoBehaviour
         Vector3 targetPosition = _targetIsLost ? _lastKnownPosition : _target.position;
         if (Vector3.Distance(transform.position, targetPosition) <= arriveDistance)
         {
-            ApplyEffectAndDestroy(targetPosition);
+            OnTargetHit(targetPosition);
         }
     }
 
-    private void ApplyEffectAndDestroy(Vector3 hitPosition)
+    private void OnTargetHit(Vector3 hitPosition)
     {
         // 저장해 둔 충돌음을 재생하는 코드를 추가합니다.
         // 재생할 충돌음이 있는지 확인 ('None'이 아니면 재생)
@@ -81,8 +83,50 @@ public class Projectile : MonoBehaviour
             AudioManager.Instance.PlaySFXAtPoint(_impactSound, hitPosition);
         }
 
-        ApplyDamageAndEffect(hitPosition);
+        // 타격 타입에 따라 다르게 처리
+        switch (hitType)
+        {
+            case HitType.Direct:
+                // 직접 타격: 대상에게 직접 TakeHit 호출
+                if (hitType == HitType.Direct && !_targetIsLost && _target != null)
+                {
+                    NormalEnemy enemy = _target.GetComponent<NormalEnemy>();
+                    if (enemy != null)
+                    {
+                        // 데미지, 상태이상 효과, 그리고 '확률'을 모두 넘겨줍니다.
+                        enemy.TakeHit(_damage, _effectToApply, _effectChance);
+                    }
+                }
+                break;
+
+            // 폭발이나 범위 공격은 기존처럼 DamageEffectManager 사용
+            case HitType.Explosive:
+            case HitType.GroundAoE:
+                ApplyAoeDamage(hitPosition);
+                break;
+        }
+
+        // 처리 후 발사체 파괴
         Destroy(gameObject);
+    }
+
+    // 범위 공격 로직을 별도 함수로 분리
+    private void ApplyAoeDamage(Vector3 hitPosition)
+    {
+        if (DamageEffectManager.Instance != null)
+        {
+            var forward = transform.right;
+            Transform targetToSend = _targetIsLost ? null : _target;
+
+            DamageEffectManager.Instance.ApplyEffect(
+                effectType, hitPosition, _damage, targetToSend,
+                radius, coneAngle, forward, elementType
+            );
+        }
+        else
+        {
+            Debug.LogWarning("DamageEffectManager 인스턴스가 씬에 없습니다!");
+        }
     }
 
     private void MoveTowardsTarget()
@@ -122,7 +166,7 @@ public class Projectile : MonoBehaviour
             EnemyStatusManager statusManager = _target.GetComponent<EnemyStatusManager>();
             if (statusManager != null)
             {
-                statusManager.ApplyStatusEffect(_effectToApply);
+                statusManager.TryApplyStatusEffect(_effectToApply);
             }
         }
 

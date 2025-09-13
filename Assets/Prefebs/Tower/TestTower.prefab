@@ -94,7 +94,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6676330683900796178}
   - component: {fileID: 6625448989783033580}
-  - component: {fileID: -5632423137665832659}
   - component: {fileID: 8300866107100621093}
   m_Layer: 0
   m_Name: TestTower
@@ -171,32 +170,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &-5632423137665832659
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5584138857135854208}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 804193ecc83142f9986b3509f3ac9691, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerSetting:
-    Name: 
-    Description: 
-    Type: 0
-    Rank: 0
-    reinforceLevel: 1
-    MaxReinforce: 5
-    Damage: 0
-    AttackSpeed: 0
-    Range: 0
-    CriticalHit: 0
-  reinforceType: 0
-  projectilePrefab: {fileID: 0}
-  spawnPoint: {fileID: 0}
 --- !u!58 &8300866107100621093
 CircleCollider2D:
   m_ObjectHideFlags: 0

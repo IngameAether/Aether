@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -93,6 +93,11 @@ public class ClickManager : MonoBehaviour
     /// </summary>
     private void HandleTowerClick(Tower tower, TowerSelectable towerSelectable)
     {
+        if (tower == null || towerSelectable == null)
+        {
+            return;
+        }
+
         float currentTime = Time.time;
 
         // 같은 타워로 더블클릭인지 판정

@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 /// <summary>
@@ -32,7 +30,6 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     public EnemyData enemyData;
     public EnemyInfoData enemyInfo;
     public int curEnemyIndex;
-
     public bool finalDamageReduction = false;
 
     private void Awake()
@@ -48,15 +45,10 @@ public class NormalEnemy : MonoBehaviour, IDamageable
             Debug.LogError($"{gameObject.name}에서 필수 컴포넌트(EnemyMovement 또는 EnemyStatusManager)를 찾을 수 없습니다.");
         }
 
-        // idCode를 기반으로 CSV에서 데이터 받기
         enemyInfo = EnemyDatabase.GetEnemyInfoData(idCode);
         if (enemyInfo != null)
         {
-            // maxHealth = enemyInfo.Hp;
-            // CurrentHealth = maxHealth;
             moveSpeed = enemyInfo.Speed;
-            // magicResistance
-            // mentalStrength
         }
     }
 
@@ -106,11 +98,11 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     /// <summary>
     /// 데미지를 받는 함수. 부패, 마법 저항력 순서로 최종 데미지를 계산합니다.
     /// </summary>
-    public void TakeDamage(float damageAmount)
+    public void TakeDamage(float damageAmount) 
     {
         float finalDamage = damageAmount;
 
-        // 1. 상태 이상 효과 적용
+        // 1. 상태 이상 효과 적용 (부패 등)
         finalDamage = ApplyStatusEffects(finalDamage);
 
         // 2. 마법 저항력 적용
@@ -119,7 +111,6 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         // 3. 특수 능력 적용
         finalDamage = ApplySpecialAbilities(finalDamage);
 
-        // 최종 대미지를 체력에서 차감
         if (finalDamage > 0)
         {
             CurrentHealth -= finalDamage;
@@ -127,11 +118,21 @@ public class NormalEnemy : MonoBehaviour, IDamageable
             UpdateHealthBar();
         }
 
-        // 체력이 0 이하면 사망 처리
         if (CurrentHealth <= 0)
         {
             Die();
         }
+    }
+
+    // 상태 이상으로 인한 데미지 증폭/감소 효과를 적용합니다.
+    private float ApplyStatusEffects(float damage)
+    {
+        if (statusManager != null)
+        {
+            // 부패(Rot) 효과 등으로 변경된 데미지 배율을 가져와 적용합니다.
+            damage *= statusManager.DamageTakenMultiplier;
+        }
+        return damage;
     }
 
     /// <summary>
@@ -139,8 +140,9 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     /// </summary>
     public float CalculateDamageAfterResistance(float damageAmount)
     {
-        float resistanceRatio = magicResistance / 100f;
-        return damageAmount * resistanceRatio;
+        // 저항력이 10이면 10% 데미지 감소 -> 원래 데미지의 90%만 받음
+        float damageMultiplier = 1.0f - (magicResistance / 100f);
+        return damageAmount * damageMultiplier;
     }
 
     /// <summary>
@@ -148,21 +150,32 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     /// </summary>
     public float CalculateReducedCCDuration(float baseDuration)
     {
-        float tenacityRatio = mentalStrength / 100f;
-        return baseDuration *  tenacityRatio;
+        // 정신력이 10이면 10% 시간 감소 -> 원래 시간의 90%만 적용
+        float durationMultiplier = 1.0f - (mentalStrength / 100f);
+        return baseDuration * durationMultiplier;
     }
 
-    /// <summary>
-    /// 상태 이상 처리
-    /// </summary>
-    /// <param name="damage"></param>
-    /// <returns></returns>
-    private float ApplyStatusEffects(float damage)
+    // =======================================================================
+    // 공격을 받는 새로운 진입점. Projectile이 이 함수를 호출해야 합니다.
+    // =======================================================================
+    public void TakeHit(float damageAmount, StatusEffect effect, float effectChance)
     {
-        // 1. 부패(Rot) 효과 적용 (StatusManager의 데미지 배율 참조)
-        if (statusManager != null)
-            damage *= statusManager.DamageTakenMultiplier;
-        return damage;
+        // 적용할 상태이상이 있는지 확인
+        if (effect != null && effect.Type != StatusEffectType.None)
+        {
+            // 제어저항(정신력)에 따른 최종 확률 계산
+            float resistanceFactor = 1.0f - (mentalStrength / 100f); // 정신력 10 = 10% 저항
+            float finalChance = effectChance * resistanceFactor;
+
+            // 확률 체크
+            if (Random.Range(0f, 1f) <= finalChance)
+            {
+                // 확률 성공! 상태이상 적용 로직 실행
+                statusManager.TryApplyStatusEffect(effect);
+            }
+        }
+        // 데미지 처리 로직 실행
+        TakeDamage(damageAmount);
     }
 
     /// <summary>

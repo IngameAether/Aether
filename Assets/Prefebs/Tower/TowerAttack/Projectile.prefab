@@ -162,10 +162,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f623bd0702b20a54f89c335167e10fb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  elementType: 4
   motionType: 0
   speed: 10
   arcHeight: 2
   arriveDistance: 0.3
+  radius: 2
+  coneAngle: 60
   hitType: 0
   effectType: 0
 --- !u!114 &1729115417553675218

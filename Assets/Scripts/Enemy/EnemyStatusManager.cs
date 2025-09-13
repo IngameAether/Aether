@@ -28,45 +28,55 @@ public class EnemyStatusManager : MonoBehaviour
 
     private void Update()
     {
-        HandleEffectDurations();
-        HandleEffectCooldowns();
+        HandleEffectTimers();
     }
 
     /// <summary>
     /// 타워가 이 함수를 호출하여 상태 이상을 적용합니다.
     /// </summary>
-    public void ApplyStatusEffect(StatusEffect newEffect)
+    public void TryApplyStatusEffect(StatusEffect newEffect)
     {
         var type = newEffect.Type;
 
-        // 1. 동일한 상태이상이 이미 활성화되어 있으면 무시 (중첩 불가 규칙)
-        if (_activeEffects.ContainsKey(type)) return;
-
-        // 2. 쿨타임 중이면 1초 감소시키고 무시
+        // 쿨타임 중인지 먼저 확인
         if (_effectCooldowns.ContainsKey(type))
         {
-            _effectCooldowns[type] = Mathf.Max(0, _effectCooldowns[type] - 1.0f);
+            // 쿨타임 감소 로직 (원하시면 유지)
+            // _effectCooldowns[type] = Mathf.Max(0, _effectCooldowns[type] - 1.0f);
             return;
         }
 
-        // 3. 정신력(강인함)에 따른 CC 지속시간 감소 적용
-        float finalDuration = newEffect.Duration;
-        switch (type)
+        // 플로우차트 로직 적용
+        // 동일한 상태이상이 이미 활성화되어 있는지 확인
+        if (_activeEffects.TryGetValue(type, out StatusEffect existingEffect))
         {
-            case StatusEffectType.Slow:
-            case StatusEffectType.Stun:
-            case StatusEffectType.Fear:
-            case StatusEffectType.Paralyze:
-                finalDuration = _normalEnemy.CalculateReducedCCDuration(newEffect.Duration);
-                break;
+            // 새로 들어온 효과가 더 강한지 확인 (Value > Duration 순)
+            bool isNewEffectStronger = newEffect.Value > existingEffect.Value ||
+                                     (Mathf.Approximately(newEffect.Value, existingEffect.Value) && newEffect.Duration > existingEffect.Duration);
+
+            if (isNewEffectStronger)
+            {
+                // 기존 효과를 제거하고 새로운 효과로 교체
+                RemoveStatusEffect(type);
+            }
+            else
+            {
+                // 기존 효과가 더 강하므로 무시
+                return;
+            }
         }
 
-        // 4. 최종 계산된 지속시간으로 새로운 효과 객체를 생성하여 적용
-        var effectToApply = new StatusEffect(type, finalDuration, newEffect.Value, newEffect.SourcePosition);
+        // CC 지속시간 감소 적용
+        float finalDuration = newEffect.Duration;
+        if (type == StatusEffectType.Slow || type == StatusEffectType.Stun || type == StatusEffectType.Fear || type == StatusEffectType.Paralyze)
+        {
+            finalDuration = _normalEnemy.CalculateReducedCCDuration(newEffect.Duration);
+        }
 
+        // 새로운 효과 적용
+        var effectToApply = new StatusEffect(type, finalDuration, newEffect.Value, newEffect.SourcePosition);
         _activeEffects.Add(type, effectToApply);
         ApplyEffectLogic(effectToApply);
-        // ShowStatusIcon(type); // UI 아이콘 표시 로직
         Debug.Log($"[{type}] 효과 적용 (최종 지속시간: {finalDuration:F2}초)");
     }
 
@@ -161,18 +171,35 @@ public class EnemyStatusManager : MonoBehaviour
     }
 
     // --- 시간 기반 로직 처리 ---
-    private void HandleEffectDurations()
+    private void HandleEffectTimers()
     {
-        if (_activeEffects.Count == 0) return;
-
-        foreach (var type in _activeEffects.Keys.ToList())
+        // 활성화된 효과의 남은 시간 감소
+        if (_activeEffects.Count > 0)
         {
-            _activeEffects[type].RemainingTime -= Time.deltaTime;
-            if (_activeEffects[type].RemainingTime <= 0)
+            foreach (var type in _activeEffects.Keys.ToList())
             {
-                if (type != StatusEffectType.Bleed)
+                var effect = _activeEffects[type];
+                effect.RemainingTime -= Time.deltaTime;
+                if (effect.RemainingTime <= 0)
                 {
-                    RemoveStatusEffect(type);
+                    // 출혈은 코루틴이 스스로를 제거하므로 예외
+                    if (type != StatusEffectType.Bleed)
+                    {
+                        RemoveStatusEffect(type);
+                    }
+                }
+            }
+        }
+
+        // 쿨타임 감소
+        if (_effectCooldowns.Count > 0)
+        {
+            foreach (var type in _effectCooldowns.Keys.ToList())
+            {
+                _effectCooldowns[type] -= Time.deltaTime;
+                if (_effectCooldowns[type] <= 0)
+                {
+                    _effectCooldowns.Remove(type);
                 }
             }
         }

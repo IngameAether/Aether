@@ -199,13 +199,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8283490171316825427}
-  - component: {fileID: 277942651979247731}
   - component: {fileID: 7306077242942755138}
   - component: {fileID: 912924898313707350}
   - component: {fileID: 4843641144360428122}
   - component: {fileID: 4569328015134976402}
   - component: {fileID: 1407164335372021098}
   - component: {fileID: 8768647810141785125}
+  - component: {fileID: -3361127631089178800}
   m_Layer: 0
   m_Name: FireTower
   m_TagString: Untagged
@@ -234,44 +234,6 @@ Transform:
   - {fileID: 6730964440949109200}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &277942651979247731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4710304639692687514}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 804193ecc83142f9986b3509f3ac9691, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  towerSetting:
-    Name: Fire Tower
-    Description: straight projectile
-    Type: 0
-    Rank: 1
-    reinforceLevel: 0
-    MaxReinforce: 5
-    Damage: 10
-    AttackSpeed: 2
-    Range: 2
-    CriticalHit: 0
-  reinforceType: 0
-  firePoint: {fileID: 0}
-  projectilePrefab: {fileID: 6725626314794571107, guid: a2d621a88b492e24e8d0c1800fbbf719, type: 3}
-  spawnPoint: {fileID: 0}
-  projectileSpeed: 10
-  defaultMotionType: 1
-  defaultEffectType: 0
-  defaultHitType: 0
-  basicProjectilePrefab: {fileID: 0}
-  fireProjectilePrefab: {fileID: 0}
-  advancedProjectilePrefab: {fileID: 0}
-  projectileStraightPrefab: {fileID: 6725626314794571107, guid: a2d621a88b492e24e8d0c1800fbbf719, type: 3}
-  projectileFireConePrefab: {fileID: 6725626314794571107, guid: abf51b4aa60f52340b856f97b5621b2f, type: 3}
-  projectileEarthArcPrefab: {fileID: 0}
-  useAnimation: 0
 --- !u!58 &7306077242942755138
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -391,6 +353,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20edbcd3837c4fb99fa8e32522bad5a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-3361127631089178800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4710304639692687514}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d19bf32470f471185fe055d30db48eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  towerData: {fileID: 11400000, guid: 3e9bcde478196ba4ab18928bea8d526e, type: 2}
+  reinforceType: 0
+  firePoint: {fileID: 0}
+  projectileSpeed: 10
+  defaultMotionType: 1
+  defaultEffectType: 0
+  defaultHitType: 0
+  basicProjectilePrefab: {fileID: 0}
+  fireProjectilePrefab: {fileID: 0}
+  advancedProjectilePrefab: {fileID: 0}
 --- !u!1 &6555064300628505403
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,13 +4,12 @@ using UnityEngine;
 
 public enum ReinforceType { None, Light, Dark };
 
-public abstract class Tower : MonoBehaviour
+public class Tower : MonoBehaviour
 {
     private TowerInformation towerInformation;
 
     [Header("Tower Configuration")]
     [SerializeField] public TowerData towerData; // protected를 public으로 변경했음. 도저히 오류를 잡을 수가 없었음.
-
     public static event Action<Tower> OnTowerClicked;
     public static event Action OnTowerDestroyed;
 
@@ -32,22 +31,14 @@ public abstract class Tower : MonoBehaviour
 
     public Transform FirePoint => firePoint != null ? firePoint : transform;
 
-    [Header("Projectile Settings")]
-    [SerializeField] protected float projectileSpeed = 10f;
-    [SerializeField] protected ProjectileMotionType defaultMotionType;
-    [SerializeField] protected DamageEffectType defaultEffectType;
-    [SerializeField] protected HitType defaultHitType;
-
-    [Header("Projectile Prefabs by Rank")]
-    [SerializeField] private GameObject basicProjectilePrefab;
-    [SerializeField] private GameObject fireProjectilePrefab;
-    [SerializeField] private GameObject advancedProjectilePrefab;
-
     // 초기화 완료 상태를 저장할 변수
     private bool _isInitialized = false;
 
     [Header("Tower Data")]
     private int reinforceLevel = 0;
+    // 현재 타워의 강화 횟수를 저장하는 변수
+    private int lightReinforceCount = 0;
+    private int darkReinforceCount = 0;
     public string TowerName => towerData.Name;
     public float Damage => towerData.GetDamage(reinforceLevel);
     public float AttackSpeed => towerData.GetAttackSpeed(reinforceLevel);
@@ -59,18 +50,46 @@ public abstract class Tower : MonoBehaviour
 
     protected virtual void Start()
     {
-        InitializeTower();
+        Setup(this.towerData);
     }
 
     protected virtual void Update()
     {
+        // 타워가 초기화되지 않았으면 아무 행동도 하지 않습니다.
         if (!_isInitialized)
         {
             return;
         }
 
-        // 타겟 찾기 및 공격 
+        // 매 프레임마다 타겟을 찾고 공격을 시도합니다.
         FindAndAttackTarget();
+    }
+
+    public void Upgrade()
+    {
+        // 현재 강화 단계가 최대치 미만인지 확인 (예: 0, 1 < 2)
+        if (reinforceLevel < towerData.MaxReinforce - 1)
+        {
+            // 외형이 바뀌지 않는 일반 강화 (1->2, 2->3)
+            reinforceLevel++; // 강화 레벨만 1 올림
+            Debug.Log($"{towerData.Name} {reinforceLevel + 1}단계로 강화 완료!");
+        }
+        else
+        {
+            // 최종 단계로 업그레이드 (3->4)
+            TowerData nextData = towerData.nextUpgradeData;
+            if (nextData != null && nextData.upgradedPrefab != null)
+            {
+                // 새 타워 생성 및 기존 타워 파괴 로직 
+                GameObject newTowerObject = Instantiate(nextData.upgradedPrefab, transform.position, transform.rotation);
+                newTowerObject.GetComponent<Tower>()?.Setup(nextData);
+                Destroy(gameObject);
+            }
+            else
+            {
+                Debug.Log("최대 레벨입니다.");
+            }
+        }
     }
 
     protected virtual void OnDestroy()
@@ -82,16 +101,65 @@ public abstract class Tower : MonoBehaviour
     {
         if (data == null)
         {
-            Debug.LogError($"{this.name}: 유효하지 않은 TowerData(null)로 Setup을 시도했습니다. 타워를 비활성화합니다.");
+            Debug.LogError($"{this.name}: 유효하지 않은 TowerData로 Setup을 시도했습니다.");
             _isInitialized = false;
-            gameObject.SetActive(false); // 문제가 생긴 타워는 비활성화 처리
+            gameObject.SetActive(false);
             return;
         }
 
         this.towerData = data;
         this.reinforceLevel = 0;
-        _isInitialized = true;
+
+        InitializeTower();
+
+        _isInitialized = true; 
+
     }
+
+    // Light 또는 Dark 재화로 타워를 강화하는 함수. UI 버튼 등에서 이 함수를 호출합니다.
+    public void Reinforce(ReinforceType type)
+    {
+        // 강화 타입에 따라 횟수 증가
+        if (type == ReinforceType.Light)
+        {
+            lightReinforceCount++;
+            Debug.Log($"{towerData.Name} Light 강화! ({lightReinforceCount}/{towerData.reinforcementThreshold})");
+
+            // 진화 조건 확인
+            if (towerData.lightEvolutionData != null && lightReinforceCount >= towerData.reinforcementThreshold)
+            {
+                Evolve(towerData.lightEvolutionData);
+            }
+        }
+        else if (type == ReinforceType.Dark)
+        {
+            darkReinforceCount++;
+            Debug.Log($"{towerData.Name} Dark 강화! ({darkReinforceCount}/{towerData.reinforcementThreshold})");
+
+            // 진화 조건 확인
+            if (towerData.darkEvolutionData != null && darkReinforceCount >= towerData.reinforcementThreshold)
+            {
+                Evolve(towerData.darkEvolutionData);
+            }
+        }
+    }
+
+    /// 특정 데이터로 타워를 진화시키는 내부 함수
+    private void Evolve(TowerData evolutionData)
+    {
+        Debug.Log($"{towerData.Name}이(가) {evolutionData.Name}(으)로 진화합니다!");
+
+        // Upgrade() 함수의 프리팹 교체 로직과 동일
+        GameObject prefabToSpawn = evolutionData.upgradedPrefab != null ? evolutionData.upgradedPrefab : this.gameObject;
+
+        // 새 타워 생성
+        GameObject newTowerObject = Instantiate(prefabToSpawn, transform.position, transform.rotation);
+        newTowerObject.GetComponent<Tower>()?.Setup(evolutionData);
+
+        // 기존 타워 파괴
+        Destroy(gameObject);
+    }
+
 
     public TowerData GetTowerData()
     {
@@ -218,43 +286,35 @@ public abstract class Tower : MonoBehaviour
     {
         if (currentTarget == null) return;
 
-        // 발사체 프리팹 선택
-        GameObject projectilePrefab = null;
-
-        switch (towerInformation.Rank)
+        if (towerData.attackSound != SfxType.None)
         {
-            case 1:
-                projectilePrefab = basicProjectilePrefab; // 1단계용
-                break;
-            case 2:
-                projectilePrefab = fireProjectilePrefab; // 2단계용 (불타워 효과)
-                break;
-            case 3:
-                projectilePrefab = advancedProjectilePrefab; // 3단계용 (추가 가능)
-                break;
-            default:
-                projectilePrefab = basicProjectilePrefab;
-                break;
+            // 이 부분은 현재 프로젝트의 '오디오 매니저' 이름에 맞게 수정해야 합니다.
+            AudioManager.Instance.PlaySFX(towerData.attackSound);
         }
 
-        if (projectilePrefab == null) return;
+        // TowerData에 발사체 프리팹이 있는지 확인
+        if (towerData.projectilePrefab == null)
+        {
+            Debug.LogWarning($"{towerData.Name}: 발사체 프리팹이 지정되지 않았습니다.");
+            return;
+        }
 
         // 발사체 생성
-        GameObject proj = Instantiate(projectilePrefab, firePoint.position, Quaternion.identity);
-        Projectile projectile = proj.GetComponent<Projectile>();
+        Vector3 spawnPos = FirePoint.position;
+        GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
 
+        // 발사체 초기화 (Projectile.cs의 Setup 호출)
+        var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            // 1. 적용할 상태 이상 객체 생성
             var effect = new StatusEffect(
-                towerInformation.effectType,
-                towerInformation.effectDuration,
-                towerInformation.effectValue,
+                towerData.effectType,
+                towerData.effectDuration,
+                towerData.effectValue,
                 transform.position
             );
 
-            // 2. 발사체에 타겟, 데미지, 상태 이상 정보를 한 번에 전달
-            projectile.Setup(currentTarget, this.Damage, effect, towerData.impactSound);
+            projectile.Setup(currentTarget, this.Damage, effect, towerData.effectChance, towerData.impactSound);
         }
     }
 

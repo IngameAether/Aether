@@ -171,8 +171,18 @@ public class TowerInfoDisplay : MonoBehaviour
     /// </summary>
     public void HideUI()
     {
-        infoPanelUI.SetActive(false);
-        towerIndicateImg.SetActive(false);
+        // infoPanelUI가 파괴되지 않고 존재할 때만 SetActive(false)를 호출합니다.
+        if (infoPanelUI != null)
+        {
+            infoPanelUI.SetActive(false);
+        }
+
+        // towerIndicateImg가 파괴되지 않고 존재할 때만 SetActive(false)를 호출합니다.
+        if (towerIndicateImg != null)
+        {
+            towerIndicateImg.SetActive(false);
+        }
+
         currentSelectedTower = null;
     }
 
@@ -210,10 +220,17 @@ public class TowerInfoDisplay : MonoBehaviour
         if (currentSelectedTower != null)
         {
             var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
-            towerReinforce.ReinforceTower();
+            if (towerReinforce != null)
+            {
+                // 강화 실행 '요청' (이 부분은 그대로)
+                towerReinforce.ReinforceTower();
+            }
 
-            int reinforce = towerReinforce.GetReinforceLevel();
-            reinforceText.text = $"{currentSelectedTower.type} + {reinforce}";
+            // 강화 레벨을 Tower.cs에서 직접 가져오기
+            int reinforce = currentSelectedTower.CurrentReinforceLevel;
+
+            // 텍스트 업데이트 (tower.type 대신 tower.TowerName 사용 권장)
+            reinforceText.text = $"{currentSelectedTower.TowerName} + {reinforce + 1}"; // reinforce가 0부터 시작하므로 +1 해줘야 UI에 1레벨로 표시됩니다.
         }
     }
 }
