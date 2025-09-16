@@ -34,9 +34,9 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator WaveRoutine()
     {
-        // 1. MagicBookManager에게 '일반 선택'을 준비시킴
+        // MagicBookManager에게 '일반 선택'을 준비시킴
         MagicBookManager.Instance.PrepareSelection(BookRequestType.Regular);
-        // 2. PopUpManager를 호출하고 선택을 기다림
+        // PopUpManager를 호출하고 선택을 기다림
         yield return StartCoroutine(WaitForChoice());
 
         if (GameTimer.Instance != null)
@@ -49,7 +49,13 @@ public class WaveManager : MonoBehaviour
         for (int waveIndex = 0; waveIndex < spawnManager.waves.Count; waveIndex++)
         {
             currentWaveLevel = waveIndex;
+            int displayWave = waveIndex + 1; // UI에 표시될 웨이브 숫자 (1부터 시작)
             waveText.text = $"{waveIndex + 1} wave";
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.SetWave(displayWave);
+            }
 
             if ((waveIndex + 1) % 10 == 0)
             {

@@ -35,6 +35,8 @@ public class Projectile : MonoBehaviour
     private SfxType _impactSound;
     // 상태이상 확률 저장 변수
     private float _effectChance;
+    // 값을 받아서 저장했다가 적에게 명중 시 전달
+    private float _effectBuildup;
 
     /// <summary>
     /// 타워에서 발사체를 생성할 때 호출할 단일 초기화 함수입니다.
@@ -43,13 +45,13 @@ public class Projectile : MonoBehaviour
     /// <param name="damage">적용할 데미지</param>
     /// <param name="effect">적용할 상태 이상 정보</param>
 
-    public void Setup(Transform target, float damage, StatusEffect effect, float effectChance, SfxType impactSound)
+    public void Setup(Transform target, float damage, StatusEffect effect, float effectBuildup, SfxType impactSound)
     {
         _target = target;
         _damage = damage;
         _effectToApply = effect;
-        _effectChance = effectChance; // 전달받은 확률 정보 저장
-        _impactSound = impactSound; 
+        _effectBuildup = effectBuildup; // 전달받은 누적치 정보를 변수에 저장
+        _impactSound = impactSound;
 
         _startPos = transform.position;
         _t = 0f;
@@ -94,7 +96,7 @@ public class Projectile : MonoBehaviour
                     if (enemy != null)
                     {
                         // 데미지, 상태이상 효과, 그리고 '확률'을 모두 넘겨줍니다.
-                        enemy.TakeHit(_damage, _effectToApply, _effectChance);
+                        enemy.TakeHit(_damage, _effectToApply, _effectBuildup);
                     }
                 }
                 break;

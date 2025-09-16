@@ -155,26 +155,16 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         return baseDuration * durationMultiplier;
     }
 
-    // =======================================================================
     // 공격을 받는 새로운 진입점. Projectile이 이 함수를 호출해야 합니다.
-    // =======================================================================
-    public void TakeHit(float damageAmount, StatusEffect effect, float effectChance)
+    public void TakeHit(float damageAmount, StatusEffect effect, float buildupValue)
     {
-        // 적용할 상태이상이 있는지 확인
+        // 상태이상 효과가 있는 공격이라면, StatusManager에 누적치를 전달
         if (effect != null && effect.Type != StatusEffectType.None)
         {
-            // 제어저항(정신력)에 따른 최종 확률 계산
-            float resistanceFactor = 1.0f - (mentalStrength / 100f); // 정신력 10 = 10% 저항
-            float finalChance = effectChance * resistanceFactor;
-
-            // 확률 체크
-            if (Random.Range(0f, 1f) <= finalChance)
-            {
-                // 확률 성공! 상태이상 적용 로직 실행
-                statusManager.TryApplyStatusEffect(effect);
-            }
+            statusManager.AddBuildup(effect, buildupValue);
         }
-        // 데미지 처리 로직 실행
+
+        // 데미지 처리 로직은 그대로 실행
         TakeDamage(damageAmount);
     }
 

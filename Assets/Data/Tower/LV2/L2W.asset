@@ -14,22 +14,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uBC14\uB78C"
   ID: L2W
-  Level: 2
   ElementType: 3
+  Level: 2
   MaxReinforce: 10
   RequiredTowerIds: []
   Damage:
-    baseValue: 25
+    baseValue: 20
     reinforceCoef: 6
   AttackSpeed:
-    baseValue: 3
+    baseValue: 1.5
     reinforceCoef: 0.1
   CriticalRate:
-    baseValue: 10
-    reinforceCoef: 3
-  BaseRange: 3.5
+    baseValue: 0
+    reinforceCoef: 1
+  BaseRange: 3
   AttackMode: 0
   radiant: 0
   TimeDuration: 0
   Guided: 1
   Multi: 0
+  attackSound: 7
+  impactSound: 0
+  effectType: 0
+  effectDuration: 0
+  effectValue: 0
+  effectBuildup: 20
+  projectilePrefab: {fileID: 0}
+  nextUpgradeData: {fileID: 0}
+  upgradedPrefab: {fileID: 0}
+  reinforcementThreshold: 10
+  lightEvolutionData: {fileID: 0}
+  darkEvolutionData: {fileID: 0}

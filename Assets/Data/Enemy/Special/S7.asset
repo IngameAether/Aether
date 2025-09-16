@@ -25,3 +25,10 @@ MonoBehaviour:
   <Description>k__BackingField: "\uD2B9\uC815 \uC18D\uC131\uC744 \uC804\uACF5\uD574\uC11C
     \uD574\uB2F9 \uC18D\uC131\uC5D0 \uB300\uD55C \uB370\uBBF8\uC9C0\uAC10\uC18C\uAC00
     10level\uB85C \uC801\uC6A9"
+  statusGauges:
+  - type: 1
+    maxValue: 100
+  - type: 2
+    maxValue: 300
+  - type: 3
+    maxValue: 100

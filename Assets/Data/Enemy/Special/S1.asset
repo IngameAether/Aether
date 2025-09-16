@@ -24,3 +24,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 7b0e55ffdd165b0479b3896a6e9f7915, type: 2}
   <Description>k__BackingField: "\uC81C\uC5B4\uD6A8\uACFC\uC758 \uC601\uD5A5\uC744
     \uBC1B\uC9C0 \uC54A\uC74C"
+  statusGauges:
+  - type: 1
+    maxValue: 100
+  - type: 2
+    maxValue: 100

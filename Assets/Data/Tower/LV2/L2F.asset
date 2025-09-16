@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uBD88\uAF43"
   ID: L2F
-  Level: 2
   ElementType: 0
+  Level: 2
   MaxReinforce: 10
   RequiredTowerIds: []
   Damage:
@@ -33,3 +33,15 @@ MonoBehaviour:
   TimeDuration: 0
   Guided: 0
   Multi: 1
+  attackSound: 0
+  impactSound: 0
+  effectType: 3
+  effectDuration: 2
+  effectValue: 10
+  effectBuildup: 20
+  projectilePrefab: {fileID: 6725626314794571107, guid: abf51b4aa60f52340b856f97b5621b2f, type: 3}
+  nextUpgradeData: {fileID: 0}
+  upgradedPrefab: {fileID: 0}
+  reinforcementThreshold: 10
+  lightEvolutionData: {fileID: 0}
+  darkEvolutionData: {fileID: 0}

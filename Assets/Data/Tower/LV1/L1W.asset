@@ -12,22 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c1dcb257cdf490da3406cbf4966e539, type: 3}
   m_Name: L1W
   m_EditorClassIdentifier: 
-  Name: "\uBB3C\uBC29\uC6B8"
+  Name: "\uACF5\uAE30"
   ID: L1W
-  ElementType: 1
+  ElementType: 3
   Level: 1
   MaxReinforce: 5
   RequiredTowerIds: []
   Damage:
-    baseValue: 8
-    reinforceCoef: 4
+    baseValue: 5
+    reinforceCoef: 2
   AttackSpeed:
-    baseValue: 0.6
+    baseValue: 1
     reinforceCoef: 0
   CriticalRate:
     baseValue: 0
     reinforceCoef: 0.5
-  BaseRange: 2
+  BaseRange: 2.5
   AttackMode: 0
   radiant: 0
   TimeDuration: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
   effectType: 0
   effectDuration: 0
   effectValue: 0
-  effectChance: 0
+  effectBuildup: 20
   projectilePrefab: {fileID: 4766331063098911513, guid: 14d41416ca05d3a448b9c9394a949701, type: 3}
   nextUpgradeData: {fileID: 11400000, guid: 9ff7e58d8650a7749a49828040024d20, type: 2}
   upgradedPrefab: {fileID: 0}

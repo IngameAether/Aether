@@ -40,9 +40,8 @@ public class TowerData : ScriptableObject
     public float effectDuration;     
     public float effectValue;
 
-    // 상태이상이 적용될 확률 (0.0 = 0%, 1.0 = 100%)
-    [Range(0f, 1f)]
-    public float effectChance;
+    [Tooltip("공격 시 상태이상 게이지를 얼마나 깎을지에 대한 값입니다.")]
+    public float effectBuildup = 20f; // 예: 공격마다 20씩 깎음
 
     [Header("발사체 정보")]
     public GameObject projectilePrefab;

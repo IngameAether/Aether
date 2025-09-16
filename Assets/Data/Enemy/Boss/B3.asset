@@ -23,3 +23,12 @@ MonoBehaviour:
   <abilities>k__BackingField: []
   <Description>k__BackingField: "\uC8FC\uAE30\uC801\uC73C\uB85C \uB9C8\uBC95 \uBCF4\uD638\uB9C9\uC744
     \uC0AC\uC6A9\uD574 \uB9C8\uBC95 \uB370\uBBF8\uC9C0\uB97C \uB9C9\uC74C"
+  statusGauges:
+  - type: 1
+    maxValue: 250
+  - type: 3
+    maxValue: 250
+  - type: 2
+    maxValue: 250
+  - type: 7
+    maxValue: 250

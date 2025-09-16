@@ -12,13 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c1dcb257cdf490da3406cbf4966e539, type: 3}
   m_Name: L3W
   m_EditorClassIdentifier: 
-  Name: "\uCE7C\uBC14\uB78C"
+  Name: "\uB300\uAE30"
   ID: L3W
-  Level: 3
   ElementType: 3
+  Level: 3
   MaxReinforce: 20
   RequiredTowerIds: []
-  BaseDamage: 25
+  Damage:
+    baseValue: 60
+    reinforceCoef: 0
+  AttackSpeed:
+    baseValue: 2
+    reinforceCoef: 0
+  CriticalRate:
+    baseValue: 0
+    reinforceCoef: 1.5
   BaseRange: 3.5
-  BaseAttackSpeed: 3
-  BaseCriticalRate: 10
+  AttackMode: 0
+  radiant: 0
+  TimeDuration: 0
+  Guided: 1
+  Multi: 0
+  attackSound: 13
+  impactSound: 0
+  effectType: 7
+  effectDuration: 1.5
+  effectValue: 10
+  effectBuildup: 10
+  projectilePrefab: {fileID: 4323443502052370822, guid: c247002935a4d0c41a6dfd9c8e656d36, type: 3}
+  nextUpgradeData: {fileID: 0}
+  upgradedPrefab: {fileID: 0}
+  reinforcementThreshold: 10
+  lightEvolutionData: {fileID: 0}
+  darkEvolutionData: {fileID: 0}

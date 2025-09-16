@@ -17,6 +17,10 @@ public class EnemyStatusManager : MonoBehaviour
     private readonly Dictionary<StatusEffectType, float> _effectCooldowns = new Dictionary<StatusEffectType, float>();
     private readonly Dictionary<StatusEffectType, Coroutine> _effectCoroutines = new Dictionary<StatusEffectType, Coroutine>();
 
+    // 상태이상 게이지 관리 변수 
+    private Dictionary<StatusEffectType, float> _currentGauges = new Dictionary<StatusEffectType, float>();
+    private Dictionary<StatusEffectType, float> _maxGauges = new Dictionary<StatusEffectType, float>();
+
     // 공개 프로퍼티 (부패 효과용)
     public float DamageTakenMultiplier { get; private set; } = 1.0f;
 
@@ -26,9 +30,79 @@ public class EnemyStatusManager : MonoBehaviour
         _normalEnemy = GetComponent<NormalEnemy>();
     }
 
+    // Start() 함수에서 게이지 초기화 호출
+    private void Start()
+    {
+        InitializeGauges();
+    }
     private void Update()
     {
         HandleEffectTimers();
+    }
+
+    /// 함수의 이름과 역할 변경: 상태이상 '누적치'를 받아 게이지를 깎는 역할
+    public void AddBuildup(StatusEffect effect, float buildupValue)
+    {
+        var type = effect.Type;
+
+        // 이 적이 해당 상태이상에 대한 게이지를 가지고 있는지 확인
+        if (!_currentGauges.ContainsKey(type)) return;
+
+        // 게이지를 깎습니다.
+        _currentGauges[type] -= buildupValue;
+        Debug.Log($"{_normalEnemy.name}의 {type} 게이지: {_currentGauges[type]}/{_maxGauges[type]} (-{buildupValue})");
+
+        // 게이지가 0 이하가 되었을 때만 아래 로직을 실행
+        if (_currentGauges[type] <= 0)
+        {
+            // 기존 TryApplyStatusEffect의 로직을 이곳으로 가져옵니다 
+
+            // 쿨타임 중이면 발동하지 않고 게이지도 초기화하지 않음 (다음에 다시 시도)
+            if (_effectCooldowns.ContainsKey(type)) return;
+
+            // 이미 걸린 효과와 비교해서 더 강할 때만 덮어쓰기
+            if (_activeEffects.TryGetValue(type, out StatusEffect existingEffect))
+            {
+                bool isNewEffectStronger = effect.Value > existingEffect.Value ||
+                                         (Mathf.Approximately(effect.Value, existingEffect.Value) && effect.Duration > existingEffect.Duration);
+                if (isNewEffectStronger)
+                {
+                    RemoveStatusEffect(type); // 기존 효과 제거
+                }
+                else
+                {
+                    _currentGauges[type] = _maxGauges[type]; // 기존 효과가 더 강하면 발동 안하고 게이지만 초기화
+                    return;
+                }
+            }
+
+            // CC 지속시간 감소 적용
+            float finalDuration = effect.Duration;
+            if (type == StatusEffectType.Slow || type == StatusEffectType.Stun || type == StatusEffectType.Fear || type == StatusEffectType.Paralyze)
+            {
+                finalDuration = _normalEnemy.CalculateReducedCCDuration(effect.Duration);
+            }
+
+            // 최종 효과 적용
+            var effectToApply = new StatusEffect(type, finalDuration, effect.Value, effect.SourcePosition);
+            _activeEffects.Add(type, effectToApply);
+            ApplyEffectLogic(effectToApply);
+            Debug.Log($"★★★ [{type}] 효과 발동! (지속시간: {finalDuration:F2}초) ★★★");
+
+            // 게이지를 다시 최대로 초기화
+            _currentGauges[type] = _maxGauges[type];
+        }
+    }
+
+    // EnemyData로부터 게이지 값을 읽어오는 함수
+    private void InitializeGauges()
+    {
+        if (_normalEnemy.enemyData == null) return;
+        foreach (var gaugeInfo in _normalEnemy.enemyData.statusGauges)
+        {
+            _maxGauges[gaugeInfo.type] = gaugeInfo.maxValue;
+            _currentGauges[gaugeInfo.type] = gaugeInfo.maxValue;
+        }
     }
 
     /// <summary>
@@ -100,15 +174,11 @@ public class EnemyStatusManager : MonoBehaviour
             case StatusEffectType.Rot:
                 DamageTakenMultiplier += (effect.Value / 100f);
                 break;
-            case StatusEffectType.Paralyze:
-                // _enemyAbilities.SetParalyze(true); // 적 스킬 스크립트가 있다면 연동
-                break;
             case StatusEffectType.Fear:
                 _enemyMovement.ApplyFear(effect.SourcePosition, effect.Duration);
                 break;
             case StatusEffectType.Bleed:
-                var bleedCoroutine = StartCoroutine(BleedCoroutine(effect));
-                _effectCoroutines.Add(effect.Type, bleedCoroutine);
+                StartCoroutine(BleedCoroutine(effect));
                 break;
         }
     }
@@ -219,32 +289,46 @@ public class EnemyStatusManager : MonoBehaviour
         }
     }
 
-    // --- 상태 이상별 코루틴 ---
     private IEnumerator BurnCoroutine(StatusEffect effect)
     {
-        float tickCount = effect.Duration / 0.5f;
+        float tickInterval = 0.5f; // 0.5초마다 데미지
+        int tickCount = Mathf.FloorToInt(effect.Duration / tickInterval); // 총 몇 번의 데미지를 줄지 계산
         if (tickCount <= 0) yield break;
 
-        float damagePerTick = effect.Value / tickCount;
+        // [핵심] GameManager에서 현재 웨이브 정보를 가져와 총 데미지를 계산
+        int currentWave = GameManager.Instance.CurrentWave;
+        float totalDamage = currentWave * effect.Value; // 예: 5웨이브 * 10 = 50의 총 데미지
 
-        while (_activeEffects.ContainsKey(effect.Type))
+        // 한 틱당 입힐 데미지
+        float damagePerTick = totalDamage / tickCount;
+
+        for (int i = 0; i < tickCount; i++)
         {
+            // 이 효과가 아직 유효한지 매 틱마다 확인
+            if (!_activeEffects.ContainsKey(effect.Type)) yield break;
+
             _normalEnemy.TakeDamage(damagePerTick);
-            yield return new WaitForSeconds(0.5f);
+            Debug.Log($"화상 데미지! {damagePerTick}");
+            yield return new WaitForSeconds(tickInterval);
         }
     }
 
+    // BleedCoroutine 코루틴 수정
     private IEnumerator BleedCoroutine(StatusEffect effect)
     {
-        yield return new WaitForSeconds(1.0f);
+        // effect.Duration(1.5초) 만큼 기다립니다.
+        yield return new WaitForSeconds(effect.Duration);
 
+        // 이 효과가 아직 유효하다면 데미지를 적용합니다.
         if (_activeEffects.ContainsKey(effect.Type))
         {
-            _normalEnemy.TakeDamage(effect.Value);
-            _activeEffects.Remove(effect.Type);
-            _effectCooldowns[effect.Type] = 5.0f;
-            // HideStatusIcon(effect.Type);
+            // effect.Value(10)를 이용해 최대 체력의 10% 데미지 계산
+            float damage = _normalEnemy.maxHealth * (effect.Value / 100f);
+            _normalEnemy.TakeDamage(damage);
+            Debug.Log($"출혈 데미지! {damage}");
+
+            // 데미지를 준 후에는 즉시 효과를 제거합니다.
+            RemoveStatusEffect(effect.Type);
         }
-        _effectCoroutines.Remove(effect.Type);
     }
 }

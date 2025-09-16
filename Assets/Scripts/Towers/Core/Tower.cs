@@ -314,7 +314,7 @@ public class Tower : MonoBehaviour
                 transform.position
             );
 
-            projectile.Setup(currentTarget, this.Damage, effect, towerData.effectChance, towerData.impactSound);
+            projectile.Setup(currentTarget, this.Damage, effect, towerData.effectBuildup, towerData.impactSound);
         }
     }
 

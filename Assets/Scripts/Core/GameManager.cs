@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
     public bool IsGameOver { get; private set; }
+    public int CurrentWave { get; private set; } // 현재 웨이브 정보를 저장할 변수
 
     [Header("플레이어 목숨")]
     [SerializeField] private int initialLives = 3; // 기본 목숨은 5로 설정. 인스펙터에서 수정가능
@@ -97,8 +98,11 @@ public class GameManager : MonoBehaviour
     {
         currentLives = initialLives;
         UpdateLivesUI();
-        Debug.Log("게임 시작. 초기 목숨 부여");
+        IsGameOver = false;
+        CurrentWave = 1; // 게임 시작 시 웨이브를 1로 초기화
+        Debug.Log("게임 시작. 초기 목숨 및 웨이브 설정 완료.");
     }
+
 
     public void LoseLife()
     {
@@ -148,5 +152,12 @@ public class GameManager : MonoBehaviour
     public void ChangeScene(EScene scene)
     {
         SceneManager.LoadScene((int)scene);
+    }
+
+    // 현재 웨이브 숫자 업데이트
+    public void SetWave(int waveNumber)
+    {
+        CurrentWave = waveNumber;
+        Debug.Log($"Wave {CurrentWave} 시작!");
     }
 }

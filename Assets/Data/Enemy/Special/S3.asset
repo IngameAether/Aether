@@ -22,3 +22,12 @@ MonoBehaviour:
   <Aether>k__BackingField: 20
   <abilities>k__BackingField: []
   <Description>k__BackingField: 
+  statusGauges:
+  - type: 1
+    maxValue: 200
+  - type: 3
+    maxValue: 200
+  - type: 2
+    maxValue: 200
+  - type: 7
+    maxValue: 200
