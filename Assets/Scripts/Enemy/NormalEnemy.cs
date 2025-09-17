@@ -26,7 +26,6 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     // 컴포넌트 참조
     private EnemyMovement enemyMovement;
     private EnemyStatusManager statusManager;
-    private WaveManager _waveManager;
 
     public EnemyData enemyData;
     public EnemyInfoData enemyInfo;
@@ -49,7 +48,6 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     {
         currentShield = 0;
         UpdateHealthBar();
-        _waveManager = FindObjectOfType<WaveManager>();
     }
 
     /// <summary>
@@ -71,9 +69,8 @@ public class NormalEnemy : MonoBehaviour, IDamageable
             // 저항력, 정신력 계산
             magicResistance = FormulaEvaluator.EvaluateToInt(enemyInfo.DamageReduction, currentWave);
             mentalStrength = FormulaEvaluator.EvaluateToInt(enemyInfo.ControlResistance, currentWave);
-            int Wave = _waveManager?.CurrentWaveLevel ?? 0;
-            Debug.Log($"wave: {Wave}");
-            Debug.Log($"{CurrentHealth}, {magicResistance}, {mentalStrength}");
+
+            Debug.Log($"{currentWave}, {CurrentHealth}, {magicResistance}, {mentalStrength}");
         }
     }
 

@@ -137,7 +137,7 @@ public class SpawnManager : MonoBehaviour
 
         // 적 생성 시 Enemy Data 세팅
         EnemyInfoData info = EnemyDatabase.GetEnemyInfoData(enemy.GetEnemyId);
-        int currentWave = _waveManager?.CurrentWaveLevel ?? 0;
+        int currentWave = _waveManager?.CurrentWaveLevel+1 ?? 0;
         enemy.Initialize(info, currentWave);
 
         string enemyId = enemy.GetEnemyId;
