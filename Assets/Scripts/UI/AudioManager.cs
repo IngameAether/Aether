@@ -150,6 +150,8 @@ public class AudioManager : MonoBehaviour
             float savedVolume = PlayerPrefs.GetFloat(volumeParameterName, 5f);
             SetGroupVolume(volumeParameterName, savedVolume);
         }
+        // 음소거 상태 저장
+        PlayerPrefs.SetInt(parameterName.Replace("Volume", "Mute"), isMuted ? 1 : 0);
     }
 
     // 전체 음소거 설정 (스냅샷 사용)
