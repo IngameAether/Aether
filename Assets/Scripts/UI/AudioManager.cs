@@ -34,7 +34,36 @@ public enum SfxType
 }
 public class AudioManager : MonoBehaviour
 {
-    public static AudioManager Instance { get; private set; }
+    private static AudioManager _instance;
+    public static AudioManager Instance
+    {
+        get
+        {
+            // _instance가 비어있는 경우 (씬에 AudioManager가 없을 때)
+            if (_instance == null)
+            {
+                // 혹시 씬에 이미 있는지 찾아본다.
+                _instance = FindObjectOfType<AudioManager>();
+
+                // 그래도 없으면 Resources 폴더에서 프리팹을 불러와 생성한다.
+                if (_instance == null)
+                {
+                    // "Resources" 폴더에 있는 "AudioManager" 이름의 프리팹을 찾습니다.
+                    GameObject prefab = Resources.Load<GameObject>("AudioManager");
+                    if (prefab != null)
+                    {
+                        GameObject go = Instantiate(prefab);
+                        _instance = go.GetComponent<AudioManager>();
+                    }
+                    else
+                    {
+                        Debug.LogError("Resources 폴더에 'AudioManager' 프리팹이 없습니다!");
+                    }
+                }
+            }
+            return _instance;
+        }
+    }
 
     [Header("오디오 믹서")]
     public AudioMixer masterMixer;
@@ -64,23 +93,27 @@ public class AudioManager : MonoBehaviour
 
     private void Awake()
     {
+        // Awake() 함수의 싱글톤 처리 로직 변경
+        // 이미 인스턴스가 존재하는데, 그게 내가 아니라면 스스로를 파괴합니다.
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
-        }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
+            return;
         }
 
+        // 내가 최초의 인스턴스라면, DontDestroyOnLoad를 통해 씬 전환 시에도 파괴되지 않도록 합니다.
+        // Instance 속성이 호출될 때 _instance에 자신을 할당하므로, 여기서 중복 할당할 필요는 없습니다.
+        DontDestroyOnLoad(gameObject);
+
         // BGM 처리
+        bgmClipDictionary = new Dictionary<string, AudioClip>();
         foreach (AudioClip clip in bgmClips)
         {
             if (clip != null && !bgmClipDictionary.ContainsKey(clip.name))
                 bgmClipDictionary.Add(clip.name, clip);
         }
         // SFX 처리
+        sfxClipDictionary = new Dictionary<SfxType, AudioClip>();
         foreach (SfxEntry entry in sfxList)
         {
             if (!sfxClipDictionary.ContainsKey(entry.type))
