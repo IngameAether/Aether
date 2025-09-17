@@ -120,6 +120,11 @@ public class PopUpManager : MonoBehaviour
             return;
         }
 
+        if (popUpType == "MagicBookPopup")
+        {
+            _initialBookShown = true;
+        }
+
         if (_currentPopUpUICanvas != null)
         {
             _currentPopUpUICanvas.SetActive(true);

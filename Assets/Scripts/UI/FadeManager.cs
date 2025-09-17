@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System;
 
 public class FadeManager : MonoBehaviour
 {
@@ -23,6 +24,9 @@ public class FadeManager : MonoBehaviour
    
     private Canvas fadeCanvas; // 페이드 패널이 속한 캔버스
     private bool isFading = false; // 페이드 중인지 확인
+
+    // 씬 전환 완료 이벤트를 선언합니다.
+    public static event Action OnSceneTransitionComplete;
 
     private void OnEnable()
     {
@@ -125,28 +129,26 @@ public class FadeManager : MonoBehaviour
         isFading = true;
         SetInputBlocking(true); // 씬 전환 시 입력 차단
 
-        // 1. 페이드 아웃
+        // 페이드 아웃
         yield return StartCoroutine(Fade(1f, sceneTransitionFadeDuration));
 
-        // 2. 검은 화면 유지
-        yield return new WaitForSeconds(blackScreenHoldDuration);
-
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-        asyncLoad.allowSceneActivation = false; // 새로운 씬의 게임 시작을 일시 정지
 
+        // 씬 로딩이 끝날 때까지 기다림 (로딩이 90%에서 멈추는 것은 자연스러운 현상)
         while (!asyncLoad.isDone)
         {
-            if(asyncLoad.progress >= 0.9f)
-            {
-                asyncLoad.allowSceneActivation = true;
-            }
             yield return null;
         }
 
+        // 페이드 인 (새로운 씬이 로드된 후 화면을 밝게 함)
         yield return StartCoroutine(Fade(0f, sceneTransitionFadeDuration));
 
         SetInputBlocking(false);
         isFading = false;
+
+        // 모든 과정이 끝났음을 외부에 알립니다.
+        OnSceneTransitionComplete?.Invoke();
+        Debug.Log("FadeManager: Scene transition complete.");
     }
 
     // 게임 오버 페이드

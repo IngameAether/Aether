@@ -20,44 +20,91 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private string bossRewardBookCode = "YourBossRewardBookCode";
 
     private int currentWaveLevel = 0;
-    public int CurrentWaveLevel => currentWaveLevel;
-
     private int _waveEndBonusCoin = 0;
     private bool _isWaitingForChoice = false;
     private bool _waitingForEnemies = false;
 
-    private void Start()
+    public int CurrentWaveLevel => currentWaveLevel;
+
+    private void OnEnable()
     {
         spawnManager ??= FindObjectOfType<SpawnManager>();
+
+        // FadeManager가 준비될 때까지 기다린 후, 씬 전환이 끝나면 게임 루틴을 시작합니다.
+        StartCoroutine(WaitForFadeManagerAndSubscribe());
+
+        // PopUpManager의 팝업 닫힘 이벤트를 구독합니다.
+        if (PopUpManager.Instance != null)
+            PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
+
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+            MagicBookManager.Instance.OnCombinationCompleted += HandleCombinationCompleted;
+        }
+
+        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
+    }
+
+    private void OnDisable()
+    {
+        // 구독했던 모든 이벤트를 해제합니다.
+        if (FadeManager.Instance != null)
+            FadeManager.OnSceneTransitionComplete -= StartWaveRoutine;
+        if (PopUpManager.Instance != null)
+            PopUpManager.Instance.OnPopUpClosed -= OnPopupClosed;
+
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+            MagicBookManager.Instance.OnCombinationCompleted -= HandleCombinationCompleted;
+        }
+
+        SpawnManager.OnAllEnemiesCleared -= HandleWaveCleared;
+    }
+
+    // FadeManager가 씬에 나타날 때까지 기다렸다가 이벤트를 구독하는 코루틴
+    private IEnumerator WaitForFadeManagerAndSubscribe()
+    {
+        // FadeManager 인스턴스가 생성될 때까지 기다립니다.
+        yield return new WaitUntil(() => FadeManager.Instance != null);
+        FadeManager.OnSceneTransitionComplete += StartWaveRoutine;
+    }
+
+    // FadeManager로부터 "씬 전환 완료" 신호를 받으면 호출될 함수
+    private void StartWaveRoutine()
+    {
+        // 이전에 구독했던 이벤트를 해제하여 중복 실행을 방지합니다.
+        FadeManager.OnSceneTransitionComplete -= StartWaveRoutine;
+        // 실제 게임 웨이브 코루틴을 시작합니다.
         StartCoroutine(WaveRoutine());
     }
 
     private IEnumerator WaveRoutine()
     {
-        // MagicBookManager에게 '일반 선택'을 준비시킴
+        // --- 1. 최초 마법책 선택 ---
+        Debug.Log("WaveManager: 최초 마법책 선택을 시작합니다.");
         MagicBookManager.Instance.PrepareSelection(BookRequestType.Regular);
-        // PopUpManager를 호출하고 선택을 기다림
-        yield return StartCoroutine(WaitForChoice());
+        yield return StartCoroutine(WaitForChoice()); // 팝업을 띄우고 선택을 기다립니다.
+        Debug.Log("WaveManager: 최초 선택 완료! 게임을 시작합니다.");
 
+        // --- 2. 게임 시작 준비 ---
         if (GameTimer.Instance != null)
         {
             GameTimer.Instance.StartTimer();
         }
-
         yield return new WaitForSeconds(initialDelay);
 
+        // --- 3. 웨이브 루프 시작 ---
         for (int waveIndex = 0; waveIndex < spawnManager.waves.Count; waveIndex++)
         {
+            // ... (기존의 for 루프 안의 모든 코드는 그대로 유지) ...
             currentWaveLevel = waveIndex;
-            int displayWave = waveIndex + 1; // UI에 표시될 웨이브 숫자 (1부터 시작)
-            waveText.text = $"{waveIndex + 1} wave";
+            int displayWave = waveIndex + 1;
+            waveText.text = $"{displayWave} wave";
+            GameManager.Instance.SetWave(displayWave);
 
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.SetWave(displayWave);
-            }
-
-            if ((waveIndex + 1) % 10 == 0)
+            if (displayWave % 10 == 0)
             {
                 MagicBookManager.Instance.PrepareSelection(BookRequestType.Regular);
                 yield return StartCoroutine(WaitForChoice());
@@ -120,22 +167,10 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(WaitForChoice());
     }
 
-    private void OnEnable()
-    {
-        // PopUpManager는 DontDestroyOnLoad 객체일 수 있으므로 null 체크 후 구독
-        if (PopUpManager.Instance != null)
-            PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
-
-        if (MagicBookManager.Instance != null)
-        {
-            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
-            MagicBookManager.Instance.OnCombinationCompleted += HandleCombinationCompleted;
-        }
-
-        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
-    }
-
     private void HandleWaveCleared() { _waitingForEnemies = false; }
-    private void HandleBookEffectApplied(EBookEffectType type, int val) { _waveEndBonusCoin = val; }
+    private void HandleBookEffectApplied(EBookEffectType type, int val)
+    {
+        _waveEndBonusCoin = val;
+    }
     #endregion
 }
