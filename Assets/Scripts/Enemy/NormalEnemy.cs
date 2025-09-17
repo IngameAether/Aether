@@ -26,6 +26,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     // 컴포넌트 참조
     private EnemyMovement enemyMovement;
     private EnemyStatusManager statusManager;
+    private WaveManager _waveManager;
 
     public EnemyData enemyData;
     public EnemyInfoData enemyInfo;
@@ -34,8 +35,6 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 
     private void Awake()
     {
-        CurrentHealth = maxHealth;
-
         // 필수 컴포넌트들을 미리 찾아와서 저장합니다.
         enemyMovement = GetComponent<EnemyMovement>();
         statusManager = GetComponent<EnemyStatusManager>();
@@ -44,18 +43,38 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         {
             Debug.LogError($"{gameObject.name}에서 필수 컴포넌트(EnemyMovement 또는 EnemyStatusManager)를 찾을 수 없습니다.");
         }
-
-        enemyInfo = EnemyDatabase.GetEnemyInfoData(idCode);
-        if (enemyInfo != null)
-        {
-            moveSpeed = enemyInfo.Speed;
-        }
     }
 
     private void Start()
     {
         currentShield = 0;
         UpdateHealthBar();
+        _waveManager = FindObjectOfType<WaveManager>();
+    }
+
+    /// <summary>
+    /// Enemy Data 세팅
+    /// </summary>
+    /// <param name="info"></param>
+    /// <param name="currentWave"></param>
+    public void Initialize(EnemyInfoData info, int currentWave)
+    {
+        enemyInfo = info;
+        if (enemyInfo != null)
+        {
+            moveSpeed = enemyInfo.Speed;
+
+            // hp 계산
+            maxHealth = FormulaEvaluator.EvaluateToFloat(enemyInfo.Hp, currentWave);
+            CurrentHealth = maxHealth;
+
+            // 저항력, 정신력 계산
+            magicResistance = FormulaEvaluator.EvaluateToInt(enemyInfo.DamageReduction, currentWave);
+            mentalStrength = FormulaEvaluator.EvaluateToInt(enemyInfo.ControlResistance, currentWave);
+            int Wave = _waveManager?.CurrentWaveLevel ?? 0;
+            Debug.Log($"wave: {Wave}");
+            Debug.Log($"{CurrentHealth}, {magicResistance}, {mentalStrength}");
+        }
     }
 
     public void SetEnemyData(EnemyData data, int enemyIndex)
@@ -225,8 +244,9 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         int totalReward = baseReward + bonusReward;
         ResourceManager.Instance.AddCoin(totalReward);
 
-        // 코인 보상 등 게임 로직 처리
-        // ResourceManager.Instance.AddCoin(ResourceManager.Instance.EnemyKillBonusCoin);
+        // 빛/어둠 재화 보상
+        int element = enemyInfo.Element;
+        ResourceManager.Instance.GetElement(element);
 
         // EnemyMovement를 통해 오브젝트 파괴 및 이벤트 전파
         if (enemyMovement != null)

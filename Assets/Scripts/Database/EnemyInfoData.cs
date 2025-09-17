@@ -11,7 +11,7 @@ public class EnemyInfoData
     public string DamageReduction;
     public string ControlResistance;
     public int Aether;
-    public int ReinforceElement;
+    public int Element;
     public int SlowdownGauge;
     public int BurnGauge;
     public int StunGauge;
@@ -26,7 +26,7 @@ public class EnemyInfoData
         DamageReduction = dic["damage_reduction_level"].ToString();
         ControlResistance = dic["control_resistance_level"].ToString();
         Aether = (int)dic["aether"];
-        ReinforceElement = (int)dic["light/dark_element"];
+        Element = (int)dic["light/dark_element"];
         SlowdownGauge = (int)dic["slowdown_gauge"];
         BurnGauge = (int)dic["burn_gauge"];
         StunGauge = (int)dic["stun_gauge"];

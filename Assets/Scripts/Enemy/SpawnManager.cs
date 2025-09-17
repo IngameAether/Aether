@@ -16,6 +16,7 @@ public class SpawnManager : MonoBehaviour
 
     [Header("Wave Data")]
     public List<Wave> waves;
+    private WaveManager _waveManager;
 
     public static event Action OnAllEnemiesCleared;
 
@@ -33,6 +34,8 @@ public class SpawnManager : MonoBehaviour
 
         EnemyMovement.OnEnemyDestroyed += HandleEnemyDestroyed;
         EnemyMovement.OnReachEndPoint += HandleEnemyDestroyed;
+
+        _waveManager = FindObjectOfType<WaveManager>();
     }
 
     private void OnDestroy()
@@ -131,6 +134,12 @@ public class SpawnManager : MonoBehaviour
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
         NormalEnemy enemy = newEnemy.GetComponent<NormalEnemy>();
+
+        // 적 생성 시 Enemy Data 세팅
+        EnemyInfoData info = EnemyDatabase.GetEnemyInfoData(enemy.GetEnemyId);
+        int currentWave = _waveManager?.CurrentWaveLevel ?? 0;
+        enemy.Initialize(info, currentWave);
+
         string enemyId = enemy.GetEnemyId;
 
         if (enemyId == "S3") _aliveS3Enemies++;
