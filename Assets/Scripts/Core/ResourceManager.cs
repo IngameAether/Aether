@@ -76,6 +76,13 @@ public class ResourceManager : MonoBehaviour
         OnElementChanged?.Invoke(LightElement, DarkElement);
     }
 
+    public void GetElement(int amount)
+    {
+        LightElement += amount;
+        DarkElement += amount;
+        OnElementChanged?.Invoke(LightElement, DarkElement);
+    }
+
     public bool SpendElement(ReinforceType type, int amount)
     {
         var canSpend = false;

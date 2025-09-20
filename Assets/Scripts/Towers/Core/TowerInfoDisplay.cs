@@ -119,6 +119,7 @@ public class TowerInfoDisplay : MonoBehaviour
         UpdateReinforceUI(tower);
         infoPanelUI.SetActive(true);
     }
+
     // 타워 강화 타입에 따라 UI 조정
     private void UpdateReinforceUI(Tower tower)
     { 
