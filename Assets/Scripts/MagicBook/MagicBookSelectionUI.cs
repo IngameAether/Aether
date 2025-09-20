@@ -44,7 +44,16 @@ public class MagicBookSelectionUI : MonoBehaviour
         {
             if (i < _bookButtons.Length)
             {
-                _bookButtons[i].SetBookData(_currentChoices[i].Description);
+                var bookData = _currentChoices[i]; // 현재 책 데이터 가져오기
+
+                // MagicBookData에 정의된 실제 변수 이름(Icon, Name, Rank, Description)을 사용합니다.
+                _bookButtons[i].SetBookData(
+                    bookData.Icon,                 // bookData.Sprite -> bookData.Icon
+                    bookData.Name,
+                    bookData.Rank.ToString(),      // bookData.Rank -> bookData.Rank.ToString()
+                    bookData.Description
+                );
+
                 _bookButtons[i].gameObject.SetActive(true);
             }
         }
