@@ -25,6 +25,8 @@ public class Tower : MonoBehaviour
     protected bool isFacingRight = true;
     protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
     protected Vector3 direction; // 적 방향
+    private bool isDisable = false;
+    private float disableTimer = 0f;
 
     [Header("Firing")]
     [SerializeField] protected Transform firePoint; 
@@ -58,6 +60,14 @@ public class Tower : MonoBehaviour
         // 타워가 초기화되지 않았으면 아무 행동도 하지 않습니다.
         if (!_isInitialized)
         {
+            return;
+        }
+
+        // 타워가 기능 정지 상태인 경우 타겟 찾는 로직 실행 X
+        if (isDisable)
+        {
+            disableTimer -= Time.deltaTime;
+            if (disableTimer <= 0) isDisable = false;
             return;
         }
 
@@ -197,6 +207,17 @@ public class Tower : MonoBehaviour
         {
             magicCircleRenderer.flipX = isFacingRight;
         }
+    }
+
+    /// <summary>
+    /// B4 특수 능력: 사거리 내의 타워 1초간 기능 정지
+    /// </summary>
+    /// <param name="duration"></param>
+    public void DisableForSeconds(float duration)
+    {
+        isDisable = true;
+        disableTimer = duration;
+        Debug.Log($"{gameObject.name}타워: {disableTimer} 동안 기능 일시 정지");
     }
 
     #region Tower Find Target & Attack
