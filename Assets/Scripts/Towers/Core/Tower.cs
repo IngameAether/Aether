@@ -37,8 +37,7 @@ public class Tower : MonoBehaviour
     private bool _isInitialized = false;
 
     [Header("Tower Data")]
-    private int reinforceLevel = 0;
-    // 현재 타워의 강화 횟수를 저장하는 변수
+    private int reinforceLevel = 0;  // 현재 타워의 강화 횟수를 저장하는 변수
     private int lightReinforceCount = 0;
     private int darkReinforceCount = 0;
     public string TowerName => towerData.Name;
@@ -177,7 +176,7 @@ public class Tower : MonoBehaviour
     }
 
     /// <summary>
-    ///     타워 초기화 - 컴포넌트 설정 및 스프라이트 적용
+    /// 타워 초기화 - 컴포넌트 설정 및 스프라이트 적용
     /// </summary>
     protected virtual void InitializeTower()
     {
