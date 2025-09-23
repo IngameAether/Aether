@@ -33,18 +33,18 @@ public class Projectile : MonoBehaviour
     private StatusEffect _effectToApply;
     // 충돌음 정보 저장 변수
     private SfxType _impactSound;
-    // 상태이상 확률 저장 변수
-    private float _effectChance;
     // 값을 받아서 저장했다가 적에게 명중 시 전달
     private float _effectBuildup;
+    // Animator 참조 변수
+    private Animator _animator;
 
-    /// <summary>
+    private void Awake()
+    {
+        // Animator 컴포넌트를 미리 찾아둡니다.
+        _animator = GetComponent<Animator>();
+    }
+
     /// 타워에서 발사체를 생성할 때 호출할 단일 초기화 함수입니다.
-    /// </summary>
-    /// <param name="target">목표 대상</param>
-    /// <param name="damage">적용할 데미지</param>
-    /// <param name="effect">적용할 상태 이상 정보</param>
-
     public void Setup(Transform target, float damage, StatusEffect effect, float effectBuildup, SfxType impactSound)
     {
         _target = target;
@@ -59,57 +59,77 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        // 타겟이 사라졌는지 확인
-        if (!_targetIsLost && _target == null)
+        // 이미 목표 지점에 도달해서 멈췄다면 더 이상 업데이트하지 않음
+        if (speed <= 0) return;
+
+        // 타겟이 살아있고 아직 잃어버리지 않았다면, 마지막 위치를 계속 갱신
+        if (_target != null && !_targetIsLost)
         {
-            _targetIsLost = true; // 타겟을 잃어버렸다고 표시
+            _lastKnownPosition = _target.position;
+        }
+        // 타겟이 사라졌는지 확인 (최초 1회만 실행)
+        else if (_target == null && !_targetIsLost)
+        {
+            _targetIsLost = true;
         }
 
-        // 목표 지점을 향해 이동
+        // 목표 지점을 향해 계속 이동
         MoveTowardsTarget();
 
-        // 목표 지점 도착 여부 확인
-        Vector3 targetPosition = _targetIsLost ? _lastKnownPosition : _target.position;
-        if (Vector3.Distance(transform.position, targetPosition) <= arriveDistance)
+        // 목표 지점(마지막으로 알던 위치) 도착 여부 확인
+        if (Vector3.Distance(transform.position, _lastKnownPosition) <= arriveDistance)
         {
-            OnTargetHit(targetPosition);
+            OnTargetHit(_lastKnownPosition);
         }
     }
 
+    public void OnImpactAnimationEnd()
+    {
+        Destroy(gameObject);
+    }
+
+    // 적 명중 시 호출되는 함수
     private void OnTargetHit(Vector3 hitPosition)
     {
-        // 저장해 둔 충돌음을 재생하는 코드를 추가합니다.
-        // 재생할 충돌음이 있는지 확인 ('None'이 아니면 재생)
+        // 더 이상 움직이지 않도록 속도를 0으로 설정
+        speed = 0;
+
+        // 충돌음 재생
         if (_impactSound != SfxType.None)
         {
             AudioManager.Instance.PlaySFXAtPoint(_impactSound, hitPosition);
         }
 
-        // 타격 타입에 따라 다르게 처리
+        // 데미지 및 상태이상 적용
         switch (hitType)
         {
             case HitType.Direct:
-                // 직접 타격: 대상에게 직접 TakeHit 호출
-                if (hitType == HitType.Direct && !_targetIsLost && _target != null)
+                if (!_targetIsLost && _target != null)
                 {
                     NormalEnemy enemy = _target.GetComponent<NormalEnemy>();
                     if (enemy != null)
                     {
-                        // 데미지, 상태이상 효과, 그리고 '확률'을 모두 넘겨줍니다.
                         enemy.TakeHit(_damage, _effectToApply, _effectBuildup);
                     }
                 }
                 break;
-
-            // 폭발이나 범위 공격은 기존처럼 DamageEffectManager 사용
             case HitType.Explosive:
             case HitType.GroundAoE:
                 ApplyAoeDamage(hitPosition);
                 break;
         }
 
-        // 처리 후 발사체 파괴
-        Destroy(gameObject);
+        // 애니메이터가 있다면 'onHit' 트리거를 발동시켜 부딪히는 모션을 재생
+        if (_animator != null)
+        {
+            _animator.SetTrigger("onHit");
+            // 파괴는 애니메이션 이벤트(OnImpactAnimationEnd)가 담당하므로 여기서 Destroy하지 않음
+        }
+        else
+        {
+            // 애니메이터가 없다면 즉시 파괴
+            Destroy(gameObject);
+        }
     }
 
     // 범위 공격 로직을 별도 함수로 분리
@@ -133,15 +153,10 @@ public class Projectile : MonoBehaviour
 
     private void MoveTowardsTarget()
     {
-        // 이동 전에 항상 마지막 위치를 갱신
-        if (!_targetIsLost)
-        {
-            _lastKnownPosition = _target.position;
-        }
-
-        // 목표 위치 설정
+        // 목표 위치는 항상 _lastKnownPosition을 사용
         Vector3 targetPosition = _lastKnownPosition;
 
+        // motionType에 따라 이동
         switch (motionType)
         {
             case ProjectileMotionType.Straight:
@@ -153,46 +168,6 @@ public class Projectile : MonoBehaviour
                 pos.y += arcHeight * Mathf.Sin(Mathf.Clamp01(_t) * Mathf.PI);
                 transform.position = pos;
                 break;
-        }
-    }
-
-    /// <summary>
-    /// 목표 지점에 도달했을 때 데미지와 상태 이상 효과를 모두 적용합니다.
-    /// </summary>
-    private void ApplyDamageAndEffect(Vector3 hitPosition)
-    {
-        // 상태 이상 효과 적용 로직 
-        // 목표가 아직 살아있고, 적용할 효과가 있을 경우에만 실행
-        if (!_targetIsLost && _target != null && _effectToApply != null && _effectToApply.Type != StatusEffectType.None)
-        {
-            EnemyStatusManager statusManager = _target.GetComponent<EnemyStatusManager>();
-            if (statusManager != null)
-            {
-                statusManager.TryApplyStatusEffect(_effectToApply);
-            }
-        }
-
-        if (DamageEffectManager.Instance != null)
-        {
-            var forward = transform.right;
-
-            // 타겟이 사라졌다면 null을, 아니라면 _target을 넘겨준다.
-            Transform targetToSend = _targetIsLost ? null : _target;
-
-            DamageEffectManager.Instance.ApplyEffect(
-                effectType,
-                hitPosition,
-                _damage,
-                targetToSend, // 수정된 targetToSend 변수를 사용
-                radius,
-                coneAngle,
-                forward,
-                elementType
-            );
-        }
-        else
-        {
-            Debug.LogWarning("DamageEffectManager 인스턴스가 씬에 없습니다!");
         }
     }
 }

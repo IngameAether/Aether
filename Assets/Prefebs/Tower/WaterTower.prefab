@@ -259,16 +259,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9d19bf32470f471185fe055d30db48eb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerData: {fileID: 11400000, guid: 699c526a23d75d740b240a367adf19c1, type: 2}
+  towerData: {fileID: 11400000, guid: a339eaaaf61ea394392fb04242ff03ad, type: 2}
   reinforceType: 0
   firePoint: {fileID: 0}
-  projectileSpeed: 10
-  defaultMotionType: 1
-  defaultEffectType: 0
-  defaultHitType: 0
-  basicProjectilePrefab: {fileID: 0}
-  fireProjectilePrefab: {fileID: 0}
-  advancedProjectilePrefab: {fileID: 0}
 --- !u!1 &3354781947211632409
 GameObject:
   m_ObjectHideFlags: 0

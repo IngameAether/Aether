@@ -310,6 +310,12 @@ public class Tower : MonoBehaviour
         Vector3 spawnPos = FirePoint.position;
         GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
 
+        // 타워에서 타겟으로 향하는 방향 벡터를 계산합니다.
+        Vector3 direction = (currentTarget.position - spawnPos).normalized;
+
+        // 발사체의 오른쪽(x축)이 그 방향을 바라보도록 회전시킵니다.
+        proj.transform.right = direction;
+
         // 발사체 초기화 (Projectile.cs의 Setup 호출)
         var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
