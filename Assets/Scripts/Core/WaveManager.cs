@@ -40,7 +40,6 @@ public class WaveManager : MonoBehaviour
         if (MagicBookManager.Instance != null)
         {
             MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
-            MagicBookManager.Instance.OnCombinationCompleted += HandleCombinationCompleted;
         }
 
         SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
@@ -57,7 +56,6 @@ public class WaveManager : MonoBehaviour
         if (MagicBookManager.Instance != null)
         {
             MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
-            MagicBookManager.Instance.OnCombinationCompleted -= HandleCombinationCompleted;
         }
 
         SpawnManager.OnAllEnemiesCleared -= HandleWaveCleared;

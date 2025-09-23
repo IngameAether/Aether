@@ -842,10 +842,32 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d0d332811ce225942987ec7c0fb6148e, type: 2}
   - {fileID: 11400000, guid: 156acc346a724eb47b9dd2ebd48b0f98, type: 2}
   - {fileID: 11400000, guid: 0389e6fc1751d8548a81ea5d5935a2f2, type: 2}
+  - {fileID: 11400000, guid: 406a30e934308584983963b495d012bb, type: 2}
+  - {fileID: 11400000, guid: 0d5967f073a3a1d4fa0791be02085090, type: 2}
   - {fileID: 11400000, guid: 7e25811f06bb4eb4abc4f2fc97c963cb, type: 2}
   - {fileID: 11400000, guid: e444a6ab051ced849a120e163a947c75, type: 2}
   - {fileID: 11400000, guid: 9851c0bd92d34f9429707a163325da20, type: 2}
-  _combinations: []
+  - {fileID: 11400000, guid: bb7af05b25396a045a7fe78277207e7d, type: 2}
+  - {fileID: 11400000, guid: bf2f9a47356a15b409eab3bdd718fbbf, type: 2}
+  - {fileID: 11400000, guid: 241efcd12ffbd314ead2b796a0d54a09, type: 2}
+  - {fileID: 11400000, guid: ca92760642bc33444bfc93a6f69f0a8a, type: 2}
+  - {fileID: 11400000, guid: 9af5bd712ae480f49959459430530dd8, type: 2}
+  - {fileID: 11400000, guid: 144729ee257c944459bc453ff5b3217d, type: 2}
+  - {fileID: 11400000, guid: b3b7c22286e844a4a9f70bc43c485b72, type: 2}
+  - {fileID: 11400000, guid: 190bc91687424db49890d04d0bf17fee, type: 2}
+  - {fileID: 11400000, guid: 64e242975c7b56f4c800ee1dae153013, type: 2}
+  - {fileID: 11400000, guid: 8a5f3c9855a28184997bcf72632cffc3, type: 2}
+  - {fileID: 11400000, guid: e4c9f3bf92bc70a429c2e214b15fb246, type: 2}
+  - {fileID: 11400000, guid: 28875643fb84f9442aea353eed2d35cb, type: 2}
+  - {fileID: 11400000, guid: 959ebb65e80478f4c92b24f0de09c1fa, type: 2}
+  - {fileID: 11400000, guid: 7e8ac9ba818475a41afa5c29cfca4751, type: 2}
+  - {fileID: 11400000, guid: 56b853aeb9a084e409957fc6123a3a45, type: 2}
+  - {fileID: 11400000, guid: 3763e5881e09a42469c17e8f52e38d21, type: 2}
+  - {fileID: 11400000, guid: 23820312ea24fda4d9fff622f83a96b3, type: 2}
+  - {fileID: 11400000, guid: 3af715b91f02c234eaaf2ab46ef66b43, type: 2}
+  - {fileID: 11400000, guid: 2439b91415e057f419beb13425d1b3e1, type: 2}
+  - {fileID: 11400000, guid: 538bf9a09de6fc04899018b816567e31, type: 2}
+  rarityTable: {fileID: 11400000, guid: c803b70486041bd45a69d19561c8617c, type: 2}
 --- !u!1 &412185229
 GameObject:
   m_ObjectHideFlags: 0

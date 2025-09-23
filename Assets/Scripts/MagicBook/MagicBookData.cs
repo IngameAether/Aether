@@ -29,6 +29,9 @@ public class MagicBookData : ScriptableObject
     public EBookRank Rank;
     public int MaxStack;
 
+    [Header("획득 조건")]
+    public AcquisitionCondition condition;
+
     [Header("효과 목록")]
     // 마법책이 여러 효과를 가질 수 있도록 List<BookEffect>로 변경 
     public List<BookEffect> Effects;

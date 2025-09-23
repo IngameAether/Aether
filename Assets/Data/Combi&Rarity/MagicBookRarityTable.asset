@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 752f944b3b94d0a4fb68b4a4f7d05d03, type: 3}
+  m_Name: MagicBookRarityTable
+  m_EditorClassIdentifier: 
+  raritySettings:
+  - waveThreshold: 0
+    normalChance: 100
+    rareChance: 0
+    epicChance: 0
+  - waveThreshold: 10
+    normalChance: 80
+    rareChance: 20
+    epicChance: 0
+  - waveThreshold: 20
+    normalChance: 70
+    rareChance: 30
+    epicChance: 0
+  - waveThreshold: 30
+    normalChance: 60
+    rareChance: 40
+    epicChance: 0
+  - waveThreshold: 40
+    normalChance: 50
+    rareChance: 50
+    epicChance: 0
+  - waveThreshold: 50
+    normalChance: 50
+    rareChance: 40
+    epicChance: 10
+  - waveThreshold: 60
+    normalChance: 40
+    rareChance: 50
+    epicChance: 10
+  - waveThreshold: 70
+    normalChance: 30
+    rareChance: 50
+    epicChance: 20
+  - waveThreshold: 80
+    normalChance: 20
+    rareChance: 50
+    epicChance: 30
+  - waveThreshold: 90
+    normalChance: 20
+    rareChance: 40
+    epicChance: 40
