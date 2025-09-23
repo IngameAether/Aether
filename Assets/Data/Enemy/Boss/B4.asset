@@ -20,7 +20,8 @@ MonoBehaviour:
   <DamageReduction>k__BackingField: 8
   <ControlResistance>k__BackingField: 8
   <Aether>k__BackingField: 0
-  <abilities>k__BackingField: []
+  <abilities>k__BackingField:
+  - {fileID: 11400000, guid: 3bf4e4324a4df684b90f479f5e564e38, type: 2}
   <Description>k__BackingField: 
   statusGauges:
   - type: 1
