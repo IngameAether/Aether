@@ -118,9 +118,12 @@ public class TileInteraction : MonoBehaviour
         }
     }
 
-    private void HandleBookEffectApplied(EBookEffectType bookEffectType, int value)
+    private void HandleBookEffectApplied(BookEffect effect, float finalValue)
     {
-        if (bookEffectType != EBookEffectType.DirectTowerPlace) return;
-        _isDirectPlaceTower = (value == 1);
+        // 효과 타입이 '타워 즉시 설치'가 아니면 아무것도 하지 않고 함수를 종료합니다.
+        if (effect.EffectType != EBookEffectType.DirectTowerPlace) return;
+
+        // finalValue가 1이면 true, 아니면 false로 설정합니다.
+        _isDirectPlaceTower = (finalValue == 1);
     }
 }

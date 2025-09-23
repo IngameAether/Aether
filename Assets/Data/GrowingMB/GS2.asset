@@ -10,24 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
-  m_Name: GR3
+  m_Name: GS2
   m_EditorClassIdentifier: 
-  Name: "\uBE5B\uC758 \uAD8C\uC18D"
-  Code: GR3
-  Description: "\uBE5B \uC6D0\uC18C \uB4F1\uC7A5\uD655\uB960 {0}%(\uC5B4\uB460\uC6D0\uC18C\uAC00
-    {0}% \uB428)"
+  Name: "\uC5B4\uB460\uACFC \uBE5B\uC758 \uACF5\uC874"
+  Code: GS2
+  Description: "\uBE5B\uACFC \uC5B4\uB460 \uC6D0\uC18C \uB4F1\uC7A5 \uD655\uB960\uC744
+    50%\uB85C \uC7AC\uC870\uC815, \uC9C0\uAE08\uAE4C\uC9C0 \uC5BB\uC740 \uBE5B\uACFC
+    \uC5B4\uB460 \uC6D0\uC18C\uB9CC\uD07C \uBE5B\uACFC \uC5B4\uB460 \uC6D0\uC18C
+    \uC81C\uACF5"
   Icon: {fileID: 0}
-  Rank: 1
+  Rank: 3
   MaxStack: 1
   Effects:
   - EffectType: 5
     ValueType: 1
-    Value: 1
+    Value: 50
     TargetElement: 4
     TargetTowerCode: 
+    TargetStatusEffect: 0
   - EffectType: 6
     ValueType: 1
-    Value: 1
+    Value: 50
     TargetElement: 4
     TargetTowerCode: 
-  EffectValuesByStack: 4b00000019000000
+    TargetStatusEffect: 0
+  EffectValuesByStack: 0100000001000000

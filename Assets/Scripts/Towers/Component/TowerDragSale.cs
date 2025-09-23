@@ -188,9 +188,13 @@ public class TowerDragSale : MonoBehaviour
         }
     }
 
-    private void HandleBookEffectApplied(EBookEffectType bookEffectType, int value)
+    // 새로운 신호 형식 (BookEffect, float)을 받도록 파라미터를 변경합니다.
+    private void HandleBookEffectApplied(BookEffect effect, float finalValue)
     {
-        if (bookEffectType != EBookEffectType.SellBonus) return;
-        _towerSellBonusCoin = value;
+        // 효과 타입이 '판매 보너스'가 아니면 아무것도 하지 않고 함수를 종료합니다.
+        if (effect.EffectType != EBookEffectType.SellBonus) return;
+
+        // finalValue는 float이지만, 코인 값은 정수여야 하므로 int로 변환해줍니다.
+        _towerSellBonusCoin = (int)finalValue;
     }
 }

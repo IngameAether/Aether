@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
+  m_Name: BR5
+  m_EditorClassIdentifier: 
+  Name: "\uB2EC\uBE5B\uAC80"
+  Code: BR5
+  Description: "\uB2EC\uBE5B\uD0C0\uC6CC\uC758 \uACF5\uACA9 \uBC94\uC704 \uB0B4\uC758
+    \uAC15\uCCA0\uD0C0\uC6CC \uD558\uB098\uB2F9 \uC11C\uB85C\uC758 \uCD5C\uC885\uB370\uBBF8\uC9C0
+    +10%"
+  Icon: {fileID: 0}
+  Rank: 1
+  MaxStack: 1
+  Effects:
+  - EffectType: 28
+    ValueType: 1
+    Value: 10
+    TargetElement: 3
+    TargetTowerCode: L3MOO
+    TargetStatusEffect: 0
+  - EffectType: 28
+    ValueType: 1
+    Value: 10
+    TargetElement: 0
+    TargetTowerCode: L3MET
+    TargetStatusEffect: 0
+  EffectValuesByStack: 0100000001000000

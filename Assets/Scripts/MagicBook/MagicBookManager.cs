@@ -10,7 +10,7 @@ public class MagicBookManager : MonoBehaviour
     public static MagicBookManager Instance { get; private set; }
 
     [SerializeField] private MagicBookData[] _allBooks;
-    public event Action<EBookEffectType, int> OnBookEffectApplied;
+    public event System.Action<BookEffect, float> OnBookEffectApplied;
 
     private Dictionary<string, MagicBookData> _allBooksDict;
     private Dictionary<string, int> _ownedBooksDict;
@@ -147,16 +147,16 @@ public class MagicBookManager : MonoBehaviour
     {
         // 현재 스택(레벨)에 맞는 최종 효과 값을 가져옵니다.
         int stackIndex = Mathf.Clamp(stack - 1, 0, bookData.EffectValuesByStack.Count - 1);
-        int stackValue = bookData.EffectValuesByStack[stackIndex];
+        float stackValue = bookData.EffectValuesByStack[stackIndex];
 
         // 책이 가진 모든 효과(Effects) 목록을 순회합니다.
         foreach (var effect in bookData.Effects)
         {
             // 각 효과의 기본값과 스택별 값을 곱해 최종 수치를 계산합니다.
-            int finalValue = effect.Value * stackValue;
+            float finalValue = effect.Value * stackValue;
 
             // OnBookEffectApplied 이벤트를 각 효과(EffectType)에 대해 개별적으로 호출합니다.
-            OnBookEffectApplied?.Invoke(effect.EffectType, finalValue);
+            OnBookEffectApplied?.Invoke(effect, finalValue);
         }
     }
 
@@ -205,5 +205,11 @@ public class MagicBookManager : MonoBehaviour
         }
         Debug.LogWarning($"요청한 책 코드 '{bookCode}'를 찾을 수 없습니다.");
         return null;
+    }
+
+    // 특정 책의 현재 스택을 반환합니다. 없으면 0을 반환합니다.
+    public int GetCurrentStack(string bookCode)
+    {
+        return _ownedBooksDict.GetValueOrDefault(bookCode, 0);
     }
 }

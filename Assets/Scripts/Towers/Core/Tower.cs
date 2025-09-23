@@ -39,6 +39,13 @@ public class Tower : MonoBehaviour
     // 현재 타워의 강화 횟수를 저장하는 변수
     private int lightReinforceCount = 0;
     private int darkReinforceCount = 0;
+    private float bonusRange = 0f;
+    private float bonusBuildup = 0f;
+
+    // 외부 효과로 추가된 상태이상 지속시간을 저장할 변수
+    private float bonusEffectDuration = 0f;
+    // 최종 지속시간은 '기본 지속시간'과 '추가 지속시간'을 더한 값입니다.
+    public float EffectDuration => towerData.effectDuration + bonusEffectDuration;
     public string TowerName => towerData.Name;
     public float Damage => towerData.GetDamage(reinforceLevel);
     public float AttackSpeed => towerData.GetAttackSpeed(reinforceLevel);
@@ -318,6 +325,24 @@ public class Tower : MonoBehaviour
         }
     }
 
+    public void AddBonusRange(float amount)
+    {
+        bonusRange += amount;
+    }
+
+    // 외부에서 타워의 상태이상 누적치를 강화하는 함수
+    public void AddBonusBuildup(float amount)
+    {
+        bonusBuildup += amount;
+        Debug.Log($"{TowerName}의 상태이상 누적치가 {amount}만큼 증가!");
+    }
+
+    // 외부에서 타워의 상태이상 지속시간을 늘려주는 함수
+    public void AddBonusEffectDuration(float amount)
+    {
+        bonusEffectDuration += amount;
+        Debug.Log($"{TowerName}의 상태이상 지속시간이 {amount}초 증가!");
+    }
     #endregion
     #region Action Handler
 

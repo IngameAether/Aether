@@ -10,19 +10,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
-  m_Name: GE2
+  m_Name: GR3
   m_EditorClassIdentifier: 
-  Name: "\uC6D0\uC18C\uC758 \uB300\uAC00 "
-  Code: GE2
-  Description: "\uBE5B, \uC5B4\uB460 \uC6D0\uC18C\uC758 \uCD5C\uB300 \uAC15\uD654
-    \uD69F\uC218 +20"
+  Name: "\uBE5B\uC758 \uAD8C\uC18D"
+  Code: GR3
+  Description: "\uBE5B \uC6D0\uC18C \uB4F1\uC7A5\uD655\uB960 {0}%(\uC5B4\uB460\uC6D0\uC18C\uAC00
+    {0}% \uB428)"
   Icon: {fileID: 0}
-  Rank: 2
+  Rank: 1
   MaxStack: 1
   Effects:
-  - EffectType: 8
-    ValueType: 0
-    Value: 1
+  - EffectType: 5
+    ValueType: 1
+    Value: 75
     TargetElement: 4
     TargetTowerCode: 
-  EffectValuesByStack: 14000000
+    TargetStatusEffect: 0
+  - EffectType: 6
+    ValueType: 1
+    Value: 25
+    TargetElement: 4
+    TargetTowerCode: 
+    TargetStatusEffect: 0
+  EffectValuesByStack: 0100000001000000

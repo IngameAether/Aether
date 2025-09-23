@@ -168,9 +168,14 @@ public class WaveManager : MonoBehaviour
     }
 
     private void HandleWaveCleared() { _waitingForEnemies = false; }
-    private void HandleBookEffectApplied(EBookEffectType type, int val)
+    private void HandleBookEffectApplied(BookEffect effect, float finalValue)
     {
-        _waveEndBonusCoin = val;
+        // 효과 타입이 '웨이브 종료 시 에테르 보너스'일 경우에만 작동
+        if (effect.EffectType == EBookEffectType.WaveAether)
+        {
+            // finalValue는 float이지만, 코인 값은 정수이므로 int로 변환
+            _waveEndBonusCoin = (int)finalValue;
+        }
     }
     #endregion
 }
