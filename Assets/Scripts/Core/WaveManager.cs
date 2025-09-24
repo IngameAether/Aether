@@ -23,6 +23,7 @@ public class WaveManager : MonoBehaviour
     private int _waveEndBonusCoin = 0;
     private bool _isWaitingForChoice = false;
     private bool _waitingForEnemies = false;
+    private bool _isExtraLife = false;
 
     public int CurrentWaveLevel => currentWaveLevel;
 
@@ -112,6 +113,11 @@ public class WaveManager : MonoBehaviour
             yield return StartCoroutine(spawnManager.SpawnWaveEnemies(spawnManager.waves[waveIndex]));
             while (_waitingForEnemies) yield return null;
 
+            if (_isExtraLife)
+            {
+                GameManager.Instance.AddLife();
+            }
+
             if (waveIndex == bossWaveIndex)
             {
                 Debug.Log("보스 처치! 특별 보상을 제공합니다.");
@@ -168,11 +174,19 @@ public class WaveManager : MonoBehaviour
     private void HandleWaveCleared() { _waitingForEnemies = false; }
     private void HandleBookEffectApplied(BookEffect effect, float finalValue)
     {
-        // 효과 타입이 '웨이브 종료 시 에테르 보너스'일 경우에만 작동
-        if (effect.EffectType == EBookEffectType.WaveAether)
+        switch (effect.EffectType)
         {
-            // finalValue는 float이지만, 코인 값은 정수이므로 int로 변환
-            _waveEndBonusCoin = (int)finalValue;
+            // 효과 타입이 '웨이브 종료 시 에테르 보너스'일 경우에만 작동
+            case EBookEffectType.WaveAether:
+                // finalValue는 float이지만, 코인 값은 정수이므로 int로 변환
+                _waveEndBonusCoin = (int)finalValue;
+                break;
+            case EBookEffectType.ExtraLife:
+                _isExtraLife = true;
+                break;
+            case EBookEffectType.FullLife:
+                GameManager.Instance.AddLife(20 - GameManager.Instance.currentLives);
+                break;
         }
     }
     #endregion
