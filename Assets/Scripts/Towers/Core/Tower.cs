@@ -25,6 +25,8 @@ public class Tower : MonoBehaviour
     protected bool isFacingRight = true;
     protected Transform currentTarget; // 현재 타겟으로 삼고 있는 적의 위치
     protected Vector3 direction; // 적 방향
+    private bool isDisable = false;
+    private float disableTimer = 0f;
 
     [Header("Firing")]
     [SerializeField] protected Transform firePoint; 
@@ -35,8 +37,7 @@ public class Tower : MonoBehaviour
     private bool _isInitialized = false;
 
     [Header("Tower Data")]
-    private int reinforceLevel = 0;
-    // 현재 타워의 강화 횟수를 저장하는 변수
+    private int reinforceLevel = 0;  // 현재 타워의 강화 횟수를 저장하는 변수
     private int lightReinforceCount = 0;
     private int darkReinforceCount = 0;
     public string TowerName => towerData.Name;
@@ -58,6 +59,14 @@ public class Tower : MonoBehaviour
         // 타워가 초기화되지 않았으면 아무 행동도 하지 않습니다.
         if (!_isInitialized)
         {
+            return;
+        }
+
+        // 타워가 기능 정지 상태인 경우 타겟 찾는 로직 실행 X
+        if (isDisable)
+        {
+            disableTimer -= Time.deltaTime;
+            if (disableTimer <= 0) isDisable = false;
             return;
         }
 
@@ -167,7 +176,7 @@ public class Tower : MonoBehaviour
     }
 
     /// <summary>
-    ///     타워 초기화 - 컴포넌트 설정 및 스프라이트 적용
+    /// 타워 초기화 - 컴포넌트 설정 및 스프라이트 적용
     /// </summary>
     protected virtual void InitializeTower()
     {
@@ -197,6 +206,17 @@ public class Tower : MonoBehaviour
         {
             magicCircleRenderer.flipX = isFacingRight;
         }
+    }
+
+    /// <summary>
+    /// B4 특수 능력: 사거리 내의 타워 1초간 기능 정지
+    /// </summary>
+    /// <param name="duration"></param>
+    public void DisableForSeconds(float duration)
+    {
+        isDisable = true;
+        disableTimer = duration;
+        Debug.Log($"{gameObject.name}타워: {disableTimer} 동안 기능 일시 정지");
     }
 
     #region Tower Find Target & Attack
