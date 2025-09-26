@@ -38,8 +38,12 @@ MonoBehaviour:
   effectType: 0
   effectDuration: 0
   effectValue: 0
-  effectChance: 0
+  effectBuildup: 20
   projectilePrefab: {fileID: 6725626314794571107, guid: a2d621a88b492e24e8d0c1800fbbf719, type: 3}
+  projectileSpeed: 10
+  arcHeight: 2
+  hitType: 0
+  damageEffectType: 0
   nextUpgradeData: {fileID: 11400000, guid: 4bd9325fb78a8b243b4c17b58641acd4, type: 2}
   upgradedPrefab: {fileID: 0}
   reinforcementThreshold: 10

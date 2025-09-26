@@ -6,6 +6,8 @@ public enum ReinforceType { None, Light, Dark };
 
 public class Tower : MonoBehaviour
 {
+    // TowerExtension 참조 변수 
+    private TowerExtension _extension;
     private TowerInformation towerInformation;
 
     [Header("Tower Configuration")]
@@ -55,8 +57,12 @@ public class Tower : MonoBehaviour
     public int CurrentReinforceLevel => reinforceLevel;
     public int MaxReinforce => towerData.MaxReinforce;
 
-    protected virtual void Start()
+    protected virtual void Awake()
     {
+        // 확장 스크립트를 찾아서 연결합니다.
+        _extension = GetComponent<TowerExtension>();
+
+        // 데이터 초기화는 Awake에서 먼저 실행되도록 유지
         Setup(this.towerData);
     }
 
@@ -234,7 +240,8 @@ public class Tower : MonoBehaviour
     protected virtual bool IsTargetInRange(Transform target)
     {
         if (target == null) return false;
-        return Vector2.Distance(transform.position, target.position) <= this.Range;
+        return Vector2.Distance(transform.position, target.position)
+            <= (_extension != null ? _extension.BuffedRange : this.Range);
     }
 
     /// <summary>
@@ -246,7 +253,7 @@ public class Tower : MonoBehaviour
 
         var enemiesInRange = Physics2D.OverlapCircleAll(
             transform.position,
-            this.Range,
+            (_extension != null ? _extension.BuffedRange : this.Range),
             enemyLayerMask
         );
 
@@ -265,7 +272,7 @@ public class Tower : MonoBehaviour
             }
         }
 
-        return nearestTarget;
+        return null;
     }
 
     // 타겟이 살아 있는지 확인
@@ -281,8 +288,9 @@ public class Tower : MonoBehaviour
     /// </summary>
     protected virtual bool CanAttack()
     {
-        if (this.AttackSpeed <= 0f) return false;
-        float attackInterval = 1f / this.AttackSpeed;
+        float currentAttackSpeed = (_extension != null) ? _extension.BuffedAttackSpeed : this.AttackSpeed;
+        if (currentAttackSpeed <= 0f) return false;
+        float attackInterval = 1f / currentAttackSpeed;
         return Time.time >= lastAttackTime + attackInterval;
     }
 
@@ -291,43 +299,16 @@ public class Tower : MonoBehaviour
     /// </summary>
     protected virtual void Attack()
     {
-        if (currentTarget == null) return;
-
-        if (towerData.attackSound != SfxType.None)
-        {
-            // 이 부분은 현재 프로젝트의 '오디오 매니저' 이름에 맞게 수정해야 합니다.
-            AudioManager.Instance.PlaySFX(towerData.attackSound);
+        // 공격의 실제 실행을 TowerExtension에 위임
+        if (_extension != null)
+        { 
+            // 확장 스크립트가 있다면, 애니메이션 재생을 요청
+            _extension.TriggerAttackAnimation();
         }
-
-        // TowerData에 발사체 프리팹이 있는지 확인
-        if (towerData.projectilePrefab == null)
+        else
         {
-            Debug.LogWarning($"{towerData.Name}: 발사체 프리팹이 지정되지 않았습니다.");
-            return;
-        }
-
-        // 발사체 생성
-        Vector3 spawnPos = FirePoint.position;
-        GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
-
-        // 타워에서 타겟으로 향하는 방향 벡터를 계산합니다.
-        Vector3 direction = (currentTarget.position - spawnPos).normalized;
-
-        // 발사체의 오른쪽(x축)이 그 방향을 바라보도록 회전시킵니다.
-        proj.transform.right = direction;
-
-        // 발사체 초기화 (Projectile.cs의 Setup 호출)
-        var projectile = proj.GetComponent<Projectile>();
-        if (projectile != null)
-        {
-            var effect = new StatusEffect(
-                towerData.effectType,
-                towerData.effectDuration,
-                towerData.effectValue,
-                transform.position
-            );
-
-            projectile.Setup(currentTarget, this.Damage, effect, towerData.effectBuildup, towerData.impactSound);
+            // 확장 스크립트가 없다면, 직접 발사 (예비용)
+            FireProjectile();
         }
     }
 
@@ -348,6 +329,41 @@ public class Tower : MonoBehaviour
     {
         bonusEffectDuration += amount;
         Debug.Log($"{TowerName}의 상태이상 지속시간이 {amount}초 증가!");
+    }
+
+    /// <summary>
+    /// 실제 발사 로직. TowerExtension 또는 Attack()에서 호출됩니다.
+    /// </summary>
+    public void FireProjectile()
+    {
+        if (currentTarget == null) return;
+        if (towerData.projectilePrefab == null) return;
+        if (towerData.attackSound != SfxType.None) AudioManager.Instance.PlaySFX(towerData.attackSound);
+
+        Vector3 spawnPos = FirePoint.position;
+        GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
+        proj.transform.right = (currentTarget.position - spawnPos).normalized;
+
+        var projectile = proj.GetComponent<Projectile>();
+        if (projectile != null)
+        {
+            // [수정] 모든 능력치를 _extension에서 가져오도록 변경
+            var effect = new StatusEffect(
+                towerData.effectType,
+                _extension != null ? _extension.BuffedEffectDuration : this.EffectDuration,
+                towerData.effectValue, // TODO: EffectValue 버프 추가 필요
+                transform.position
+            );
+
+            projectile.Setup(
+                currentTarget,
+                _extension != null ? _extension.BuffedDamage : this.Damage,
+                effect,
+                _extension != null ? _extension.BuffedEffectBuildup : towerData.effectBuildup,
+                towerData.impactSound,
+                this.towerData
+            );
+        }
     }
     #endregion
     #region Action Handler

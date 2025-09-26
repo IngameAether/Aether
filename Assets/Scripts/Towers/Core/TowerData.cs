@@ -46,6 +46,12 @@ public class TowerData : ScriptableObject
     [Header("발사체 정보")]
     public GameObject projectilePrefab;
 
+    [Header("발사체 상세 설정")]
+    public float projectileSpeed = 10f; // 발사체 속도
+    public float arcHeight = 2f;      // 포물선 높이 (AttackMode가 Parabolic일 때)
+    public HitType hitType = HitType.Direct; // 명중 방식 (직격, 폭발 등)
+    public DamageEffectType damageEffectType = DamageEffectType.SingleTarget;
+
     [Header("업그레이드 정보")]
     public TowerData nextUpgradeData; // 4단계 TowerData를 여기에 연결
     public GameObject upgradedPrefab;  // 4단계 타워 프리팹을 여기에 연결
