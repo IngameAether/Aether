@@ -19,10 +19,16 @@ MonoBehaviour:
   Icon: {fileID: 0}
   Rank: 1
   MaxStack: 2
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 2
     ValueType: 1
     Value: 1
     TargetElement: 4
     TargetTowerCode: 
+    TargetStatusEffect: 0
   EffectValuesByStack: 0200000005000000

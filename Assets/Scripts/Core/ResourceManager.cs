@@ -11,6 +11,7 @@ public class ResourceManager : MonoBehaviour
     public int DarkElement { get; private set; }
     public int EnemyKillBonusCoin { get; private set; } = 0;
     public int MaxElementUpgrade { get; private set; } = 0;
+    public bool IsBossRewardDouble { get; private set; } = false;
 
     private int _lightElementChance = 5;
     private int _darkElementChance = 5;
@@ -169,6 +170,9 @@ public class ResourceManager : MonoBehaviour
                 break;
             case EBookEffectType.ElementMaxUpgrade:
                 MaxElementUpgrade += value;
+                break;
+            case EBookEffectType.BossRewardDouble:
+                IsBossRewardDouble = true;
                 break;
         }
     }

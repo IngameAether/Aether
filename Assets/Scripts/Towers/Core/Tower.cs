@@ -6,7 +6,7 @@ public enum ReinforceType { None, Light, Dark };
 
 public class Tower : MonoBehaviour
 {
-    // TowerExtension 참조 변수 
+    // TowerExtension 참조 변수
     private TowerExtension _extension;
     private TowerInformation towerInformation;
 
@@ -29,7 +29,7 @@ public class Tower : MonoBehaviour
     protected Vector3 direction; // 적 방향
 
     [Header("Firing")]
-    [SerializeField] protected Transform firePoint; 
+    [SerializeField] protected Transform firePoint;
 
     public Transform FirePoint => firePoint != null ? firePoint : transform;
 
@@ -44,6 +44,8 @@ public class Tower : MonoBehaviour
     private float bonusRange = 0f;
     private float bonusBuildup = 0f;
 
+    private TowerBuffData _appliedBuffs;
+
     // 외부 효과로 추가된 상태이상 지속시간을 저장할 변수
     private float bonusEffectDuration = 0f;
     // 최종 지속시간은 '기본 지속시간'과 '추가 지속시간'을 더한 값입니다.
@@ -56,6 +58,8 @@ public class Tower : MonoBehaviour
     public float CriticalHit => towerData.GetCriticalRate(reinforceLevel);
     public int CurrentReinforceLevel => reinforceLevel;
     public int MaxReinforce => towerData.MaxReinforce;
+    private TowerFinalStats _cachedStats;
+    private bool _statsValid = false;
 
     protected virtual void Awake()
     {
@@ -64,6 +68,7 @@ public class Tower : MonoBehaviour
 
         // 데이터 초기화는 Awake에서 먼저 실행되도록 유지
         Setup(this.towerData);
+        MagicBookBuffSystem.OnBuffsUpdated += OnMagicBookBuffsUpdated;
     }
 
     protected virtual void Update()
@@ -93,7 +98,7 @@ public class Tower : MonoBehaviour
             TowerData nextData = towerData.nextUpgradeData;
             if (nextData != null && nextData.upgradedPrefab != null)
             {
-                // 새 타워 생성 및 기존 타워 파괴 로직 
+                // 새 타워 생성 및 기존 타워 파괴 로직
                 GameObject newTowerObject = Instantiate(nextData.upgradedPrefab, transform.position, transform.rotation);
                 newTowerObject.GetComponent<Tower>()?.Setup(nextData);
                 Destroy(gameObject);
@@ -108,6 +113,7 @@ public class Tower : MonoBehaviour
     protected virtual void OnDestroy()
     {
         OnTowerDestroyed?.Invoke();
+        MagicBookBuffSystem.OnBuffsUpdated -= OnMagicBookBuffsUpdated;
     }
 
     public void Setup(TowerData data)
@@ -125,7 +131,7 @@ public class Tower : MonoBehaviour
 
         InitializeTower();
 
-        _isInitialized = true; 
+        _isInitialized = true;
 
     }
 
@@ -186,6 +192,7 @@ public class Tower : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
+
         EnsureFirePoint();
     }
 
@@ -301,7 +308,7 @@ public class Tower : MonoBehaviour
     {
         // 공격의 실제 실행을 TowerExtension에 위임
         if (_extension != null)
-        { 
+        {
             // 확장 스크립트가 있다면, 애니메이션 재생을 요청
             _extension.TriggerAttackAnimation();
         }
@@ -366,6 +373,72 @@ public class Tower : MonoBehaviour
         }
     }
     #endregion
+
+    #region Tower Buff
+
+    /// <summary>
+    /// 마법도서 버프 적용
+    /// </summary>
+    public void ApplyMagicBookBuffs()
+    {
+        _statsValid = false; // 캐시 무효화
+        Debug.Log($"[{towerData?.Name}] 버프 캐시 무효화");
+    }
+
+    /// <summary>
+    /// 최종 스탯
+    /// </summary>
+    private void EnsureStatsValid()
+    {
+        if (!_statsValid && MagicBookBuffSystem.Instance != null)
+        {
+            _cachedStats = MagicBookBuffSystem.Instance.CalculateFinalStats(this);
+            _statsValid = true;
+        }
+    }
+
+    public float GetBuffedDamage()
+    {
+        EnsureStatsValid();
+        return _cachedStats.Damage;
+    }
+
+    public float GetBuffedAttackSpeed()
+    {
+        EnsureStatsValid();
+        return _cachedStats.AttackSpeed;
+    }
+
+    public float GetBuffedRange()
+    {
+        EnsureStatsValid();
+        return _cachedStats.Range;
+    }
+
+    public float GetBuffedCritChance()
+    {
+        EnsureStatsValid();
+        return _cachedStats.CritChance;
+    }
+
+    public float GetExcessCritDamageMultiplier()
+    {
+        EnsureStatsValid();
+        return _cachedStats.ExcessCritDamageMultiplier;
+    }
+
+    public StatusEffect GetBuffedStatusEffect()
+    {
+        EnsureStatsValid();
+        return _cachedStats.StatusEffect;
+    }
+
+    // 기존 보너스 값들 접근용 public 메서드 추가
+    public float GetBonusRange() => bonusRange;
+    public float GetBonusEffectDuration() => bonusEffectDuration;
+
+    #endregion
+
     #region Action Handler
 
     /// <summary>
@@ -374,6 +447,17 @@ public class Tower : MonoBehaviour
     public void HandleTowerClicked()
     {
         OnTowerClicked?.Invoke(this);
+    }
+
+    /// <summary>
+    /// 새로운 마법도서가 획득되었을 때 호출
+    /// </summary>
+    private void OnMagicBookBuffsUpdated()
+    {
+        if (!_isInitialized) return;
+
+        ApplyMagicBookBuffs(); // 캐시만 무효화
+        Debug.Log($"[{towerData?.Name}] 새로운 마법도서 버프 준비 완료!");
     }
 
     #endregion

@@ -114,7 +114,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     /// <summary>
     /// 데미지를 받는 함수. 부패, 마법 저항력 순서로 최종 데미지를 계산합니다.
     /// </summary>
-    public void TakeDamage(float damageAmount) 
+    public void TakeDamage(float damageAmount)
     {
         float finalDamage = damageAmount;
 
@@ -224,16 +224,18 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 
         // 사망 시 모든 상태 이상 효과를 즉시 정리하여 오류를 방지합니다.
         statusManager?.ClearAllEffectsOnDeath();
-        
+
+        int bonus = ResourceManager.Instance.IsBossRewardDouble ? 2 : 1;
+
         int baseReward = enemyInfo.Aether;
         // 코인 보상
         int bonusReward = ResourceManager.Instance.EnemyKillBonusCoin;
         int totalReward = baseReward + bonusReward;
-        ResourceManager.Instance.AddCoin(totalReward);
+        ResourceManager.Instance.AddCoin(totalReward * bonus);
 
         // 빛/어둠 재화 보상
         int element = enemyInfo.Element;
-        ResourceManager.Instance.GetElement(element);
+        ResourceManager.Instance.GetElement(element * bonus);
 
         // EnemyMovement를 통해 오브젝트 파괴 및 이벤트 전파
         if (enemyMovement != null)

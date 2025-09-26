@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq; 
+using System.Linq;
 using Random = UnityEngine.Random;
 
 public enum BookRequestType { Regular, Specific }
@@ -38,7 +38,7 @@ public class MagicBookManager : MonoBehaviour
 
         _ownedBooksDict = new Dictionary<string, int>(_allBooks.Length);
 
-        // 책을 등급별로 분류하는 로직 
+        // 책을 등급별로 분류하는 로직
         _normalBooks = new List<MagicBookData>();
         _rareBooks = new List<MagicBookData>();
         _epicBooks = new List<MagicBookData>();
@@ -179,6 +179,7 @@ public class MagicBookManager : MonoBehaviour
         {
             float finalValue = effect.Value * stackValue;
             OnBookEffectApplied?.Invoke(effect, finalValue);
+            MagicBookBuffSystem.Instance.ApplyBookEffect(effect, finalValue);
         }
     }
 

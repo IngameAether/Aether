@@ -12,6 +12,7 @@ public enum EBookEffectType
     ElementMaxUpgrade,
     DirectTowerPlace,
     ExtraLife,
+    FullLife,
 
     // Battle 관련 타입
     // --- 기본 & 범용 효과 ---
