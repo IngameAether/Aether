@@ -56,6 +56,8 @@ public class Tower : MonoBehaviour
     public float CriticalHit => towerData.GetCriticalRate(reinforceLevel);
     public int CurrentReinforceLevel => reinforceLevel;
     public int MaxReinforce => towerData.MaxReinforce;
+    private TowerFinalStats _cachedStats;
+    private bool _statsValid = false;
 
     protected virtual void Start()
     {
@@ -360,158 +362,66 @@ public class Tower : MonoBehaviour
 
     #region Tower Buff
 
+    /// <summary>
+    /// 마법도서 버프 적용
+    /// </summary>
     public void ApplyMagicBookBuffs()
     {
-        if (MagicBookBuffSystem.Instance == null) return;
-
-        string towerCode = towerData?.Name ?? "DefaultTower";
-        ElementType element = towerData!.ElementType;
-
-        appliedBuffs = MagicBookBuffSystem.Instance.GetTowerBuffs(towerCode, element);
-        Debug.Log($"[{towerCode}] 마법도서 버프 적용 완료");
+        _statsValid = false; // 캐시 무효화
+        Debug.Log($"[{towerData?.Name}] 버프 캐시 무효화");
     }
 
     /// <summary>
-    ///     마법도서 버프가 적용된 최종 데미지 계산
+    /// 최종 스탯
     /// </summary>
+    private void EnsureStatsValid()
+    {
+        if (!_statsValid && MagicBookBuffSystem.Instance != null)
+        {
+            _cachedStats = MagicBookBuffSystem.Instance.CalculateFinalStats(this);
+            _statsValid = true;
+        }
+    }
+
     public float GetBuffedDamage()
     {
-        var baseDamage = Damage;
-        var finalDamage = baseDamage * appliedBuffs.FinalDamageMultiplier;
-
-        // 타워 개수 기반 동적 버프 추가
-        var dynamicDamageBonus = MagicBookBuffSystem.Instance?.GetTowerCountBasedBuff(
-            towerData.Name, EBookEffectType.IncreaseDamagePerTowerCount) ?? 0f;
-
-        if (dynamicDamageBonus > 0) finalDamage *= 1f + dynamicDamageBonus / 100f;
-
-        return finalDamage;
+        EnsureStatsValid();
+        return _cachedStats.Damage;
     }
 
-    /// <summary>
-    ///     마법도서 버프가 적용된 최종 공격속도 계산
-    /// </summary>
     public float GetBuffedAttackSpeed()
     {
-        var baseAttackSpeed = AttackSpeed;
-        var finalAttackSpeed = baseAttackSpeed * appliedBuffs.AttackSpeedMultiplier;
-
-        // 타워 개수 기반 동적 버프 추가
-        var dynamicSpeedBonus = MagicBookBuffSystem.Instance?.GetTowerCountBasedBuff(
-            towerData.Name, EBookEffectType.IncreaseAttackSpeedPerTowerCount) ?? 0f;
-
-        if (dynamicSpeedBonus > 0) finalAttackSpeed *= 1f + dynamicSpeedBonus / 100f;
-
-        return finalAttackSpeed;
+        EnsureStatsValid();
+        return _cachedStats.AttackSpeed;
     }
 
-    /// <summary>
-    ///     마법도서 버프가 적용된 최종 사거리 계산
-    /// </summary>
     public float GetBuffedRange()
     {
-        if (appliedBuffs.OverrideRange > 0) return appliedBuffs.OverrideRange;
-
-        var baseRange = Range + bonusRange; // 기존 보너스 사거리도 포함
-        return baseRange * appliedBuffs.RangeMultiplier;
+        EnsureStatsValid();
+        return _cachedStats.Range;
     }
 
-    /// <summary>
-    ///     마법도서 버프가 적용된 최종 치명타 확률 계산
-    /// </summary>
     public float GetBuffedCritChance()
     {
-        var baseCrit = CriticalHit;
-        var finalCrit = baseCrit + appliedBuffs.CritChanceBonus;
-
-        // 타워 개수 기반 동적 버프 추가
-        var dynamicCritBonus = MagicBookBuffSystem.Instance?.GetTowerCountBasedBuff(
-            towerData.Name, EBookEffectType.IncreaseCritChancePerTowerCount) ?? 0f;
-
-        finalCrit += dynamicCritBonus;
-
-        // 초과 치명타를 데미지로 변환하는 특수 효과 처리
-        if (appliedBuffs.HasUniqueEffects.Contains(EBookEffectType.ConvertExcessCritToDamage))
-            return Mathf.Min(finalCrit, 100f); // 100% 초과분은 데미지로 변환됨
-
-        return finalCrit;
+        EnsureStatsValid();
+        return _cachedStats.CritChance;
     }
 
-    /// <summary>
-    ///     초과 치명타가 데미지로 변환되는 추가 데미지 배수 계산
-    /// </summary>
     public float GetExcessCritDamageMultiplier()
     {
-        if (!appliedBuffs.HasUniqueEffects.Contains(EBookEffectType.ConvertExcessCritToDamage))
-            return 1f;
-
-        var totalCrit = CriticalHit + appliedBuffs.CritChanceBonus;
-
-        // 타워 개수 기반 치명타도 포함
-        var dynamicCritBonus = MagicBookBuffSystem.Instance?.GetTowerCountBasedBuff(
-            towerData.Name, EBookEffectType.IncreaseCritChancePerTowerCount) ?? 0f;
-        totalCrit += dynamicCritBonus;
-
-        if (totalCrit > 100f)
-        {
-            var excessCrit = totalCrit - 100f;
-            return 1f + excessCrit / 100f; // 초과분을 데미지 배수로 변환
-        }
-
-        return 1f;
+        EnsureStatsValid();
+        return _cachedStats.ExcessCritDamageMultiplier;
     }
 
-    /// <summary>
-    ///     상태이상 효과에 마법도서 버프 적용
-    /// </summary>
     public StatusEffect GetBuffedStatusEffect()
     {
-        // 기본 지속시간 계산 (기존 보너스 포함)
-        float baseDuration = towerData.effectDuration + bonusEffectDuration;
-        float baseValue = towerData.effectValue;
-
-        // 상태이상 관련 버프가 있는지 확인
-        if (appliedBuffs.StatusEffectModifiers != null &&
-            appliedBuffs.StatusEffectModifiers.TryGetValue(towerData.effectType, out var modifier))
-        {
-            // Value는 상태이상 타입에 따라 데미지 또는 수치를 의미
-            // - Burn/Rot/Bleed: 데미지 값
-            // - Slow/Stun/Paralyze: 효과 수치 (둔화율, 기절 수치 등)
-            float modifiedValue = baseValue;
-            float modifiedDuration = baseDuration + modifier.DurationBonus;
-
-            switch (towerData.effectType)
-            {
-                case StatusEffectType.Burn:
-                case StatusEffectType.Rot:
-                case StatusEffectType.Bleed:
-                    modifiedValue *= modifier.DamageMultiplier;
-                    break;
-
-                case StatusEffectType.Slow:
-                case StatusEffectType.Stun:
-                case StatusEffectType.Paralyze:
-                case StatusEffectType.Fear:
-                    modifiedValue *= modifier.PotencyMultiplier;
-                    break;
-            }
-
-            return new StatusEffect(
-                towerData.effectType,
-                modifiedDuration,
-                modifiedValue,
-                transform.position
-            );
-        }
-
-        // 버프가 없으면 기본 효과 반환
-        return new StatusEffect(
-            towerData.effectType,
-            baseDuration,
-            baseValue,
-            transform.position
-        );
+        EnsureStatsValid();
+        return _cachedStats.StatusEffect;
     }
+
+    // 기존 보너스 값들 접근용 public 메서드 추가
+    public float GetBonusRange() => bonusRange;
+    public float GetBonusEffectDuration() => bonusEffectDuration;
 
     #endregion
 
@@ -532,9 +442,8 @@ public class Tower : MonoBehaviour
     {
         if (!_isInitialized) return;
 
-        ApplyMagicBookBuffs();
-
-        Debug.Log($"[{towerData?.Name}] 새로운 마법도서 버프 적용 완료!");
+        ApplyMagicBookBuffs(); // 캐시만 무효화
+        Debug.Log($"[{towerData?.Name}] 새로운 마법도서 버프 준비 완료!");
     }
 
     #endregion

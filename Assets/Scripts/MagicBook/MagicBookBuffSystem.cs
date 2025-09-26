@@ -281,6 +281,138 @@ public class MagicBookBuffSystem : MonoBehaviour
         _towerBuffCache.Clear();
     }
 
+    public TowerFinalStats CalculateFinalStats(Tower tower)
+    {
+        string towerCode = tower.towerData?.Name ?? "DefaultTower";
+        ElementType element = tower.towerData.ElementType;
+
+        var buffData = GetTowerBuffs(towerCode, element);
+
+        float baseDamage = tower.Damage;
+        float baseAttackSpeed = tower.AttackSpeed;
+        float baseRange = tower.Range + tower.GetBonusRange();
+        float baseCrit = tower.CriticalHit;
+
+        var finalStats = new TowerFinalStats
+        {
+            Damage = CalculateFinalDamage(towerCode, baseDamage, buffData),
+            AttackSpeed = CalculateFinalAttackSpeed(towerCode, baseAttackSpeed, buffData),
+            Range = CalculateFinalRange(baseRange, buffData),
+            CritChance = CalculateFinalCritChance(towerCode, baseCrit, buffData),
+            ExcessCritDamageMultiplier = CalculateExcessCritDamageMultiplier(towerCode, baseCrit, buffData),
+            StatusEffect = CalculateBuffedStatusEffect(tower, buffData)
+        };
+
+        return finalStats;
+    }
+
+    private float CalculateFinalDamage(string towerCode, float baseDamage, TowerBuffData buffData)
+    {
+        float finalDamage = baseDamage * buffData.FinalDamageMultiplier;
+
+        // 타워 개수 기반 동적 버프
+        float dynamicBonus = GetTowerCountBasedBuff(towerCode, EBookEffectType.IncreaseDamagePerTowerCount);
+        if (dynamicBonus > 0)
+        {
+            finalDamage *= (1f + dynamicBonus / 100f);
+        }
+
+        return finalDamage;
+    }
+
+    private float CalculateFinalAttackSpeed(string towerCode, float baseAttackSpeed, TowerBuffData buffData)
+    {
+        float finalSpeed = baseAttackSpeed * buffData.AttackSpeedMultiplier;
+
+        // 타워 개수 기반 동적 버프
+        float dynamicBonus = GetTowerCountBasedBuff(towerCode, EBookEffectType.IncreaseAttackSpeedPerTowerCount);
+        if (dynamicBonus > 0)
+        {
+            finalSpeed *= (1f + dynamicBonus / 100f);
+        }
+
+        return finalSpeed;
+    }
+
+    private float CalculateFinalRange(float baseRange, TowerBuffData buffData)
+    {
+        // 고정 사거리가 설정되어 있으면 우선 적용
+        if (buffData.OverrideRange > 0)
+        {
+            return buffData.OverrideRange;
+        }
+
+        return baseRange * buffData.RangeMultiplier;
+    }
+
+    private float CalculateFinalCritChance(string towerCode, float baseCrit, TowerBuffData buffData)
+    {
+        float finalCrit = baseCrit + buffData.CritChanceBonus;
+
+        // 타워 개수 기반 동적 버프
+        float dynamicBonus = GetTowerCountBasedBuff(towerCode, EBookEffectType.IncreaseCritChancePerTowerCount);
+        finalCrit += dynamicBonus;
+
+        // 초과 치명타를 데미지로 변환하는 특수 효과가 있으면 100%로 제한
+        if (buffData.HasUniqueEffects.Contains(EBookEffectType.ConvertExcessCritToDamage))
+        {
+            return Mathf.Min(finalCrit, 100f);
+        }
+
+        return finalCrit;
+    }
+
+    private float CalculateExcessCritDamageMultiplier(string towerCode, float baseCrit, TowerBuffData buffData)
+    {
+        if (!buffData.HasUniqueEffects.Contains(EBookEffectType.ConvertExcessCritToDamage))
+            return 1f;
+
+        float totalCrit = baseCrit + buffData.CritChanceBonus;
+        float dynamicBonus = GetTowerCountBasedBuff(towerCode, EBookEffectType.IncreaseCritChancePerTowerCount);
+        totalCrit += dynamicBonus;
+
+        if (totalCrit > 100f)
+        {
+            float excessCrit = totalCrit - 100f;
+            return 1f + (excessCrit / 100f);
+        }
+
+        return 1f;
+    }
+
+    private StatusEffect CalculateBuffedStatusEffect(Tower tower, TowerBuffData buffData)
+    {
+        float baseDuration = tower.towerData.effectDuration + tower.GetBonusEffectDuration();
+        float baseValue = tower.towerData.effectValue;
+
+        if (buffData.StatusEffectModifiers != null &&
+            buffData.StatusEffectModifiers.TryGetValue(tower.towerData.effectType, out var modifier))
+        {
+            float modifiedValue = baseValue;
+            float modifiedDuration = baseDuration + modifier.DurationBonus;
+
+            switch (tower.towerData.effectType)
+            {
+                case StatusEffectType.Burn:
+                case StatusEffectType.Rot:
+                case StatusEffectType.Bleed:
+                    modifiedValue *= modifier.DamageMultiplier;
+                    break;
+
+                case StatusEffectType.Slow:
+                case StatusEffectType.Stun:
+                case StatusEffectType.Paralyze:
+                case StatusEffectType.Fear:
+                    modifiedValue *= modifier.PotencyMultiplier;
+                    break;
+            }
+
+            return new StatusEffect(tower.towerData.effectType, modifiedDuration, modifiedValue, tower.transform.position);
+        }
+
+        return new StatusEffect(tower.towerData.effectType, baseDuration, baseValue, tower.transform.position);
+    }
+
     #endregion
 }
 
@@ -322,6 +454,17 @@ internal struct CachedTowerBuffs
     public float RangeMultiplier;
     public float CritChanceBonus;
     public float OverrideRange;
+}
+
+[Serializable]
+public struct TowerFinalStats
+{
+    public float Damage;
+    public float AttackSpeed;
+    public float Range;
+    public float CritChance;
+    public float ExcessCritDamageMultiplier;
+    public StatusEffect StatusEffect;
 }
 
 #endregion

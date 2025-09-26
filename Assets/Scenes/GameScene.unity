@@ -800,6 +800,7 @@ GameObject:
   m_Component:
   - component: {fileID: 365221777}
   - component: {fileID: 365221778}
+  - component: {fileID: 365221779}
   m_Layer: 0
   m_Name: MagicBookManager
   m_TagString: Untagged
@@ -868,6 +869,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 2439b91415e057f419beb13425d1b3e1, type: 2}
   - {fileID: 11400000, guid: 538bf9a09de6fc04899018b816567e31, type: 2}
   rarityTable: {fileID: 11400000, guid: c803b70486041bd45a69d19561c8617c, type: 2}
+--- !u!114 &365221779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 365221776}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d789edf28ac4c46a9097d5a287c09f1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &412185229
 GameObject:
   m_ObjectHideFlags: 0
