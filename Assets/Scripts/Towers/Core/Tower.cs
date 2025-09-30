@@ -50,11 +50,12 @@ public class Tower : MonoBehaviour
     private float bonusEffectDuration = 0f;
     // 최종 지속시간은 '기본 지속시간'과 '추가 지속시간'을 더한 값입니다.
     public float EffectDuration => towerData.effectDuration + bonusEffectDuration;
+    public float EffectBuildup => towerData.effectBuildup + bonusBuildup;
     public string TowerName => towerData.Name;
     public float Damage => towerData.GetDamage(reinforceLevel);
     public float AttackSpeed => towerData.GetAttackSpeed(reinforceLevel);
     public float Range => towerData.BaseRange;
-    public int Rank => towerData.Level; // <-- 이 코드가 없으면 this.Rank 에서 CS1061 오류 발생
+    public int Rank => towerData.Level; 
     public float CriticalHit => towerData.GetCriticalRate(reinforceLevel);
     public int CurrentReinforceLevel => reinforceLevel;
     public int MaxReinforce => towerData.MaxReinforce;
@@ -69,6 +70,11 @@ public class Tower : MonoBehaviour
         // 데이터 초기화는 Awake에서 먼저 실행되도록 유지
         Setup(this.towerData);
         MagicBookBuffSystem.OnBuffsUpdated += OnMagicBookBuffsUpdated;
+    }
+
+    protected virtual void Start()
+    {
+        Debug.Log($"[5] {gameObject.name}: Start() 함수 호출됨");
     }
 
     protected virtual void Update()
@@ -118,12 +124,19 @@ public class Tower : MonoBehaviour
 
     public void Setup(TowerData data)
     {
+        Debug.Log($"[3] {gameObject.name}: Setup() 함수가 호출됨. 전달된 data is {(data == null ? "null" : data.name)}");
+
         if (data == null)
         {
             Debug.LogError($"{this.name}: 유효하지 않은 TowerData로 Setup을 시도했습니다.");
             _isInitialized = false;
             gameObject.SetActive(false);
             return;
+        }
+        else
+        {
+            // 이 로그가 뜬다면, Setup 함수는 정상적으로 데이터를 받았습니다.
+            Debug.Log($"===> {this.name}: Setup 함수가 '{data.name}' 데이터로 성공적으로 초기화되었습니다.", this.gameObject);
         }
 
         this.towerData = data;
@@ -257,29 +270,53 @@ public class Tower : MonoBehaviour
     protected virtual Transform FindNearestTarget()
     {
         LayerMask enemyLayerMask = LayerMask.GetMask("Enemy");
+        float searchRange = (_extension != null ? _extension.BuffedRange : this.Range);
 
         var enemiesInRange = Physics2D.OverlapCircleAll(
             transform.position,
-            (_extension != null ? _extension.BuffedRange : this.Range),
+            searchRange,
             enemyLayerMask
         );
 
-        if (enemiesInRange.Length == 0) return null;
+        if (enemiesInRange.Length == 0)
+        {
+            return null; // 주변에 적이 없음
+        }
 
         Transform nearestTarget = null;
-        var nearestDistance = float.MaxValue;
+        float closestDistance = float.MaxValue;
 
-        foreach (var enemyCollider in enemiesInRange)
+        // 감지된 모든 적을 순회
+        foreach (Collider2D enemyCollider in enemiesInRange)
         {
-            var distance = Vector2.Distance(transform.position, enemyCollider.transform.position);
-            if (distance < nearestDistance)
+            // [수정] enemyCollider 자체가 null이 아닌지 한번 더 확인 (안전장치)
+            if (enemyCollider == null) continue;
+
+            float distance = Vector2.Distance(transform.position, enemyCollider.transform.position);
+            if (distance < closestDistance)
             {
-                nearestDistance = distance;
-                nearestTarget = enemyCollider.transform;
+                // [추가] 적으로부터 IDamageable 컴포넌트를 가져올 수 있는지 확인
+                IDamageable damageable = enemyCollider.GetComponent<IDamageable>();
+                if (damageable != null && damageable.CurrentHealth > 0)
+                {
+                    // 살아있는 적인 경우에만 가장 가까운 타겟으로 인정
+                    closestDistance = distance;
+                    nearestTarget = enemyCollider.transform;
+                }
             }
         }
 
-        return null;
+        // [디버그 로그] 최종적으로 누구를 선택했는지 또는 못했는지 확인
+        if (nearestTarget != null)
+        {
+            Debug.Log($"가장 가까운 적 '{nearestTarget.name}'을(를) 타겟으로 설정!");
+        }
+        else
+        {
+            Debug.LogWarning("탐지된 적은 있으나, 유효한(살아있는) 타겟을 찾지 못했습니다.");
+        }
+
+        return nearestTarget;
     }
 
     // 타겟이 살아 있는지 확인
@@ -306,16 +343,39 @@ public class Tower : MonoBehaviour
     /// </summary>
     protected virtual void Attack()
     {
-        // 공격의 실제 실행을 TowerExtension에 위임
-        if (_extension != null)
+        // 발사 직전에 타겟이 여전히 유효한지(살아있는지) 다시 한번 확인합니다.
+        if (currentTarget == null || !isTargetAlive(currentTarget))
         {
-            // 확장 스크립트가 있다면, 애니메이션 재생을 요청
-            _extension.TriggerAttackAnimation();
+            return; // 유효하지 않으면 발사를 취소합니다.
         }
-        else
+
+        // 발사체 프리팹이 있는지 확인합니다.
+        if (towerData.projectilePrefab == null) return;
+
+        // 공격 사운드를 재생합니다.
+        if (towerData.attackSound != SfxType.None)
         {
-            // 확장 스크립트가 없다면, 직접 발사 (예비용)
-            FireProjectile();
+            AudioManager.Instance.PlaySFX(towerData.attackSound);
+        }
+
+        // 발사체를 'Fire Point' 위치에 생성합니다.
+        Vector3 spawnPos = firePoint.position;
+        GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
+
+        // 발사체의 방향을 타겟 쪽으로 회전시킵니다.
+        Vector3 direction = (currentTarget.position - spawnPos).normalized;
+        proj.transform.right = direction;
+
+        // 발사체에 필요한 모든 정보를 전달합니다.
+        var projectile = proj.GetComponent<Projectile>();
+        if (projectile != null)
+        {
+            // 버프 계산 로직
+            var buffedEffect = GetBuffedStatusEffect();
+            float buffedDamage = GetBuffedDamage();
+
+            // Setup 함수를 통해 'currentTarget'을 명확히 전달합니다.
+            projectile.Setup(currentTarget, buffedDamage, buffedEffect, this.EffectBuildup, towerData.impactSound, this.towerData);
         }
     }
 
@@ -354,11 +414,11 @@ public class Tower : MonoBehaviour
         var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            // [수정] 모든 능력치를 _extension에서 가져오도록 변경
+            // 모든 능력치를 _extension에서 가져오도록 변경
             var effect = new StatusEffect(
                 towerData.effectType,
                 _extension != null ? _extension.BuffedEffectDuration : this.EffectDuration,
-                towerData.effectValue, // TODO: EffectValue 버프 추가 필요
+                towerData.effectValue,
                 transform.position
             );
 
@@ -366,7 +426,7 @@ public class Tower : MonoBehaviour
                 currentTarget,
                 _extension != null ? _extension.BuffedDamage : this.Damage,
                 effect,
-                _extension != null ? _extension.BuffedEffectBuildup : towerData.effectBuildup,
+                _extension != null ? _extension.BuffedEffectBuildup : towerData.effectBuildup, 
                 towerData.impactSound,
                 this.towerData
             );

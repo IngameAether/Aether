@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public enum HitType { Direct, Explosive, GroundAoE }
@@ -15,6 +16,9 @@ public class Projectile : MonoBehaviour
     private DamageEffectType damageEffectType;
     private float radius;
     private float coneAngle;
+
+    // 유도 기능 활성화 여부를 저장할 변수
+    private bool _isGuided = false;
 
     // 내부 동작 변수 
     private Transform _target;
@@ -38,14 +42,13 @@ public class Projectile : MonoBehaviour
     /// </summary>
     public void Setup(Transform target, float damage, StatusEffect effect, float effectBuildup, SfxType impactSound, TowerData data)
     {
-        // 기본 정보 설정
         _target = target;
         _damage = damage;
         _effectToApply = effect;
         _effectBuildup = effectBuildup;
         _impactSound = impactSound;
 
-        // TowerData로부터 모든 능력치를 복사
+        // --- TowerData로부터 모든 능력치를 복사 ---
         elementType = data.ElementType;
         speed = data.projectileSpeed;
         arcHeight = data.arcHeight;
@@ -53,39 +56,57 @@ public class Projectile : MonoBehaviour
         damageEffectType = data.damageEffectType;
         radius = data.radiant;
 
-        // AttackMode를 ProjectileMotionType으로 변환
+        // TowerData로부터 Guided 설정을 받아옵니다.
+        _isGuided = data.Guided;
+
         motionType = data.AttackMode switch
         {
             AttackMode.Parabolic => ProjectileMotionType.Parabola,
             _ => ProjectileMotionType.Straight,
         };
 
-        // 시작 위치 및 시간 초기화
+        // 타겟의 최초 위치를 _lastKnownPosition으로 설정
+        if (target != null)
+        {
+            _lastKnownPosition = target.position;
+        }
+
         _startPos = transform.position;
         _t = 0f;
     }
 
     private void Update()
     {
-        // 타겟 정보가 아예 없이 생성되었다면 스스로를 파괴하고 즉시 종료
+        // [디버그] 이 발사체가 누구를 쫓고 있는지 항상 확인
+        if (_target != null)
+        {
+            Debug.DrawLine(transform.position, _target.position, Color.green); // 씬 뷰에 초록색 선으로 추적 경로 표시
+        }
+
+        // [디버그] 타겟이 사라지는 바로 그 순간을 포착!
         if (_target == null && !_targetIsLost)
         {
-            Destroy(gameObject);
-            return;
-        }
-
-        if (speed <= 0) return;
-
-        if (_target != null && !_targetIsLost)
-        {
-            _lastKnownPosition = _target.position;
-        }
-        else if (_target == null && !_targetIsLost)
-        {
+            Debug.LogError($"★★★ 타겟 상실! {gameObject.name}이(가) 타겟을 잃었습니다. 마지막 위치: {_lastKnownPosition}", this.gameObject);
             _targetIsLost = true;
         }
 
-        MoveTowardsTarget();
+        if (speed <= 0) return;
+        Vector3 targetPosition = _lastKnownPosition;
+
+        // 기존 이동 로직, 위의 디버그는 필요없어지면 지우기
+        if (_isGuided && _target != null)
+        {
+            targetPosition = _target.position;
+        }
+
+        // 발사체가 항상 목표 지점을 바라보도록 각도를 실시간으로 조절합니다.
+        if (speed > 0)
+        {
+            Vector3 direction = (targetPosition - transform.position).normalized;
+            transform.right = direction; // 2D 스프라이트의 오른쪽(x축)이 타겟을 향하도록 설정
+        }
+
+        MoveTowardsTarget(targetPosition);
 
         if (Vector3.Distance(transform.position, _lastKnownPosition) <= arriveDistance)
         {
@@ -147,16 +168,16 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    private void MoveTowardsTarget()
+    private void MoveTowardsTarget(Vector3 targetPosition)
     {
         switch (motionType)
         {
             case ProjectileMotionType.Straight:
-                transform.position = Vector3.MoveTowards(transform.position, _lastKnownPosition, speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
                 break;
             case ProjectileMotionType.Parabola:
-                _t += Time.deltaTime * speed / Mathf.Max(0.001f, Vector3.Distance(_startPos, _lastKnownPosition));
-                var pos = Vector3.Lerp(_startPos, _lastKnownPosition, Mathf.Clamp01(_t));
+                _t += Time.deltaTime * speed / Mathf.Max(0.001f, Vector3.Distance(_startPos, targetPosition));
+                var pos = Vector3.Lerp(_startPos, targetPosition, Mathf.Clamp01(_t));
                 pos.y += arcHeight * Mathf.Sin(Mathf.Clamp01(_t) * Mathf.PI);
                 transform.position = pos;
                 break;

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3133016706276062221}
   - component: {fileID: 2594363407795265777}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Face
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 5753639888089113247}
   - component: {fileID: -2638315943921502564}
   - component: {fileID: -961743338075138584}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: AirTower_LV4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2521660412143070584}
   - component: {fileID: 4442418100785638118}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ReinforceMagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -363,7 +363,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7892379910495905186}
   - component: {fileID: 8086974570959882842}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}

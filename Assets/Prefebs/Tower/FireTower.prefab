@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8816178475793042940}
   - component: {fileID: 8199774110131339436}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 4900260835950074317}
   - component: {fileID: 3775246362898450638}
   - component: {fileID: 7864145417841945743}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mouth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -207,7 +207,7 @@ GameObject:
   - component: {fileID: 8768647810141785125}
   - component: {fileID: -3361127631089178800}
   - component: {fileID: 3427042812864870713}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FireTower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -391,7 +391,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6730964440949109200}
   - component: {fileID: 3083885498593624140}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ReinforceMagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -475,7 +475,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8535751711012320867}
   - component: {fileID: 4992897514774697703}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Face
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -559,7 +559,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2592780750353970252}
   - component: {fileID: 1432576638644896997}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -643,7 +643,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3461649910478474983}
   - component: {fileID: 3152542833200254157}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Element
   m_TagString: Untagged
   m_Icon: {fileID: 0}

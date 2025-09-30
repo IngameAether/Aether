@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 5142339756747632522}
   - component: {fileID: -8457488556601090538}
   - component: {fileID: -1682911372197259330}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: EarthTower_LV4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,7 +195,7 @@ GameObject:
   m_Component:
   - component: {fileID: 987673297001925454}
   - component: {fileID: 610733622354666219}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ReinforceMagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7364446943395198389}
   - component: {fileID: 1281486678155605143}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -363,7 +363,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4899376435633352472}
   - component: {fileID: 3655142873509000782}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Face
   m_TagString: Untagged
   m_Icon: {fileID: 0}

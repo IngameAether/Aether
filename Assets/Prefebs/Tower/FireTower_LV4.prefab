@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8816178475793042940}
   - component: {fileID: 8199774110131339436}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   - component: {fileID: 8768647810141785125}
   - component: {fileID: -5384530671428570615}
   - component: {fileID: 1104477738209862601}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: FireTower_LV4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +279,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6730964440949109200}
   - component: {fileID: 3083885498593624140}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ReinforceMagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -363,7 +363,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8535751711012320867}
   - component: {fileID: 4992897514774697703}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Face
   m_TagString: Untagged
   m_Icon: {fileID: 0}

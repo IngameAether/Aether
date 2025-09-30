@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5818132802080141534}
   - component: {fileID: 3832127346807957322}
   - component: {fileID: 1861122641099850954}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: L1W_Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3679800607773970701}
   - component: {fileID: -4036635250320281883}
   - component: {fileID: 2290433820292946208}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: element_Air
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2305084337486197374}
   - component: {fileID: 8743832952108260547}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: element
   m_TagString: Untagged
   m_Icon: {fileID: 0}
