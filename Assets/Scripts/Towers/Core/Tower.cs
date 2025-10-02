@@ -20,6 +20,8 @@ public class Tower : MonoBehaviour
 
     public string type { get; set; }
 
+    public TowerInfoData towerInfo;
+
     protected SpriteRenderer spriteRenderer;
     protected SpriteRenderer magicCircleRenderer;
 
@@ -53,13 +55,14 @@ public class Tower : MonoBehaviour
     public float EffectDuration => towerData.effectDuration + bonusEffectDuration;
     public float EffectBuildup => towerData.effectBuildup + bonusBuildup;
     public string TowerName => towerData.Name;
-    public float Damage => towerData.GetDamage(reinforceLevel);
-    public float AttackSpeed => towerData.GetAttackSpeed(reinforceLevel);
-    public float Range => towerData.BaseRange;
-    public int Rank => towerData.Level; 
-    public float CriticalHit => towerData.GetCriticalRate(reinforceLevel);
+    public float Damage => FormulaEvaluator.EvaluateTowerData(towerInfo.Attack, lightReinforceCount, darkReinforceCount);
+    public float AttackSpeed => towerInfo.Speed;
+    public float Range => towerInfo.Range;
+    public int Rank => towerData.Level;
+    public float CriticalHit => FormulaEvaluator.EvaluateTowerData(towerInfo.CriticalRate, lightReinforceCount, darkReinforceCount);
     public int CurrentReinforceLevel => reinforceLevel;
-    public int MaxReinforce => towerData.MaxReinforce;
+    public int MaxReinforce => towerInfo.MaxReinforcement;
+    public int UnleashingPotential => towerInfo.UnleashingPotential;
     private TowerFinalStats _cachedStats;
     private bool _statsValid = false;
 
@@ -142,6 +145,12 @@ public class Tower : MonoBehaviour
             gameObject.SetActive(false);
             return;
         }
+
+        towerInfo = TowerDatabase.GetTowerInfoData(data.ID);
+        if (towerInfo == null)
+        {
+            Debug.Log($"{data.ID}에 해당하는 TowerInfoData가 없음");
+        }
         else
         {
             // 이 로그가 뜬다면, Setup 함수는 정상적으로 데이터를 받았습니다.
@@ -154,7 +163,6 @@ public class Tower : MonoBehaviour
         InitializeTower();
 
         _isInitialized = true;
-
     }
 
     // Light 또는 Dark 재화로 타워를 강화하는 함수. UI 버튼 등에서 이 함수를 호출합니다.
