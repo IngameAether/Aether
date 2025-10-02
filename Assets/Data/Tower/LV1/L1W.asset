@@ -45,7 +45,7 @@ MonoBehaviour:
   hitType: 0
   damageEffectType: 0
   nextUpgradeData: {fileID: 11400000, guid: 9ff7e58d8650a7749a49828040024d20, type: 2}
-  upgradedPrefab: {fileID: 0}
+  upgradedPrefab: {fileID: 2156860131253734831, guid: 0437ffc897e652e499c7af10157e99ec, type: 3}
   reinforcementThreshold: 0
   lightEvolutionData: {fileID: 0}
   darkEvolutionData: {fileID: 0}

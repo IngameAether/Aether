@@ -14,7 +14,8 @@ GameObject:
   - component: {fileID: 7962456714843517985}
   - component: {fileID: 266035224619324765}
   - component: {fileID: 6756575198684610096}
-  m_Layer: 5
+  - component: {fileID: 4466852265023245860}
+  m_Layer: 8
   m_Name: L2W_Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -103,7 +104,7 @@ SpriteRenderer:
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.26, y: 0.27}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 0
@@ -121,15 +122,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f623bd0702b20a54f89c335167e10fb6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  elementType: 3
-  motionType: 1
-  speed: 10
-  arcHeight: 2
-  arriveDistance: 0.3
-  radius: 2
-  coneAngle: 60
-  hitType: 0
-  effectType: 0
 --- !u!50 &266035224619324765
 Rigidbody2D:
   serializedVersion: 4
@@ -145,7 +137,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -186,9 +178,21 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
+--- !u!114 &4466852265023245860
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4495657370558995444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1040827a23f3db4a8c07f2277431550, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

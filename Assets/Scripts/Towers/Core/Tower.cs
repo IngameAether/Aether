@@ -370,12 +370,15 @@ public class Tower : MonoBehaviour
         var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            // 버프 계산 로직
             var buffedEffect = GetBuffedStatusEffect();
             float buffedDamage = GetBuffedDamage();
 
-            // Setup 함수를 통해 'currentTarget'을 명확히 전달합니다.
-            projectile.Setup(currentTarget, buffedDamage, buffedEffect, this.EffectBuildup, towerData.impactSound, this.towerData);
+            // 초과 치명타 데미지 적용
+            float excessCritMultiplier = GetExcessCritDamageMultiplier();
+            buffedDamage *= excessCritMultiplier;
+
+            // 마지막에 'towerData'를 추가로 전달해야 합니다.
+            projectile.Setup(currentTarget, buffedDamage, buffedEffect, towerData.effectBuildup, towerData.impactSound, towerData);
         }
     }
 
@@ -403,7 +406,7 @@ public class Tower : MonoBehaviour
     /// </summary>
     public void FireProjectile()
     {
-        if (currentTarget == null) return;
+        if (currentTarget == null || !isTargetAlive(currentTarget)) return;
         if (towerData.projectilePrefab == null) return;
         if (towerData.attackSound != SfxType.None) AudioManager.Instance.PlaySFX(towerData.attackSound);
 
@@ -430,6 +433,12 @@ public class Tower : MonoBehaviour
                 towerData.impactSound,
                 this.towerData
             );
+
+            var buffedEffect = GetBuffedStatusEffect();
+            float buffedDamage = GetBuffedDamage();
+
+            // currentTarget과 towerData를 정확히 전달하고 있는지 확인
+            projectile.Setup(currentTarget, buffedDamage, buffedEffect, this.EffectBuildup, towerData.impactSound, this.towerData);
         }
     }
     #endregion

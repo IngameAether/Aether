@@ -182,7 +182,7 @@ public class WaveManager : MonoBehaviour
                 _waveEndBonusCoin = (int)finalValue;
                 break;
             case EBookEffectType.ExtraLife:
-                _isExtraLife = true;
+                GameManager.Instance.AddLife((int)finalValue);                                                  
                 break;
             case EBookEffectType.FullLife:
                 GameManager.Instance.AddLife(20 - GameManager.Instance.currentLives);

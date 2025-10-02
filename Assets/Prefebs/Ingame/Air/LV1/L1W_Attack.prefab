@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 5818132802080141534}
   - component: {fileID: 3832127346807957322}
   - component: {fileID: 1861122641099850954}
+  - component: {fileID: -6619338339754001614}
   m_Layer: 8
   m_Name: L1W_Attack
   m_TagString: Untagged
@@ -138,7 +139,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -181,5 +182,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f623bd0702b20a54f89c335167e10fb6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-6619338339754001614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2340632274443776917}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1040827a23f3db4a8c07f2277431550, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
