@@ -39,7 +39,11 @@ MonoBehaviour:
   effectDuration: 2
   effectValue: 10
   effectBuildup: 20
-  projectilePrefab: {fileID: 6725626314794571107, guid: abf51b4aa60f52340b856f97b5621b2f, type: 3}
+  projectilePrefab: {fileID: 3990770815948138043, guid: b574f47098b6cb54a8c60e97891f3996, type: 3}
+  projectileSpeed: 10
+  arcHeight: 2
+  hitType: 0
+  damageEffectType: 0
   nextUpgradeData: {fileID: 0}
   upgradedPrefab: {fileID: 0}
   reinforcementThreshold: 10

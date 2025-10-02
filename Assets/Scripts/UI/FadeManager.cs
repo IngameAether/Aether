@@ -1,157 +1,122 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using UnityEngine.SceneManagement;
 using System;
+using System.Collections;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using TMPro;
+using UnityEngine.UI;
 
 public class FadeManager : MonoBehaviour
 {
-    // 싱글턴 인스턴스
     public static FadeManager Instance { get; private set; }
-
-    [Header("UI References")]
-    [SerializeField] private Image fadePanel; // 화면 전환용 
-    [SerializeField] private TextMeshProUGUI gameOverText; // 유다희
-    [SerializeField] private GameObject gameOverButtonContainer; // "다시하기", "메인메뉴로 나가기"
-    [SerializeField] private Button mainMenuButton; // 메인메뉴로 나가기
-
-    [Header("Fade Settings")]
-    [SerializeField] private float sceneTransitionFadeDuration = 3.0f; // 씬 전환 페이드시간
-    [SerializeField] private float gameOverFadeDuration = 3.0f; // 게임 오버 페이드 아웃 시간
-    [SerializeField] private float blackScreenHoldDuration = 3.0f; // 검은 화면 유지 시간
-   
-    private Canvas fadeCanvas; // 페이드 패널이 속한 캔버스
-    private bool isFading = false; // 페이드 중인지 확인
-
-    // 씬 전환 완료 이벤트를 선언합니다.
     public static event Action OnSceneTransitionComplete;
 
-    private void OnEnable()
+    [Header("UI References")]
+    [SerializeField] private Image fadePanel;
+
+    [Header("Loading UI")]
+    [SerializeField] private GameObject loadingContainer;
+    [SerializeField] private TextMeshProUGUI loadingText;
+
+    [Header("Game Over UI")]
+    [SerializeField] private TextMeshProUGUI gameOverText;
+
+    [Header("Fade Settings")]
+    [SerializeField] private float sceneTransitionFadeDuration = 1.0f;
+    [SerializeField] private float gameOverFadeDuration = 1.5f;
+    [SerializeField] private float gameOverTextAnimationDuration = 2.0f;
+    [SerializeField] private float minLoadingTime = 1.5f;
+    private bool isTransitioning = false;
+    private float fadeDuration; // Fade 코루틴에서 사용할 변수
+
+    private bool isFading = false;
+    private Coroutine _loadingTextAnimation;
+
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
+        InitializeUI();
     }
-    private void OnDisable()
+
+    private void OnDestroy()
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
+
+    // [핵심 수정 1] Start 함수 삭제
+    // Start 함수는 OnSceneLoaded가 역할을 대신하므로 필요 없습니다.
+
+    // [핵심 수정 2] OnSceneLoaded가 화면을 밝히는 역할을 하도록 수정
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // MainMenuScene이 로드될 때만 Main Menu 버튼을 찾고 연결합니다.
-        if (scene.name == "MainMenuScene") // <-- 실제 메인 메뉴 씬 이름
+        // 씬 전환 중이 아닐 때만 (즉, 에디터에서 씬을 바로 시작했을 때만) 페이드 인 실행
+        if (!isTransitioning)
         {
-            MainMenuUI mainMenuUI = FindObjectOfType<MainMenuUI>();
+            StartCoroutine(Fade(0f, true));
         }
     }
-    void Awake()
+
+    // [핵심 수정 3] InitializeUI의 초기 색상 값 수정
+    private void InitializeUI()
     {
-        // 싱글톤 패턴 구현
-        if (Instance == null)
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject); // 씬 전환 시 파괴되지 않도록
-        }
-        else
-        {
-            Destroy(gameObject); // 인스턴스 있으면 자기자신을 파괴
-            return;
-        }
-
-        // 오류 검사
-        if (fadePanel == null)
-        {
-            Debug.LogError("fadePanel이 연결되지 않음");
-            enabled = false;
-            return;
-        }
-
-        if(gameOverText == null) // gameOverText가 null인지 별도로 확인
-        {
-            Debug.LogError("FadeManager: Game Over Text가 연결되지 않았습니다. 인스펙터에서 연결해주세요.");
-            enabled = false; // 스크립트 비활성화
-            return;
-        }
-
-        if(gameOverButtonContainer == null)
-        {
-            Debug.LogError("GameOverButtonContainer가 연결되지 않음");
-            enabled = false;
-            return;
-        }
-
-        if (mainMenuButton == null)
-        {
-            Debug.LogError("MainMenuButton이 연결되지 않음");
-            enabled = false;
-            return;
-        }
-
-        fadeCanvas = fadePanel.GetComponentInParent<Canvas>();
-        if (fadeCanvas == null)
-        {
-            Debug.LogError("Fade Panel이 Canvas 내부에 없음");
-            enabled = false;
-            return;
-        }
-
-        // 초기에는 페이드 패널 투명하게 하기
-        fadePanel.gameObject.SetActive(true); // 활성화는 하지만 투명한거임
-        Color panelColor = fadePanel.color;
-        panelColor.a = 0f;
-        fadePanel.color = panelColor;
-
-        gameOverText.gameObject.SetActive(false); // 게임오버 텍스트는 비활성화
-        gameOverButtonContainer.SetActive(false); // 게임오버 버튼도 비활성화
-
-        SetInputBlocking(false); // 초기에는 입력 허용
-        isFading = false;
-
-        if (mainMenuButton != null) 
-        {
-            mainMenuButton.onClick.AddListener(GoToMainMenu);
-        }
-        else
-        {
-            Debug.LogError("FadeManager: mainMenuButton이 Inspector에 할당되지 않았습니다. OnClick 이벤트 연결 불가.");
-        }
+        // 시작 시 검은 화면에서 시작하도록 설정
+        if (fadePanel != null) fadePanel.color = Color.black;
+        if (loadingContainer != null) loadingContainer.SetActive(false);
+        if (gameOverText != null) gameOverText.gameObject.SetActive(false);
     }
 
-    // 씬 전환 페이드 (페이드 아웃 -> 새 씬 로드 -> 새 씬 페이드인)
     public void TransitionToScene(string sceneName)
     {
         if (isFading) return;
-        StartCoroutine(SceneTransitionCoroutine(sceneName));
+        StartCoroutine(TransitionCoroutine(sceneName));
     }
 
-    private IEnumerator SceneTransitionCoroutine(string sceneName)
+    // [핵심 수정 4] TransitionCoroutine에서 Fade In 로직 제거
+    private IEnumerator TransitionCoroutine(string sceneName)
     {
-        isFading = true;
-        SetInputBlocking(true); // 씬 전환 시 입력 차단
+        isTransitioning = true; // 전환 시작! OnSceneLoaded가 개입하지 못하도록 막음
 
-        // 페이드 아웃
-        yield return StartCoroutine(Fade(1f, sceneTransitionFadeDuration));
+        // 1. 화면을 부드럽게 어둡게 만듭니다 (페이드 아웃).
+        yield return StartCoroutine(Fade(1f, false));
 
+        // 2. 화면이 완전히 어두워진 후 로딩 UI를 켜고 애니메이션을 시작합니다.
+        if (loadingContainer != null)
+        {
+            loadingContainer.SetActive(true);
+            _loadingTextAnimation = StartCoroutine(AnimateLoadingText());
+        }
+
+        // 3. 백그라운드에서 다음 씬을 불러옵니다.
+        float loadStartTime = Time.realtimeSinceStartup;
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-
-        // 씬 로딩이 끝날 때까지 기다림 (로딩이 90%에서 멈추는 것은 자연스러운 현상)
         while (!asyncLoad.isDone)
         {
             yield return null;
         }
 
-        // 페이드 인 (새로운 씬이 로드된 후 화면을 밝게 함)
-        yield return StartCoroutine(Fade(0f, sceneTransitionFadeDuration));
+        // 4. 최소 로딩 시간을 보장합니다. (로딩이 너무 빨라도 최소 시간만큼 기다림)
+        float loadTime = Time.realtimeSinceStartup - loadStartTime;
+        if (loadTime < minLoadingTime)
+        {
+            yield return new WaitForSecondsRealtime(minLoadingTime - loadTime);
+        }
 
-        SetInputBlocking(false);
-        isFading = false;
+        // 5. 로딩이 끝나면 로딩 UI를 숨깁니다.
+        if (_loadingTextAnimation != null) StopCoroutine(_loadingTextAnimation);
+        if (loadingContainer != null) loadingContainer.SetActive(false);
 
-        // 모든 과정이 끝났음을 외부에 알립니다.
-        OnSceneTransitionComplete?.Invoke();
-        Debug.Log("FadeManager: Scene transition complete.");
+        // 6. 화면을 다시 부드럽게 밝힙니다 (페이드 인).
+        yield return StartCoroutine(Fade(0f, true));
+
+        isTransitioning = false; // 전환 완료
     }
 
-    // 게임 오버 페이드
     public void GameOver()
     {
         if (isFading) return;
@@ -163,54 +128,113 @@ public class FadeManager : MonoBehaviour
         isFading = true;
         SetInputBlocking(true);
 
-        // 1. 페이드 아웃
-        yield return StartCoroutine(Fade(1f, gameOverFadeDuration));
+        yield return StartCoroutine(Fade(1f, false));
 
-        // 2. GameOver 텍스트 표시
-        gameOverText.gameObject.SetActive(true);
-        gameOverButtonContainer.SetActive(true);
+        if (gameOverText != null)
+        {
+            gameOverText.gameObject.SetActive(true);
+            yield return StartCoroutine(AnimateGameOverText());
+        }
 
-        SetInputBlocking(false); // 버튼 클릭 가능하도록
-        isFading = false; // 다음 동작은 버튼 클릭으로 시작
-    }
+        // 씬 전환 전에 잠시 기다려서 텍스트를 볼 시간을 줍니다. (선택 사항)
+        yield return new WaitForSecondsRealtime(1.0f);
 
-    private void GoToMainMenu()
-    {
-        Debug.Log("메인메뉴로 이동합니다.");
-        HideGameOverUI();
+        // 씬을 전환하기 전에 게임 오버 UI를 숨깁니다.
+        if (gameOverText != null)
+        {
+            gameOverText.gameObject.SetActive(false);
+        }
+
+        isFading = false;
+
+        // 메인 메뉴 씬으로 부드럽게 전환합니다.
         Time.timeScale = 1f;
         TransitionToScene("MainMenuScene");
     }
 
-    private void HideGameOverUI()
+    private IEnumerator Fade(float targetAlpha, bool notifyOnComplete)
     {
-        gameOverText.gameObject.SetActive(false);
-        gameOverButtonContainer.SetActive(false);
-    }
+        if (fadePanel == null) yield break;
 
-    private IEnumerator Fade(float targetAlpha, float duration)
-    {
-        Color currentColor = fadePanel.color;
-        float startAlpha = currentColor.a;
+        SetInputBlocking(true); // 페이드 시작 시 항상 입력을 막음
+
+        float duration = sceneTransitionFadeDuration;
+        float startAlpha = fadePanel.color.a;
         float timer = 0f;
 
-        while (timer < duration)
+        while (timer < fadeDuration)
         {
             timer += Time.unscaledDeltaTime;
-            float progress = timer / duration;
-            currentColor.a = Mathf.Lerp(startAlpha, targetAlpha, progress);
-            fadePanel.color = currentColor;
-            yield return null; // 다음 프레임까지 대기
+            float progress = Mathf.Clamp01(timer / fadeDuration);
+            fadePanel.color = new Color(0, 0, 0, Mathf.Lerp(startAlpha, targetAlpha, progress));
+            yield return null;
         }
-        currentColor.a = targetAlpha;
-        fadePanel.color = currentColor;
+
+        fadePanel.color = new Color(0, 0, 0, targetAlpha);
+
+        // 페이드가 끝난 후, 목표 투명도에 따라 입력 상태를 최종 결정
+        SetInputBlocking(targetAlpha >= 1f);
+
+        // 페이드 인이 끝나고 notifyOnComplete가 true일 때만 이벤트 호출
+        if (notifyOnComplete && targetAlpha == 0f)
+        {
+            OnSceneTransitionComplete?.Invoke();
+        }
     }
+    private IEnumerator AnimateLoadingText()
+    {
+        string baseText = "Loading";
+        int dotCount = 1;
+        float timer = 0f;
+        float interval = 0.4f; // 점이 바뀌는 간격 (0.4초)
+
+        while (true)
+        {
+            timer += Time.unscaledDeltaTime;
+
+            // 타이머가 정해진 간격(0.4초)을 넘으면 텍스트를 업데이트
+            if (timer >= interval)
+            {
+                timer = 0f; // 타이머 초기화
+
+                // 점 개수를 1 -> 2 -> 3 -> 1 순서로 반복
+                dotCount = (dotCount % 3) + 1;
+                string dots = new string('.', dotCount);
+
+                if (loadingText != null)
+                {
+                    loadingText.text = baseText + dots;
+                }
+            }
+
+            // 다음 프레임까지 대기
+            yield return null;
+        }
+    }
+
+    private IEnumerator AnimateGameOverText()
+    {
+        float timer = 0f;
+        Color startColor = Color.white;
+        Color endColor = Color.red;
+        if (gameOverText == null) yield break;
+
+        gameOverText.color = startColor;
+        while (timer < gameOverTextAnimationDuration)
+        {
+            timer += Time.unscaledDeltaTime;
+            float progress = timer / gameOverTextAnimationDuration;
+            gameOverText.color = Color.Lerp(startColor, endColor, progress);
+            yield return null;
+        }
+        gameOverText.color = endColor;
+    }
+
     // 입력 차단 / 허용
     private void SetInputBlocking(bool block)
     {
         if (fadePanel != null)
         {
-            // 페이드 패널이 클릭 이벤트 가져감
             fadePanel.raycastTarget = block;
         }
     }
