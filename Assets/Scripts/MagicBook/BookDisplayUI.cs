@@ -19,16 +19,22 @@ public class BookDisplayUI : MonoBehaviour
             return;
         }
 
-        // 배경 이미지를 책 데이터의 아이콘으로 설정
         if (_backgroundImage != null && data.Icon != null)
         {
             _backgroundImage.sprite = data.Icon;
         }
 
-        // 각 텍스트 컴포넌트에 내용 할당
-        if (_titleText != null) _titleText.text = data.Name;
-        if (_rankText != null) _rankText.text = data.Rank.ToString();
-        if (_descriptionText != null) _descriptionText.text = data.Description; // 기본 설명 표시
-        if (_stackText != null) _stackText.text = $"Lv.{currentStack}";
+        if (_titleText != null)
+            _titleText.text = data.Name;
+
+        if (_rankText != null)
+            _rankText.text = data.Rank.ToString();
+
+        // data.Description 대신, data.GetFormattedDescription() 함수를 호출합니다.
+        if (_descriptionText != null)
+            _descriptionText.text = data.GetFormattedDescription(currentStack);
+
+        if (_stackText != null)
+            _stackText.text = $"Lv.{currentStack}";
     }
 }

@@ -49,20 +49,17 @@ public class FadeManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
-    // [핵심 수정 1] Start 함수 삭제
-    // Start 함수는 OnSceneLoaded가 역할을 대신하므로 필요 없습니다.
-
-    // [핵심 수정 2] OnSceneLoaded가 화면을 밝히는 역할을 하도록 수정
+    // OnSceneLoaded가 화면을 밝히는 역할을 하도록 수정
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 씬 전환 중이 아닐 때만 (즉, 에디터에서 씬을 바로 시작했을 때만) 페이드 인 실행
+        // 씬 전환 중이 아닐 때만 페이드 인 실행
         if (!isTransitioning)
         {
             StartCoroutine(Fade(0f, true));
         }
     }
 
-    // [핵심 수정 3] InitializeUI의 초기 색상 값 수정
+    // InitializeUI의 초기 색상 값 수정
     private void InitializeUI()
     {
         // 시작 시 검은 화면에서 시작하도록 설정
@@ -77,22 +74,22 @@ public class FadeManager : MonoBehaviour
         StartCoroutine(TransitionCoroutine(sceneName));
     }
 
-    // [핵심 수정 4] TransitionCoroutine에서 Fade In 로직 제거
+    // TransitionCoroutine에서 Fade In 로직 제거
     private IEnumerator TransitionCoroutine(string sceneName)
     {
         isTransitioning = true; // 전환 시작! OnSceneLoaded가 개입하지 못하도록 막음
 
-        // 1. 화면을 부드럽게 어둡게 만듭니다 (페이드 아웃).
+        // 화면을 부드럽게 어둡게 만듭니다 (페이드 아웃).
         yield return StartCoroutine(Fade(1f, false));
 
-        // 2. 화면이 완전히 어두워진 후 로딩 UI를 켜고 애니메이션을 시작합니다.
+        // 화면이 완전히 어두워진 후 로딩 UI를 켜고 애니메이션을 시작합니다.
         if (loadingContainer != null)
         {
             loadingContainer.SetActive(true);
             _loadingTextAnimation = StartCoroutine(AnimateLoadingText());
         }
 
-        // 3. 백그라운드에서 다음 씬을 불러옵니다.
+        // 백그라운드에서 다음 씬을 불러옵니다.
         float loadStartTime = Time.realtimeSinceStartup;
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
         while (!asyncLoad.isDone)
@@ -100,18 +97,18 @@ public class FadeManager : MonoBehaviour
             yield return null;
         }
 
-        // 4. 최소 로딩 시간을 보장합니다. (로딩이 너무 빨라도 최소 시간만큼 기다림)
+        // 최소 로딩 시간을 보장합니다. (로딩이 너무 빨라도 최소 시간만큼 기다림)
         float loadTime = Time.realtimeSinceStartup - loadStartTime;
         if (loadTime < minLoadingTime)
         {
             yield return new WaitForSecondsRealtime(minLoadingTime - loadTime);
         }
 
-        // 5. 로딩이 끝나면 로딩 UI를 숨깁니다.
+        // 로딩이 끝나면 로딩 UI를 숨깁니다.
         if (_loadingTextAnimation != null) StopCoroutine(_loadingTextAnimation);
         if (loadingContainer != null) loadingContainer.SetActive(false);
 
-        // 6. 화면을 다시 부드럽게 밝힙니다 (페이드 인).
+        // 화면을 다시 부드럽게 밝힙니다 (페이드 인).
         yield return StartCoroutine(Fade(0f, true));
 
         isTransitioning = false; // 전환 완료
