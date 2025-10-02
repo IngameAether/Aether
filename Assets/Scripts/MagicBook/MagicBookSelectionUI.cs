@@ -44,14 +44,20 @@ public class MagicBookSelectionUI : MonoBehaviour
         {
             if (i < _bookButtons.Length)
             {
-                var bookData = _currentChoices[i]; // 현재 책 데이터 가져오기
+                var bookData = _currentChoices[i];
 
-                // MagicBookData에 정의된 실제 변수 이름(Icon, Name, Rank, Description)을 사용합니다.
+                // MagicBookManager에서 현재 스택을 가져옵니다.
+                int currentStack = MagicBookManager.Instance.GetCurrentStack(bookData.Code);
+                // 다음에 선택될 레벨(다음 스택)을 계산합니다.
+                int nextStack = currentStack + 1;
+                // MagicBookData에 새로 만든 포맷팅 함수를 '다음 스택' 기준으로 호출합니다.
+                string formattedDesc = bookData.GetFormattedDescription(nextStack);
+
                 _bookButtons[i].SetBookData(
-                    bookData.Icon,                 // bookData.Sprite -> bookData.Icon
+                    bookData.Icon,
                     bookData.Name,
-                    bookData.Rank.ToString(),      // bookData.Rank -> bookData.Rank.ToString()
-                    bookData.Description
+                    bookData.Rank.ToString(),
+                    formattedDesc // 포맷팅된 최종 설명을 전달
                 );
 
                 _bookButtons[i].gameObject.SetActive(true);

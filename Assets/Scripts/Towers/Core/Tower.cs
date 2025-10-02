@@ -6,6 +6,8 @@ public enum ReinforceType { None, Light, Dark };
 
 public class Tower : MonoBehaviour
 {
+    // TowerExtension 참조 변수
+    private TowerExtension _extension;
     private TowerInformation towerInformation;
 
     [Header("Tower Configuration")]
@@ -29,7 +31,7 @@ public class Tower : MonoBehaviour
     private float disableTimer = 0f;
 
     [Header("Firing")]
-    [SerializeField] protected Transform firePoint; 
+    [SerializeField] protected Transform firePoint;
 
     public Transform FirePoint => firePoint != null ? firePoint : transform;
 
@@ -40,18 +42,40 @@ public class Tower : MonoBehaviour
     private int reinforceLevel = 0;  // 현재 타워의 강화 횟수를 저장하는 변수
     private int lightReinforceCount = 0;
     private int darkReinforceCount = 0;
+    private float bonusRange = 0f;
+    private float bonusBuildup = 0f;
+
+    private TowerBuffData _appliedBuffs;
+
+    // 외부 효과로 추가된 상태이상 지속시간을 저장할 변수
+    private float bonusEffectDuration = 0f;
+    // 최종 지속시간은 '기본 지속시간'과 '추가 지속시간'을 더한 값입니다.
+    public float EffectDuration => towerData.effectDuration + bonusEffectDuration;
+    public float EffectBuildup => towerData.effectBuildup + bonusBuildup;
     public string TowerName => towerData.Name;
     public float Damage => towerData.GetDamage(reinforceLevel);
     public float AttackSpeed => towerData.GetAttackSpeed(reinforceLevel);
     public float Range => towerData.BaseRange;
-    public int Rank => towerData.Level; // <-- 이 코드가 없으면 this.Rank 에서 CS1061 오류 발생
+    public int Rank => towerData.Level; 
     public float CriticalHit => towerData.GetCriticalRate(reinforceLevel);
     public int CurrentReinforceLevel => reinforceLevel;
     public int MaxReinforce => towerData.MaxReinforce;
+    private TowerFinalStats _cachedStats;
+    private bool _statsValid = false;
+
+    protected virtual void Awake()
+    {
+        // 확장 스크립트를 찾아서 연결합니다.
+        _extension = GetComponent<TowerExtension>();
+
+        // 데이터 초기화는 Awake에서 먼저 실행되도록 유지
+        Setup(this.towerData);
+        MagicBookBuffSystem.OnBuffsUpdated += OnMagicBookBuffsUpdated;
+    }
 
     protected virtual void Start()
     {
-        Setup(this.towerData);
+        Debug.Log($"[5] {gameObject.name}: Start() 함수 호출됨");
     }
 
     protected virtual void Update()
@@ -89,7 +113,7 @@ public class Tower : MonoBehaviour
             TowerData nextData = towerData.nextUpgradeData;
             if (nextData != null && nextData.upgradedPrefab != null)
             {
-                // 새 타워 생성 및 기존 타워 파괴 로직 
+                // 새 타워 생성 및 기존 타워 파괴 로직
                 GameObject newTowerObject = Instantiate(nextData.upgradedPrefab, transform.position, transform.rotation);
                 newTowerObject.GetComponent<Tower>()?.Setup(nextData);
                 Destroy(gameObject);
@@ -104,10 +128,13 @@ public class Tower : MonoBehaviour
     protected virtual void OnDestroy()
     {
         OnTowerDestroyed?.Invoke();
+        MagicBookBuffSystem.OnBuffsUpdated -= OnMagicBookBuffsUpdated;
     }
 
     public void Setup(TowerData data)
     {
+        Debug.Log($"[3] {gameObject.name}: Setup() 함수가 호출됨. 전달된 data is {(data == null ? "null" : data.name)}");
+
         if (data == null)
         {
             Debug.LogError($"{this.name}: 유효하지 않은 TowerData로 Setup을 시도했습니다.");
@@ -115,13 +142,18 @@ public class Tower : MonoBehaviour
             gameObject.SetActive(false);
             return;
         }
+        else
+        {
+            // 이 로그가 뜬다면, Setup 함수는 정상적으로 데이터를 받았습니다.
+            Debug.Log($"===> {this.name}: Setup 함수가 '{data.name}' 데이터로 성공적으로 초기화되었습니다.", this.gameObject);
+        }
 
         this.towerData = data;
         this.reinforceLevel = 0;
 
         InitializeTower();
 
-        _isInitialized = true; 
+        _isInitialized = true;
 
     }
 
@@ -182,6 +214,7 @@ public class Tower : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
+
         EnsureFirePoint();
     }
 
@@ -247,7 +280,8 @@ public class Tower : MonoBehaviour
     protected virtual bool IsTargetInRange(Transform target)
     {
         if (target == null) return false;
-        return Vector2.Distance(transform.position, target.position) <= this.Range;
+        return Vector2.Distance(transform.position, target.position)
+            <= (_extension != null ? _extension.BuffedRange : this.Range);
     }
 
     /// <summary>
@@ -256,26 +290,50 @@ public class Tower : MonoBehaviour
     protected virtual Transform FindNearestTarget()
     {
         LayerMask enemyLayerMask = LayerMask.GetMask("Enemy");
+        float searchRange = (_extension != null ? _extension.BuffedRange : this.Range);
 
         var enemiesInRange = Physics2D.OverlapCircleAll(
             transform.position,
-            this.Range,
+            searchRange,
             enemyLayerMask
         );
 
-        if (enemiesInRange.Length == 0) return null;
+        if (enemiesInRange.Length == 0)
+        {
+            return null; // 주변에 적이 없음
+        }
 
         Transform nearestTarget = null;
-        var nearestDistance = float.MaxValue;
+        float closestDistance = float.MaxValue;
 
-        foreach (var enemyCollider in enemiesInRange)
+        // 감지된 모든 적을 순회
+        foreach (Collider2D enemyCollider in enemiesInRange)
         {
-            var distance = Vector2.Distance(transform.position, enemyCollider.transform.position);
-            if (distance < nearestDistance)
+            // [수정] enemyCollider 자체가 null이 아닌지 한번 더 확인 (안전장치)
+            if (enemyCollider == null) continue;
+
+            float distance = Vector2.Distance(transform.position, enemyCollider.transform.position);
+            if (distance < closestDistance)
             {
-                nearestDistance = distance;
-                nearestTarget = enemyCollider.transform;
+                // [추가] 적으로부터 IDamageable 컴포넌트를 가져올 수 있는지 확인
+                IDamageable damageable = enemyCollider.GetComponent<IDamageable>();
+                if (damageable != null && damageable.CurrentHealth > 0)
+                {
+                    // 살아있는 적인 경우에만 가장 가까운 타겟으로 인정
+                    closestDistance = distance;
+                    nearestTarget = enemyCollider.transform;
+                }
             }
+        }
+
+        // [디버그 로그] 최종적으로 누구를 선택했는지 또는 못했는지 확인
+        if (nearestTarget != null)
+        {
+            Debug.Log($"가장 가까운 적 '{nearestTarget.name}'을(를) 타겟으로 설정!");
+        }
+        else
+        {
+            Debug.LogWarning("탐지된 적은 있으나, 유효한(살아있는) 타겟을 찾지 못했습니다.");
         }
 
         return nearestTarget;
@@ -294,8 +352,9 @@ public class Tower : MonoBehaviour
     /// </summary>
     protected virtual bool CanAttack()
     {
-        if (this.AttackSpeed <= 0f) return false;
-        float attackInterval = 1f / this.AttackSpeed;
+        float currentAttackSpeed = (_extension != null) ? _extension.BuffedAttackSpeed : this.AttackSpeed;
+        if (currentAttackSpeed <= 0f) return false;
+        float attackInterval = 1f / currentAttackSpeed;
         return Time.time >= lastAttackTime + attackInterval;
     }
 
@@ -304,41 +363,171 @@ public class Tower : MonoBehaviour
     /// </summary>
     protected virtual void Attack()
     {
-        if (currentTarget == null) return;
+        // 발사 직전에 타겟이 여전히 유효한지(살아있는지) 다시 한번 확인합니다.
+        if (currentTarget == null || !isTargetAlive(currentTarget))
+        {
+            return; // 유효하지 않으면 발사를 취소합니다.
+        }
 
+        // 발사체 프리팹이 있는지 확인합니다.
+        if (towerData.projectilePrefab == null) return;
+
+        // 공격 사운드를 재생합니다.
         if (towerData.attackSound != SfxType.None)
         {
-            // 이 부분은 현재 프로젝트의 '오디오 매니저' 이름에 맞게 수정해야 합니다.
             AudioManager.Instance.PlaySFX(towerData.attackSound);
         }
 
-        // TowerData에 발사체 프리팹이 있는지 확인
-        if (towerData.projectilePrefab == null)
-        {
-            Debug.LogWarning($"{towerData.Name}: 발사체 프리팹이 지정되지 않았습니다.");
-            return;
-        }
-
-        // 발사체 생성
-        Vector3 spawnPos = FirePoint.position;
+        // 발사체를 'Fire Point' 위치에 생성합니다.
+        Vector3 spawnPos = firePoint.position;
         GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
 
-        // 발사체 초기화 (Projectile.cs의 Setup 호출)
+        // 발사체의 방향을 타겟 쪽으로 회전시킵니다.
+        Vector3 direction = (currentTarget.position - spawnPos).normalized;
+        proj.transform.right = direction;
+
+        // 발사체에 필요한 모든 정보를 전달합니다.
         var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
         {
+            var buffedEffect = GetBuffedStatusEffect();
+            float buffedDamage = GetBuffedDamage();
+
+            // 초과 치명타 데미지 적용
+            float excessCritMultiplier = GetExcessCritDamageMultiplier();
+            buffedDamage *= excessCritMultiplier;
+
+            // 마지막에 'towerData'를 추가로 전달해야 합니다.
+            projectile.Setup(currentTarget, buffedDamage, buffedEffect, towerData.effectBuildup, towerData.impactSound, towerData);
+        }
+    }
+
+    public void AddBonusRange(float amount)
+    {
+        bonusRange += amount;
+    }
+
+    // 외부에서 타워의 상태이상 누적치를 강화하는 함수
+    public void AddBonusBuildup(float amount)
+    {
+        bonusBuildup += amount;
+        Debug.Log($"{TowerName}의 상태이상 누적치가 {amount}만큼 증가!");
+    }
+
+    // 외부에서 타워의 상태이상 지속시간을 늘려주는 함수
+    public void AddBonusEffectDuration(float amount)
+    {
+        bonusEffectDuration += amount;
+        Debug.Log($"{TowerName}의 상태이상 지속시간이 {amount}초 증가!");
+    }
+
+    /// <summary>
+    /// 실제 발사 로직. TowerExtension 또는 Attack()에서 호출됩니다.
+    /// </summary>
+    public void FireProjectile()
+    {
+        if (currentTarget == null || !isTargetAlive(currentTarget)) return;
+        if (towerData.projectilePrefab == null) return;
+        if (towerData.attackSound != SfxType.None) AudioManager.Instance.PlaySFX(towerData.attackSound);
+
+        Vector3 spawnPos = FirePoint.position;
+        GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
+        proj.transform.right = (currentTarget.position - spawnPos).normalized;
+
+        var projectile = proj.GetComponent<Projectile>();
+        if (projectile != null)
+        {
+            // 모든 능력치를 _extension에서 가져오도록 변경
             var effect = new StatusEffect(
                 towerData.effectType,
-                towerData.effectDuration,
+                _extension != null ? _extension.BuffedEffectDuration : this.EffectDuration,
                 towerData.effectValue,
                 transform.position
             );
 
-            projectile.Setup(currentTarget, this.Damage, effect, towerData.effectBuildup, towerData.impactSound);
+            projectile.Setup(
+                currentTarget,
+                _extension != null ? _extension.BuffedDamage : this.Damage,
+                effect,
+                _extension != null ? _extension.BuffedEffectBuildup : towerData.effectBuildup, 
+                towerData.impactSound,
+                this.towerData
+            );
+
+            var buffedEffect = GetBuffedStatusEffect();
+            float buffedDamage = GetBuffedDamage();
+
+            // currentTarget과 towerData를 정확히 전달하고 있는지 확인
+            projectile.Setup(currentTarget, buffedDamage, buffedEffect, this.EffectBuildup, towerData.impactSound, this.towerData);
+        }
+    }
+    #endregion
+
+    #region Tower Buff
+
+    /// <summary>
+    /// 마법도서 버프 적용
+    /// </summary>
+    public void ApplyMagicBookBuffs()
+    {
+        _statsValid = false; // 캐시 무효화
+        Debug.Log($"[{towerData?.Name}] 버프 캐시 무효화");
+    }
+
+    /// <summary>
+    /// 최종 스탯
+    /// </summary>
+    private void EnsureStatsValid()
+    {
+        if (!_statsValid && MagicBookBuffSystem.Instance != null)
+        {
+            _cachedStats = MagicBookBuffSystem.Instance.CalculateFinalStats(this);
+            _statsValid = true;
         }
     }
 
+    public float GetBuffedDamage()
+    {
+        EnsureStatsValid();
+        return _cachedStats.Damage;
+    }
+
+    public float GetBuffedAttackSpeed()
+    {
+        EnsureStatsValid();
+        return _cachedStats.AttackSpeed;
+    }
+
+    public float GetBuffedRange()
+    {
+        EnsureStatsValid();
+        return _cachedStats.Range;
+    }
+
+    public float GetBuffedCritChance()
+    {
+        EnsureStatsValid();
+        return _cachedStats.CritChance;
+    }
+
+    public float GetExcessCritDamageMultiplier()
+    {
+        EnsureStatsValid();
+        return _cachedStats.ExcessCritDamageMultiplier;
+    }
+
+    public StatusEffect GetBuffedStatusEffect()
+    {
+        EnsureStatsValid();
+        return _cachedStats.StatusEffect;
+    }
+
+    // 기존 보너스 값들 접근용 public 메서드 추가
+    public float GetBonusRange() => bonusRange;
+    public float GetBonusEffectDuration() => bonusEffectDuration;
+
     #endregion
+
     #region Action Handler
 
     /// <summary>
@@ -347,6 +536,17 @@ public class Tower : MonoBehaviour
     public void HandleTowerClicked()
     {
         OnTowerClicked?.Invoke(this);
+    }
+
+    /// <summary>
+    /// 새로운 마법도서가 획득되었을 때 호출
+    /// </summary>
+    private void OnMagicBookBuffsUpdated()
+    {
+        if (!_isInitialized) return;
+
+        ApplyMagicBookBuffs(); // 캐시만 무효화
+        Debug.Log($"[{towerData?.Name}] 새로운 마법도서 버프 준비 완료!");
     }
 
     #endregion

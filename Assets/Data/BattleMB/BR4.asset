@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
+  m_Name: BR4
+  m_EditorClassIdentifier: 
+  Name: "\uC138\uACC4\uC218"
+  Code: BR4
+  Description: "\uC0DD\uBA85\uD0C0\uC6CC\uC640 \uBD80\uD328\uD0C0\uC6CC\uC758 \uACF5\uACA9
+    \uBC18\uACBD\uC774 +1.5"
+  Icon: {fileID: 0}
+  Rank: 1
+  MaxStack: 1
+  Effects:
+  - EffectType: 14
+    ValueType: 0
+    Value: 2
+    TargetElement: 2
+    TargetTowerCode: L3VIT
+    TargetStatusEffect: 0
+  - EffectType: 14
+    ValueType: 0
+    Value: 2
+    TargetElement: 2
+    TargetTowerCode: L3ROT
+    TargetStatusEffect: 0
+  EffectValuesByStack: 0100000001000000

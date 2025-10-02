@@ -16,7 +16,8 @@ GameObject:
   - component: {fileID: 603688500823851845}
   - component: {fileID: 5142339756747632522}
   - component: {fileID: 670689113860863636}
-  m_Layer: 0
+  - component: {fileID: -4793572327813157544}
+  m_Layer: 7
   m_Name: EarthTower
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,14 +178,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   towerData: {fileID: 11400000, guid: ff1b19a22558161479babad7318204a0, type: 2}
   reinforceType: 0
-  firePoint: {fileID: 0}
-  projectileSpeed: 10
-  defaultMotionType: 1
-  defaultEffectType: 0
-  defaultHitType: 0
-  basicProjectilePrefab: {fileID: 0}
-  fireProjectilePrefab: {fileID: 0}
-  advancedProjectilePrefab: {fileID: 0}
+  firePoint: {fileID: 3219024995832317075}
+--- !u!114 &-4793572327813157544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 87051376619690041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7cfec24e344e2624d9d08a779d0ef25b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2125932898377281017
 GameObject:
   m_ObjectHideFlags: 0
@@ -195,7 +201,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3172943749333782681}
   - component: {fileID: 8424058669410732091}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Eye
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -279,7 +285,7 @@ GameObject:
   m_Component:
   - component: {fileID: 987673297001925454}
   - component: {fileID: 610733622354666219}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: ReinforceMagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -363,7 +369,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7364446943395198389}
   - component: {fileID: 1281486678155605143}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: MagicCircle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -448,7 +454,7 @@ GameObject:
   - component: {fileID: 3219024995832317075}
   - component: {fileID: 2453032225652678172}
   - component: {fileID: 5678666451430407322}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Mouth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -553,7 +559,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4899376435633352472}
   - component: {fileID: 3655142873509000782}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Face
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -637,7 +643,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2454144547687870219}
   - component: {fileID: 5372730003037443976}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Element
   m_TagString: Untagged
   m_Icon: {fileID: 0}

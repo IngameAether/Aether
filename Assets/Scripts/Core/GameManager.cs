@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -117,6 +118,13 @@ public class GameManager : MonoBehaviour
                 GameOver();
             }
         }
+    }
+
+    public void AddLife(int amout = 1)
+    {
+        if (amout < 0) throw new ArgumentOutOfRangeException(nameof(amout));
+        currentLives += amout;
+        UpdateLivesUI();
     }
 
     private void UpdateLivesUI() // 목숨 UI 업데이트

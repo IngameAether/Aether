@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3679800607773970701}
   - component: {fileID: -4036635250320281883}
   - component: {fileID: 2010846767897384555}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: element_Earth
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6357459050453642663}
   - component: {fileID: 9118434585417416650}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: element
   m_TagString: Untagged
   m_Icon: {fileID: 0}

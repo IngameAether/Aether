@@ -11,6 +11,7 @@ public class ResourceManager : MonoBehaviour
     public int DarkElement { get; private set; }
     public int EnemyKillBonusCoin { get; private set; } = 0;
     public int MaxElementUpgrade { get; private set; } = 0;
+    public bool IsBossRewardDouble { get; private set; } = false;
 
     private int _lightElementChance = 5;
     private int _darkElementChance = 5;
@@ -29,12 +30,20 @@ public class ResourceManager : MonoBehaviour
 
     private void OnEnable()
     {
-        MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        // MagicBookManager.Instance가 null일 때를 대비한 안전 코드 추가
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        }
     }
 
     private void OnDisable()
     {
-        MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+        // MagicBookManager.Instance가 null일 때를 대비한 안전 코드 추가
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+        }
     }
 
     #region Coin Management
@@ -134,9 +143,13 @@ public class ResourceManager : MonoBehaviour
 
     #endregion
 
-    private void HandleBookEffectApplied(EBookEffectType effectType, int value)
+    private void HandleBookEffectApplied(BookEffect effect, float finalValue)
     {
-        switch (effectType)
+        // finalValue는 float이지만, 이 스크립트의 효과들은 대부분 정수 값을 사용하므로 int로 변환합니다.
+        int value = (int)finalValue;
+
+        // 이제 파라미터로 받은 effect의 EffectType을 사용합니다.
+        switch (effect.EffectType)
         {
             case EBookEffectType.LightElementChance:
                 _lightElementChance = value;
@@ -157,6 +170,9 @@ public class ResourceManager : MonoBehaviour
                 break;
             case EBookEffectType.ElementMaxUpgrade:
                 MaxElementUpgrade += value;
+                break;
+            case EBookEffectType.BossRewardDouble:
+                IsBossRewardDouble = true;
                 break;
         }
     }

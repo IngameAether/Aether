@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
+  m_Name: GR1
+  m_EditorClassIdentifier: 
+  Name: "\uC131\uC120\uC124"
+  Code: GR1
+  Description: "\uC801 \uACA9\uD1F4 \uC2DC \uBE5B \uC6D0\uC18C +1 \uC5BB\uC744 \uD655\uB960
+    {0}"
+  Icon: {fileID: 0}
+  Rank: 1
+  MaxStack: 2
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
+  Effects:
+  - EffectType: 2
+    ValueType: 1
+    Value: 1
+    TargetElement: 4
+    TargetTowerCode: 
+    TargetStatusEffect: 0
+  EffectValuesByStack: 0200000005000000

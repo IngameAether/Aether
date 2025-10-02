@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
+  m_Name: BN4
+  m_EditorClassIdentifier: 
+  Name: "\uB300\uC9C0\uC758 \uAE30\uCD08\uC6D0\uC18C\uD559"
+  Code: BN4
+  Description: "\uB300\uC9C0 \uC18D\uC131 \uD0C0\uC6CC\uC758 \uCD5C\uC885 \uB370\uBBF8\uC9C0
+    {0}"
+  Icon: {fileID: 0}
+  Rank: 0
+  MaxStack: 3
+  Effects:
+  - EffectType: 11
+    ValueType: 1
+    Value: 10
+    TargetElement: 2
+    TargetTowerCode: 
+    TargetStatusEffect: 0
+  EffectValuesByStack: 010000000200000003000000
