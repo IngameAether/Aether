@@ -42,4 +42,15 @@ public static class FormulaEvaluator
         var result = new DataTable().Compute(expr, "");
         return Convert.ToInt32(result);
     }
+
+    public static float EvaluateTowerData(string formula, int light, int dark)
+    {   // l, d 변수 치환
+        string expr = formula;
+        expr = expr.Replace("l", light.ToString());
+        expr = expr.Replace("d", dark.ToString());
+
+        // int형으로 반환
+        var result = new DataTable().Compute(expr, "");
+        return Convert.ToSingle(result);
+    }
 }
