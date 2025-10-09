@@ -4,6 +4,7 @@ public class TowerExtension : MonoBehaviour
 {
     // --- 참조 ---
     private Tower _tower; // 원본 Tower 스크립트 참조
+    private Animator _animator;
 
     // --- 상태 변수 ---
     private int _lightReinforceCount = 0;
@@ -41,7 +42,23 @@ public class TowerExtension : MonoBehaviour
     public void AddBonusRange(float amount) { _bonusRange += amount; }
     public void AddBonusBuildup(float amount) { _bonusBuildup += amount; }
     public void AddBonusEffectDuration(float amount) { _bonusEffectDuration += amount; }
- 
+
+    // Tower로부터 공격 신호를 받아 애니메이션을 재생하거나 직접 발사합니다.
+    public void TriggerAttackAnimation()
+    {
+        if (_animator != null)
+        {
+            // 애니메이터가 있다면 "Attack" 신호를 보냅니다.
+            // 실제 발사는 애니메이션 이벤트에 연결된 FireProjectile()이 담당합니다.
+            _animator.SetTrigger("Attack");
+        }
+        else
+        {
+            // 애니메이터가 없다면 Tower의 FireProjectile을 직접 호출합니다.
+            _tower.FireProjectile();
+        }
+    }
+
     // --- 강화 및 진화 로직 ---
     public void Reinforce(ReinforceType type)
     {

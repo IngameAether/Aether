@@ -19,6 +19,8 @@ public class FadeManager : MonoBehaviour
 
     [Header("Game Over UI")]
     [SerializeField] private TextMeshProUGUI gameOverText;
+    // 게임오버 후 터치를 기다리는 상태인지 확인하는 변수
+    private bool _isWaitingForGameOverTouch = false;
 
     [Header("Fade Settings")]
     [SerializeField] private float sceneTransitionFadeDuration = 1.0f;
@@ -120,31 +122,50 @@ public class FadeManager : MonoBehaviour
         StartCoroutine(GameOverCoroutine());
     }
 
+    // 매 프레임마다 터치 입력을 확인합니다.
+    private void Update()
+    {
+        // 게임오버 후 터치를 기다리는 상태이고, 마우스 왼쪽 버튼을 눌렀다면
+        if (_isWaitingForGameOverTouch && Input.GetMouseButtonDown(0))
+        {
+            // 더 이상 터치를 기다리지 않도록 상태를 변경하고 메인 메뉴로 이동
+            _isWaitingForGameOverTouch = false;
+            GoToMainMenu();
+        }
+    }
+
     private IEnumerator GameOverCoroutine()
     {
         isFading = true;
-        SetInputBlocking(true);
 
+        // 화면을 검게 만듭니다.
         yield return StartCoroutine(Fade(1f, false));
 
+        // GameOver 텍스트 애니메이션을 실행합니다.
         if (gameOverText != null)
         {
             gameOverText.gameObject.SetActive(true);
             yield return StartCoroutine(AnimateGameOverText());
         }
 
-        // 씬 전환 전에 잠시 기다려서 텍스트를 볼 시간을 줍니다. (선택 사항)
-        yield return new WaitForSecondsRealtime(1.0f);
+        // 씬을 바로 전환하는 대신, 터치를 기다리는 상태로 변경합니다.
+        _isWaitingForGameOverTouch = true;
+        SetInputBlocking(false); // 화면 전체의 입력 방지를 해제하여 터치가 가능하게 함
+        isFading = false;
+    }
 
-        // 씬을 전환하기 전에 게임 오버 UI를 숨깁니다.
+    // GoToMainMenu 함수. 버튼 대신 Update에서 호출됩니다.
+    private void GoToMainMenu()
+    {
+        if (isFading) return; // 중복 실행 방지
+
+        Debug.Log("메인메뉴로 이동합니다.");
+
         if (gameOverText != null)
         {
             gameOverText.gameObject.SetActive(false);
         }
 
-        isFading = false;
-
-        // 메인 메뉴 씬으로 부드럽게 전환합니다.
         Time.timeScale = 1f;
         TransitionToScene("MainMenuScene");
     }

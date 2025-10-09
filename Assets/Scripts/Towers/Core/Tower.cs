@@ -371,42 +371,14 @@ public class Tower : MonoBehaviour
     /// </summary>
     protected virtual void Attack()
     {
-        // 발사 직전에 타겟이 여전히 유효한지(살아있는지) 다시 한번 확인합니다.
-        if (currentTarget == null || !isTargetAlive(currentTarget))
+        // TowerExtension 스크립트가 있다면 애니메이션을 통해 발사를 시도합니다.
+        if (_extension != null)
         {
-            return; // 유효하지 않으면 발사를 취소합니다.
+            _extension.TriggerAttackAnimation();
         }
-
-        // 발사체 프리팹이 있는지 확인합니다.
-        if (towerData.projectilePrefab == null) return;
-
-        // 공격 사운드를 재생합니다.
-        if (towerData.attackSound != SfxType.None)
+        else // 없다면 직접 발사합니다.
         {
-            AudioManager.Instance.PlaySFX(towerData.attackSound);
-        }
-
-        // 발사체를 'Fire Point' 위치에 생성합니다.
-        Vector3 spawnPos = firePoint.position;
-        GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
-
-        // 발사체의 방향을 타겟 쪽으로 회전시킵니다.
-        Vector3 direction = (currentTarget.position - spawnPos).normalized;
-        proj.transform.right = direction;
-
-        // 발사체에 필요한 모든 정보를 전달합니다.
-        var projectile = proj.GetComponent<Projectile>();
-        if (projectile != null)
-        {
-            var buffedEffect = GetBuffedStatusEffect();
-            float buffedDamage = GetBuffedDamage();
-
-            // 초과 치명타 데미지 적용
-            float excessCritMultiplier = GetExcessCritDamageMultiplier();
-            buffedDamage *= excessCritMultiplier;
-
-            // 마지막에 'towerData'를 추가로 전달해야 합니다.
-            projectile.Setup(currentTarget, buffedDamage, buffedEffect, towerData.effectBuildup, towerData.impactSound, towerData);
+            FireProjectile();
         }
     }
 
@@ -434,38 +406,38 @@ public class Tower : MonoBehaviour
     /// </summary>
     public void FireProjectile()
     {
+        // 발사 직전 타겟 유효성 검사
         if (currentTarget == null || !isTargetAlive(currentTarget)) return;
-        if (towerData.projectilePrefab == null) return;
-        if (towerData.attackSound != SfxType.None) AudioManager.Instance.PlaySFX(towerData.attackSound);
 
-        Vector3 spawnPos = FirePoint.position;
+        // 프리팹 확인
+        if (towerData.projectilePrefab == null)
+        {
+            Debug.LogWarning($"{towerData.Name}: 발사체 프리팹이 지정되지 않았습니다.");
+            return;
+        }
+
+        // 공격 사운드 재생
+        if (towerData.attackSound != SfxType.None)
+        {
+            AudioManager.Instance.PlaySFX(towerData.attackSound);
+        }
+
+        // 발사체 생성 및 방향 설정 (Fire Point 사용)
+        Vector3 spawnPos = firePoint.position;
         GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
         proj.transform.right = (currentTarget.position - spawnPos).normalized;
 
+        // 발사체에 정보 주입 (Setup 호출)
         var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)
         {
-            // 모든 능력치를 _extension에서 가져오도록 변경
-            var effect = new StatusEffect(
-                towerData.effectType,
-                _extension != null ? _extension.BuffedEffectDuration : this.EffectDuration,
-                towerData.effectValue,
-                transform.position
-            );
-
-            projectile.Setup(
-                currentTarget,
-                _extension != null ? _extension.BuffedDamage : this.Damage,
-                effect,
-                _extension != null ? _extension.BuffedEffectBuildup : towerData.effectBuildup, 
-                towerData.impactSound,
-                this.towerData
-            );
-
+            // 버프가 적용된 최종 능력치를 계산합니다.
             var buffedEffect = GetBuffedStatusEffect();
             float buffedDamage = GetBuffedDamage();
+            float excessCritMultiplier = GetExcessCritDamageMultiplier();
+            buffedDamage *= excessCritMultiplier;
 
-            // currentTarget과 towerData를 정확히 전달하고 있는지 확인
+            // 최종 계산된 능력치와 정보를 projectile에 한번만 전달합니다.
             projectile.Setup(currentTarget, buffedDamage, buffedEffect, this.EffectBuildup, towerData.impactSound, this.towerData);
         }
     }

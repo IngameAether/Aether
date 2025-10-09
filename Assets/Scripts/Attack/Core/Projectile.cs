@@ -80,9 +80,9 @@ public class Projectile : MonoBehaviour
         MoveTowards(targetPosition);
 
         // 목표 지점 도착 확인
-        if (Vector3.Distance(transform.position, targetPosition) <= arriveDistance)
+        if (speed > 0 && Vector3.Distance(transform.position, _lastKnownPosition) <= arriveDistance)
         {
-            OnTargetHit(targetPosition);
+            OnTargetHit(_lastKnownPosition);
         }
     }
 
