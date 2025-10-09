@@ -91,6 +91,9 @@ public class FadeManager : MonoBehaviour
             _loadingTextAnimation = StartCoroutine(AnimateLoadingText());
         }
 
+        // 다음 프레임에 씬 로딩을 시작하도록 하여 렉 방지
+        yield return null;
+
         // 백그라운드에서 다음 씬을 불러옵니다.
         float loadStartTime = Time.realtimeSinceStartup;
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
