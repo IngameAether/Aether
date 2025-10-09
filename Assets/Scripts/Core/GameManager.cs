@@ -82,6 +82,36 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ResetForNewGame()
+    {
+        currentLives = initialLives; // 목숨을 최대로
+        CurrentWave = 1;             // 웨이브를 1로
+        IsGameOver = false;          // 게임오버 상태 해제
+        Time.timeScale = 1f;         // 시간 흐르게
+        UpdateLivesUI();
+        Debug.Log("GameManager 상태가 초기화되었습니다.");
+    }
+
+    //새로운 게임을 시작하기 위해 모든 관련 매니저의 상태를 초기화합니다.
+    public void PrepareNewGame()
+    {
+        ResetForNewGame();
+        // 게임 시간을 다시 흐르게 설정
+        Time.timeScale = 1f;
+
+        if (PopUpManager.Instance != null)
+            PopUpManager.ResetInitialBookFlag();
+
+        if (WaveManager.Instance != null)
+            WaveManager.Instance.ResetForNewGame();
+
+        if (MagicBookManager.Instance != null)
+            MagicBookManager.Instance.ResetManager();
+
+        if (ResourceManager.Instance != null)
+            ResourceManager.Instance.ResetAllResources();
+    }
+
     private void PlayBgmIfNotPlaying(string bgmName)
     {
         // 재생하려는 BGM이 이미 재생 중이라면 아무것도 하지 않음

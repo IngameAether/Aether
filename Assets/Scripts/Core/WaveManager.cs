@@ -7,6 +7,17 @@ using UnityEngine.SceneManagement;
 
 public class WaveManager : MonoBehaviour
 {
+    public static WaveManager Instance { get; private set; }
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
+
     [Header("References")]
     [SerializeField] private SpawnManager spawnManager;
     [SerializeField] private TMP_Text waveText;
@@ -24,6 +35,7 @@ public class WaveManager : MonoBehaviour
     private bool _isWaitingForChoice = false;
     private bool _waitingForEnemies = false;
     private bool _isExtraLife = false;
+    private bool _initialChoiceMade = false;
 
     public int CurrentWaveLevel => currentWaveLevel;
 
@@ -60,6 +72,19 @@ public class WaveManager : MonoBehaviour
         }
 
         SpawnManager.OnAllEnemiesCleared -= HandleWaveCleared;
+    }
+
+    // 초기화 함수
+    public void ResetForNewGame()
+    {
+        // 최초 선택 상태를 '미완료'로 되돌립니다.
+        _initialChoiceMade = false;
+
+        // 현재 웨이브 레벨도 0으로 초기화합니다.
+        currentWaveLevel = 0;
+
+        // 실행 중인 모든 코루틴을 멈춰서 이전 게임의 웨이브 진행을 완전히 중단시킵니다.
+        StopAllCoroutines();
     }
 
     // FadeManager가 씬에 나타날 때까지 기다렸다가 이벤트를 구독하는 코루틴

@@ -226,4 +226,17 @@ public class MagicBookManager : MonoBehaviour
         public MagicBookData BookData;
         public int CurrentStack;
     }
+
+    // 새로운 게임을 위해 MagicBookManager의 상태를 초기화하는 함수
+    public void ResetManager()
+    {
+        // 플레이어가 보유한 책 목록을 완전히 비웁니다.
+        _ownedBooksDict.Clear();
+
+        // 조합책의 완료 상태(_combinations)도 초기화해야 한다면 아래 코드의 주석을 해제하세요.
+        // foreach (var combo in _combinations)
+        // {
+        //     combo.Reset();
+        // }
+    }
 }
