@@ -47,6 +47,20 @@ public class TowerSpriteController : MonoBehaviour
 
         if (elementRenderer != null) elementRenderer.sprite = elementSprites[level-1];
         if (magicCircleRenderer != null) magicCircleRenderer.sprite = levelSprites[level-1];
+
+        // level별 element 위치 조정
+        if (elementRenderer != null)
+        {
+            Transform elementTransform = elementRenderer.transform;
+            Vector3 pos = elementTransform.localPosition;
+
+            if (level == 2 || level == 3)
+                pos.y = -0.5f;
+            else
+                pos.y = 0f;  
+
+            elementTransform.localPosition = pos;
+        }
     }
 
     // 강화 단계에 따라 마법진 스프라이트 변경

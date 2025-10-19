@@ -57,6 +57,15 @@ public class TowerExtension : MonoBehaviour
             // 애니메이터가 없다면 Tower의 FireProjectile을 직접 호출합니다.
             _tower.FireProjectile();
         }
+
+        Animator mouthAnimator = transform.Find("Mouth")?.GetComponent<Animator>();
+        Animator scaleAnimator = GetComponent<Animator>();
+        if (mouthAnimator != null && scaleAnimator != null)
+        {
+            mouthAnimator.SetTrigger("CanAttack");
+            scaleAnimator.SetTrigger("CanAttack");
+            Debug.Log("Animation 실행");
+        }
     }
 
     // --- 강화 및 진화 로직 ---
