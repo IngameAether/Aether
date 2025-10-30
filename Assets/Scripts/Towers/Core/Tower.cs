@@ -317,13 +317,18 @@ public class Tower : MonoBehaviour
         // 감지된 모든 적을 순회
         foreach (Collider2D enemyCollider in enemiesInRange)
         {
-            // [수정] enemyCollider 자체가 null이 아닌지 한번 더 확인 (안전장치)
+            // enemyCollider 자체가 null이 아닌지 한번 더 확인 (안전장치)
             if (enemyCollider == null) continue;
+            // 감지된 콜라이더가 타워 자기 자신이 아닌지 확인
+            if (enemyCollider.gameObject == this.gameObject)
+            {
+                continue; // 자기 자신이면 무시하고 다음 적을 찾음
+            }
 
             float distance = Vector2.Distance(transform.position, enemyCollider.transform.position);
             if (distance < closestDistance)
             {
-                // [추가] 적으로부터 IDamageable 컴포넌트를 가져올 수 있는지 확인
+                // 적으로부터 IDamageable 컴포넌트를 가져올 수 있는지 확인
                 IDamageable damageable = enemyCollider.GetComponent<IDamageable>();
                 if (damageable != null && damageable.CurrentHealth > 0)
                 {
@@ -333,17 +338,6 @@ public class Tower : MonoBehaviour
                 }
             }
         }
-
-        // [디버그 로그] 최종적으로 누구를 선택했는지 또는 못했는지 확인
-        if (nearestTarget != null)
-        {
-            Debug.Log($"가장 가까운 적 '{nearestTarget.name}'을(를) 타겟으로 설정!");
-        }
-        else
-        {
-            Debug.LogWarning("탐지된 적은 있으나, 유효한(살아있는) 타겟을 찾지 못했습니다.");
-        }
-
         return nearestTarget;
     }
 

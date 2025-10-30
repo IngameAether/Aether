@@ -28,6 +28,9 @@ public class PopUpManager : MonoBehaviour
     private bool _shouldPauseGame = true;
     private static bool _initialBookShown = false;
 
+    // 팝업이 열리기 전의 게임 속도를 저장할 변수
+    private float _previousTimeScale = 1f;
+
     [Header("Registered PopUps")]
     public List<PopUpData> popUpList = new List<PopUpData>();
     private Dictionary<string, GameObject> _popUpPrefabs = new Dictionary<string, GameObject>();
@@ -165,6 +168,7 @@ public class PopUpManager : MonoBehaviour
 
         if (_shouldPauseGame)
         {
+            _previousTimeScale = Time.timeScale; // 현재 배속을 저장
             Time.timeScale = 0f;
         }
 
@@ -220,7 +224,7 @@ public class PopUpManager : MonoBehaviour
 
         if (_shouldPauseGame)
         {
-            Time.timeScale = 1f;
+            Time.timeScale = _previousTimeScale;
         }
 
         _isAnimating = false;
