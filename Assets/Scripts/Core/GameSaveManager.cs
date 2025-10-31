@@ -7,13 +7,6 @@ using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[Serializable]
-public class SaveSlotInfo
-{
-    public bool isEmpty;
-    public DateTime lastModified;
-}
-
 public class GameSaveManager : MonoBehaviour
 {
     public static GameSaveManager Instance { get; private set; }
