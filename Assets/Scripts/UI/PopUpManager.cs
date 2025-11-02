@@ -10,6 +10,9 @@ public class PopUpManager : MonoBehaviour
     public static PopUpManager Instance { get; private set; }
     public event Action OnPopUpClosed;
 
+    // 확인 팝업 콜백
+    private Action<bool> _confirmCallback;
+
     [Header("UI 레퍼런스")]
     [SerializeField] private GameObject _popUpUICanvasPrefab;
     private GameObject _currentPopUpUICanvas;
@@ -99,6 +102,68 @@ public class PopUpManager : MonoBehaviour
     {
         OpenPopUpInternal(popUpType, false);
         AudioManager.Instance.PlaySFX(SfxType.PopUp_open);
+    }
+
+    // 확인 팝업 열기 (예/아니오 선택)
+    public void OpenConfirmPopUp(string message, Action<bool> callback, bool pauseGame = false)
+    {
+        if (_currentActivePopUpGameObject != null || _isAnimating) return;
+
+        _confirmCallback = callback;
+        _shouldPauseGame = pauseGame;
+
+        if (!_popUpPrefabs.ContainsKey("ConfirmPopUp"))
+        {
+            Debug.LogError("'ConfirmPopUp' 프리팹이 등록되어 있지 않습니다.");
+            return;
+        }
+
+        if (_currentPopUpUICanvas != null)
+        {
+            _currentPopUpUICanvas.SetActive(true);
+            if (_backgroundOverlayRect != null)
+            {
+                _backgroundOverlayRect.gameObject.SetActive(true);
+            }
+        }
+
+        _currentActivePopUpGameObject = Instantiate(_popUpPrefabs["ConfirmPopUp"], _currentPopUpUICanvas.transform, false);
+        _currentActivePopUpGameObject.name = "ConfirmPopUp";
+
+        // ConfirmPopUpUI 컴포넌트 초기화
+        ConfirmPopUpUI confirmUI = _currentActivePopUpGameObject.GetComponent<ConfirmPopUpUI>();
+        if (confirmUI != null)
+        {
+            confirmUI.Initialize(message, OnConfirmYes, OnConfirmNo);
+        }
+
+        _currentActivePopUpCanvasGroup = _currentActivePopUpGameObject.GetComponent<CanvasGroup>();
+        if (_currentActivePopUpCanvasGroup == null)
+        {
+            Debug.LogError("ConfirmPopUp에 CanvasGroup 컴포넌트가 없습니다.");
+            Destroy(_currentActivePopUpGameObject);
+            _currentPopUpUICanvas.SetActive(false);
+            return;
+        }
+
+        StartCoroutine(AnimatePopUpIn(_currentActivePopUpCanvasGroup, _currentActivePopUpGameObject.transform));
+        AudioManager.Instance.PlaySFX(SfxType.PopUp_open);
+    }
+
+    // 확인 팝업 "예" 버튼 콜백
+    private void OnConfirmYes()
+    {
+        _confirmCallback?.Invoke(true);
+        _confirmCallback = null;
+        CloseCurrentPopUp();
+    }
+
+    // 확인 팝업 "아니오" 버튼 콜백
+    private void OnConfirmNo()
+    {
+        _confirmCallback?.Invoke(false);
+        _confirmCallback = null;
+        CloseCurrentPopUp();
     }
 
     private void OpenPopUpInternal(string popUpType, bool pauseGame)
