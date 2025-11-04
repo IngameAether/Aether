@@ -103,6 +103,7 @@ public class MagicBookManager : MonoBehaviour
         }
 
         // 뽑힌 등급에 맞춰 실제 책을 선택
+        HashSet<string> selectedBookCodes = new HashSet<string>();
         List<MagicBookData> finalChoices = new List<MagicBookData>();
         foreach (var rank in ranksToPick)
         {
@@ -118,14 +119,25 @@ public class MagicBookManager : MonoBehaviour
             {
                 // 아직 선택되지 않았고, 최대 스택이 아닌 책을 찾아서 추가
                 var availableBooksInRank = sourceList.Where(book =>
-                    !finalChoices.Contains(book) &&
+                    !selectedBookCodes.Contains(book.Code) && // ← string 비교로 확실한 중복 방지
                     _ownedBooksDict.GetValueOrDefault(book.Code, 0) < book.MaxStack
                 ).ToList();
 
                 if (availableBooksInRank.Count > 0)
                 {
-                    finalChoices.Add(availableBooksInRank[Random.Range(0, availableBooksInRank.Count)]);
+                    var selectedBook = availableBooksInRank[Random.Range(0, availableBooksInRank.Count)];
+                    finalChoices.Add(selectedBook);
+                    selectedBookCodes.Add(selectedBook.Code);
                 }
+                else
+                {
+                    Debug.LogError($"[MagicBookManager] {rank} 등급에서 선택 가능한 책이 없습니다. " +
+                                   $"(웨이브: {currentWave}, 이미 선택된 책: {string.Join(", ", selectedBookCodes)})");
+                }
+            }
+            else
+            {
+                Debug.LogError($"[MagicBookManager] {rank} 등급의 책 목록이 비어있거나 null입니다. (웨이브: {currentWave})");
             }
         }
 

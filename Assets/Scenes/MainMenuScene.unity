@@ -802,6 +802,8 @@ MonoBehaviour:
     popUpPrefabs: {fileID: 2197662090280688562, guid: 2d4c9c16ffab10d4f85df3301e37b83b, type: 3}
   - popUpName: MagicBookPopup
     popUpPrefabs: {fileID: 4946536349807685874, guid: ac3f2f4c35d1ed244b09fa17d894abb4, type: 3}
+  - popUpName: ConfirmPopUp
+    popUpPrefabs: {fileID: 3587901770773777926, guid: faae021c95d6d6549a9289f39ef6580c, type: 3}
 --- !u!4 &176472003
 Transform:
   m_ObjectHideFlags: 0

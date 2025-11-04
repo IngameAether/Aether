@@ -3,6 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 using System.Threading.Tasks;
+using System.Collections;
 
 // Wave 데이터를 관리할 구조체 정의
 [System.Serializable]
@@ -145,12 +146,58 @@ public class MainMenuUI : MonoBehaviour
     }
 
     // --- 저장 슬롯 패널 ---
-    // [이 슬롯으로 플레이] 버튼 -> '이어하기' 또는 '새 게임'으로 레벨 선택 패널로 이동
+    // [이 슬롯으로 플레이] 버튼 -> 세이브 파일이 있으면 확인 후 게임 로드, 없으면 레벨 선택
     public void OnSelectSlotButtonClick()
     {
-        GameSaveManager.Instance.SelectedSlotIndex = currentSaveSlotIndex;
+        StartCoroutine(HandleSlotSelection());
+    }
 
-        ShowPanel(UIPanelState.LevelSelect);
+    private IEnumerator HandleSlotSelection()
+    {
+        GameSaveManager.Instance.SelectedSlotIndex = currentSaveSlotIndex;
+        SaveSlot slotInfo = GameSaveManager.Instance.GetSaveSlot(currentSaveSlotIndex);
+
+        // 세이브 파일이 있으면 확인 팝업 표시
+        if (!slotInfo.isEmpty)
+        {
+            bool? userChoice = null;
+
+            PopUpManager.Instance.OpenConfirmPopUp(
+                "이어서 하시겠습니까?",
+                (choice) => { userChoice = choice; },
+                pauseGame: false
+            );
+
+            yield return new WaitUntil(() => userChoice.HasValue);
+
+            // 예 선택 -> 게임 로드
+            if (userChoice.Value)
+            {
+                var loadTask = GameSaveManager.Instance.LoadGameAsync(currentSaveSlotIndex);
+                yield return new WaitUntil(() => loadTask.IsCompleted);
+
+                GameSaveDataInfo saveData = loadTask.Result;
+                if (saveData != null)
+                {
+                    Debug.Log($"세이브 데이터 로드 성공. Wave: {saveData.currentWave}");
+                    StartGame(0);
+                }
+                else
+                {
+                    Debug.LogError("세이브 데이터 로드 실패!");
+                }
+            }
+            // 아니오 선택할시 레벨 선택 화면으로
+            else
+            {
+                ShowPanel(UIPanelState.LevelSelect);
+            }
+        }
+        // 세이브 파일이 없으면 레벨 선택 화면으로
+        else
+        {
+            ShowPanel(UIPanelState.LevelSelect);
+        }
     }
 
     void OnSaveSlotLeftArrowClick()
@@ -205,6 +252,14 @@ public class MainMenuUI : MonoBehaviour
         {
             saveSlotUIs[i].transform.localScale = (i == currentSaveSlotIndex) ? Vector3.one * 1.2f : Vector3.one;
         }
+
+        // 첫 번째 슬롯(0)일 때 왼쪽 버튼 비활성화
+        if (saveSlotLeftArrow != null)
+            saveSlotLeftArrow.interactable = (currentSaveSlotIndex > 0);
+
+        // 마지막 슬롯일 때 오른쪽 버튼 비활성화
+        if (saveSlotRightArrow != null)
+            saveSlotRightArrow.interactable = (currentSaveSlotIndex < saveSlotUIs.Length - 1);
     }
     #endregion
 }
