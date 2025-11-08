@@ -32,7 +32,7 @@ MonoBehaviour:
   radiant: 0
   TimeDuration: 0
   Guided: 1
-  Multi: 0
+  Multi: 1
   attackSound: 4
   impactSound: 0
   effectType: 1
