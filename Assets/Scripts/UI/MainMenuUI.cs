@@ -42,6 +42,8 @@ public class MainMenuUI : MonoBehaviour
     public Button selectSlotButton;
     public SaveSlotUI[] saveSlotUIs;
     public TMP_Text slotIndicatorText;
+    public Sprite arrowActiveSprite;  // 노랑색 화살표
+    public Sprite arrowInactiveSprite;  // 회색 화살표
     private int currentSaveSlotIndex = 0;
 
     [Header("레벨 데이터")]
@@ -50,8 +52,14 @@ public class MainMenuUI : MonoBehaviour
 
     private UIPanelState currentPanelState = UIPanelState.MainMenu;
 
+    private Image _leftArrowImage;
+    private Image _rightArrowImage;
+
     private void Start()
     {
+        _leftArrowImage = saveSlotLeftArrow.GetComponent<Image>();
+        _rightArrowImage = saveSlotRightArrow.GetComponent<Image>();
+
         // 게임 시작 시 메인 메뉴 패널만 보이도록 설정 (Awake 대신 Start 권장)
         ShowPanel(UIPanelState.MainMenu);
 
@@ -255,11 +263,25 @@ public class MainMenuUI : MonoBehaviour
 
         // 첫 번째 슬롯(0)일 때 왼쪽 버튼 비활성화
         if (saveSlotLeftArrow != null)
-            saveSlotLeftArrow.interactable = (currentSaveSlotIndex > 0);
+        {
+            bool isLeftActive = currentSaveSlotIndex > 0;
+            saveSlotLeftArrow.interactable = isLeftActive;
+
+            // 스프라이트를 활성화/비활성화 상태에 따라 변경
+            _leftArrowImage.sprite = isLeftActive ? arrowActiveSprite : arrowInactiveSprite;
+            _leftArrowImage.transform.localScale = (isLeftActive ? Vector3Int.one * -1 : Vector3Int.one);
+        }
 
         // 마지막 슬롯일 때 오른쪽 버튼 비활성화
         if (saveSlotRightArrow != null)
-            saveSlotRightArrow.interactable = (currentSaveSlotIndex < saveSlotUIs.Length - 1);
+        {
+            bool isRightActive = currentSaveSlotIndex < saveSlotUIs.Length - 1;
+            saveSlotRightArrow.interactable = isRightActive;
+
+            // 스프라이트를 활성화/비활성화 상태에 따라 변경
+            _rightArrowImage.sprite = isRightActive ? arrowActiveSprite : arrowInactiveSprite;
+            _rightArrowImage.transform.localScale = (isRightActive ? Vector3Int.one : Vector3Int.one * -1);
+        }
     }
     #endregion
 }
