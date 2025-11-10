@@ -134,9 +134,21 @@ public class WaveManager : MonoBehaviour
                 yield return StartCoroutine(WaitForChoice());
             }
 
+            // 첫 웨이브가 아니면 타이머를 다시 시작
+            if (waveIndex > 0 && GameTimer.Instance != null)
+            {
+                GameTimer.Instance.StartTimer();
+            }
+
             _waitingForEnemies = true;
             yield return StartCoroutine(spawnManager.SpawnWaveEnemies(spawnManager.waves[waveIndex]));
             while (_waitingForEnemies) yield return null;
+
+            // 웨이브가 끝나면 타이머를 멈춤
+            if (GameTimer.Instance != null)
+            {
+                GameTimer.Instance.StopTimer();
+            }
 
             if (_isExtraLife)
             {
