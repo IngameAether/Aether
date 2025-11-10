@@ -277,7 +277,8 @@ public class GameSaveManager : MonoBehaviour
             {
                 isEmpty = false,
                 lastModified = fileInfo.LastWriteTime,
-                currentWave = loadedData.currentWave // <- ★★★ 불러온 데이터에서 웨이브 정보 추가 ★★★
+                currentWave = loadedData.currentWave,
+                currentMapSeed = loadedData.currentMapSeed
             };
         }
         catch (Exception e)

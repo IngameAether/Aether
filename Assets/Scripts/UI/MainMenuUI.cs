@@ -40,11 +40,12 @@ public class MainMenuUI : MonoBehaviour
     public Button saveSlotLeftArrow;
     public Button saveSlotRightArrow;
     public Button selectSlotButton;
-    public SaveSlotUI[] saveSlotUIs;
+    public SaveSlotUI saveSlotUI;  // 단일 UI 오브젝트로 변경
     public TMP_Text slotIndicatorText;
     public Sprite arrowActiveSprite;  // 노랑색 화살표
     public Sprite arrowInactiveSprite;  // 회색 화살표
     private int currentSaveSlotIndex = 0;
+    private const int MAX_SAVE_SLOTS = 3;
 
     [Header("레벨 데이터")]
     public WaveData[] waveDatas;
@@ -76,6 +77,12 @@ public class MainMenuUI : MonoBehaviour
         PopUpManager.ResetInitialBookFlag();
     }
 
+    private void OnDestroy()
+    {
+        // 메인 메뉴 UI가 파괴될 때 미니맵 캐시를 정리하여 메모리 누수 방지
+        SaveSlotUI.ClearMinimapCache();
+    }
+
     // 특정 패널만 활성화하고 다른 패널은 비활성화하는 함수
     void ShowPanel(UIPanelState targetPanel)
     {
@@ -98,7 +105,7 @@ public class MainMenuUI : MonoBehaviour
                 break;
             case UIPanelState.SaveSlotSelect:
                 saveSlotSelectPanel?.SetActive(true);
-                UpdateAllSaveSlotsUI();
+                UpdateCurrentSlotUI();
                 UpdateCarouselVisuals();
                 break;
         }
@@ -210,12 +217,14 @@ public class MainMenuUI : MonoBehaviour
 
     void OnSaveSlotLeftArrowClick()
     {
-        currentSaveSlotIndex = (currentSaveSlotIndex - 1 + saveSlotUIs.Length) % saveSlotUIs.Length;
+        currentSaveSlotIndex = (currentSaveSlotIndex - 1 + MAX_SAVE_SLOTS) % MAX_SAVE_SLOTS;
+        UpdateCurrentSlotUI();
         UpdateCarouselVisuals();
     }
     void OnSaveSlotRightArrowClick()
     {
-        currentSaveSlotIndex = (currentSaveSlotIndex + 1) % saveSlotUIs.Length;
+        currentSaveSlotIndex = (currentSaveSlotIndex + 1) % MAX_SAVE_SLOTS;
+        UpdateCurrentSlotUI();
         UpdateCarouselVisuals();
     }
     #endregion
@@ -242,24 +251,20 @@ public class MainMenuUI : MonoBehaviour
         waveImageDisplay.sprite = waveDatas[currentSelectedWaveIndex].waveImage;
     }
 
-    // 모든 저장 슬롯의 요약 정보 UI 업데이트
-    void UpdateAllSaveSlotsUI()
+    // 현재 선택된 슬롯의 정보를 UI에 업데이트
+    void UpdateCurrentSlotUI()
     {
-        for (int i = 0; i < saveSlotUIs.Length; i++)
+        if (saveSlotUI != null)
         {
-            SaveSlot info = GameSaveManager.Instance.GetSaveSlot(i);
-            saveSlotUIs[i].UpdateUI(info);
+            SaveSlot info = GameSaveManager.Instance.GetSaveSlot(currentSaveSlotIndex);
+            saveSlotUI.UpdateUI(info);
         }
     }
 
-    // 슬롯 캐러셀의 시각적 효과 업데이트 (크기 및 텍스트)
+    // 슬롯 캐러셀의 시각적 효과 업데이트 (화살표 상태 및 텍스트)
     void UpdateCarouselVisuals()
     {
         slotIndicatorText.text = $"Slot {currentSaveSlotIndex + 1}";
-        for (int i = 0; i < saveSlotUIs.Length; i++)
-        {
-            saveSlotUIs[i].transform.localScale = (i == currentSaveSlotIndex) ? Vector3.one * 1.2f : Vector3.one;
-        }
 
         // 첫 번째 슬롯(0)일 때 왼쪽 버튼 비활성화
         if (saveSlotLeftArrow != null)
@@ -275,7 +280,7 @@ public class MainMenuUI : MonoBehaviour
         // 마지막 슬롯일 때 오른쪽 버튼 비활성화
         if (saveSlotRightArrow != null)
         {
-            bool isRightActive = currentSaveSlotIndex < saveSlotUIs.Length - 1;
+            bool isRightActive = currentSaveSlotIndex < MAX_SAVE_SLOTS - 1;
             saveSlotRightArrow.interactable = isRightActive;
 
             // 스프라이트를 활성화/비활성화 상태에 따라 변경
