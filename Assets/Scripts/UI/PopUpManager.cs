@@ -30,6 +30,7 @@ public class PopUpManager : MonoBehaviour
     private bool _isAnimating = false;
     private bool _shouldPauseGame = true;
     private static bool _initialBookShown = false;
+    private float _previousTimeScale = 1f;
 
     [Header("Registered PopUps")]
     public List<PopUpData> popUpList = new List<PopUpData>();
@@ -230,6 +231,7 @@ public class PopUpManager : MonoBehaviour
 
         if (_shouldPauseGame)
         {
+            _previousTimeScale = Time.timeScale;
             Time.timeScale = 0f;
         }
 
@@ -274,6 +276,8 @@ public class PopUpManager : MonoBehaviour
             yield return null;
         }
 
+        string popUpName = _currentActivePopUpGameObject.name;
+
         Destroy(_currentActivePopUpGameObject);
         _currentActivePopUpGameObject = null;
         _currentActivePopUpCanvasGroup = null;
@@ -285,12 +289,16 @@ public class PopUpManager : MonoBehaviour
 
         if (_shouldPauseGame)
         {
-            Time.timeScale = 1f;
+            Time.timeScale = _previousTimeScale;
+        }
+
+        if (popUpName == "MagicBookPopup")
+        {
+            _initialBookShown = false;
         }
 
         _isAnimating = false;
-
-        // 코루틴 가장 마지막에 이벤트를 호출합니다.
+        
         OnPopUpClosed?.Invoke();
     }
 }

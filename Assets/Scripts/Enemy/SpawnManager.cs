@@ -7,7 +7,7 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     [Header("적 데이터")]
-    [SerializeField] private EnemyData[] allEnemyData;   // 모든 적 데이터
+    [SerializeField] private EnemyData[] allEnemyData;
     private Dictionary<string, EnemyData> _enemyDataMap;
 
     [Header("Enemy Settings")]
@@ -15,8 +15,10 @@ public class SpawnManager : MonoBehaviour
     public MapManage mapManage;
 
     [Header("Wave Data")]
+    [SerializeField] private bool loadFromCSV = true;
     public List<Wave> waves;
     private WaveManager _waveManager;
+    private Dictionary<string, int> _enemyIdToIndexMap;
 
     public static event Action OnAllEnemiesCleared;
 
@@ -29,6 +31,12 @@ public class SpawnManager : MonoBehaviour
     private void Start()
     {
         BuildEnemyDataMap();
+        BuildEnemyIdToIndexMap();
+
+        if (loadFromCSV)
+        {
+            LoadWavesFromCSV();
+        }
 
         Debug.Log("SpawnManager: 이벤트 구독 시작");
 
@@ -56,7 +64,34 @@ public class SpawnManager : MonoBehaviour
         {
             _enemyDataMap.TryAdd(data.ID, data);
         }
-        Debug.Log($"적 데이터 맵 구성 완료: {_enemyDataMap.Count}개 적");
+    }
+
+    /// <summary>
+    /// 적 ID를 enemyPrefabIndex로 매핑하는 딕셔너리 구성
+    /// allEnemyData 배열의 순서대로 매핑됨
+    /// </summary>
+    private void BuildEnemyIdToIndexMap()
+    {
+        _enemyIdToIndexMap = new Dictionary<string, int>();
+
+        for (int i = 0; i < allEnemyData.Length; i++)
+        {
+            string enemyId = allEnemyData[i].ID;
+            _enemyIdToIndexMap[enemyId] = i;
+        }
+    }
+
+    /// <summary>
+    /// CSV 파일에서 Wave 데이터 로드
+    /// </summary>
+    private void LoadWavesFromCSV()
+    {
+        if (_enemyIdToIndexMap == null || _enemyIdToIndexMap.Count == 0)
+        {
+            return;
+        }
+
+        waves = WaveDatabase.GetAllWaves(_enemyIdToIndexMap);
     }
 
     public IEnumerator SpawnWaveEnemies(Wave wave)
@@ -156,7 +191,7 @@ public class SpawnManager : MonoBehaviour
         if (enemyMovement != null)
         {
             // 특수 능력 체크
-            if (enemyData != null && enemyData.HasAbility<BypassPath>())  
+            if (enemyData != null && enemyData.HasAbility<BypassPath>())
             {
                 Vector3 start = path[0];
                 Vector3 end = path[^1];

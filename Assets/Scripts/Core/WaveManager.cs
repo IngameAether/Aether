@@ -117,12 +117,12 @@ public class WaveManager : MonoBehaviour
         {
             GameTimer.Instance.StartTimer();
         }
+
         yield return new WaitForSeconds(initialDelay);
 
         // --- 3. 웨이브 루프 시작 ---
         for (int waveIndex = 0; waveIndex < spawnManager.waves.Count; waveIndex++)
         {
-            // ... (기존의 for 루프 안의 모든 코드는 그대로 유지) ...
             currentWaveLevel = waveIndex;
             int displayWave = waveIndex + 1;
             waveText.text = $"{displayWave} wave";
@@ -188,15 +188,39 @@ public class WaveManager : MonoBehaviour
     private IEnumerator WaitForChoice()
     {
         _isWaitingForChoice = true;
+        Debug.Log("WaitForChoice: 팝업 열기 시작...");
+
+        if (PopUpManager.Instance == null)
+        {
+            Debug.LogError("WaitForChoice: PopUpManager.Instance가 null입니다!");
+            _isWaitingForChoice = false;
+            yield break;
+        }
+
         PopUpManager.Instance.OpenPopUpInGame("MagicBookPopup");
+        Debug.Log("WaitForChoice: 팝업 열기 요청 완료, 닫힐 때까지 대기...");
+
+        float startTime = Time.time;
         while (_isWaitingForChoice)
+        {
+            // 30초 타임아웃 추가 (안전장치)
+            if (Time.time - startTime > 30f)
+            {
+                Debug.LogError("WaitForChoice: 30초 타임아웃! 팝업이 열리지 않았거나 닫히지 않았습니다.");
+                _isWaitingForChoice = false;
+                break;
+            }
             yield return null;
+        }
+
+        Debug.Log("WaitForChoice: 팝업 닫힘 확인, 대기 종료");
     }
 
     #region Action Handlers
     // PopUpManager의 OnPopUpClosed 이벤트에 연결될 핸들러
     private void OnPopupClosed()
     {
+        Debug.Log("OnPopupClosed: 팝업 닫힘 이벤트 수신");
         _isWaitingForChoice = false;
     }
 
@@ -219,7 +243,7 @@ public class WaveManager : MonoBehaviour
                 _waveEndBonusCoin = (int)finalValue;
                 break;
             case EBookEffectType.ExtraLife:
-                GameManager.Instance.AddLife((int)finalValue);                                                  
+                GameManager.Instance.AddLife((int)finalValue);
                 break;
             case EBookEffectType.FullLife:
                 GameManager.Instance.AddLife(20 - GameManager.Instance.currentLives);
