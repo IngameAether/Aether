@@ -12,6 +12,12 @@ public class Projectile : MonoBehaviour
     private bool _isGuided = false;
     private ProjectileMotionType motionType;
 
+    private ElementType elementType;
+    private HitType hitType;
+    private DamageEffectType damageEffectType;
+    private float radius;
+    private float coneAngle;
+
     // --- 내부 동작 변수 ---
     private Transform _target;
     private Vector3 _startPos;
@@ -38,9 +44,13 @@ public class Projectile : MonoBehaviour
         _impactSound = impactSound;
 
         // TowerData로부터 모든 능력치를 복사
+        elementType = data.ElementType; // 이제 정상
         speed = data.projectileSpeed;
         arcHeight = data.arcHeight;
         _isGuided = data.Guided;
+        hitType = data.hitType;
+        damageEffectType = data.damageEffectType;
+        radius = data.radiant;
         motionType = data.AttackMode == AttackMode.Parabolic ? ProjectileMotionType.Parabola : ProjectileMotionType.Straight;
 
         if (target != null)
@@ -80,9 +90,9 @@ public class Projectile : MonoBehaviour
         MoveTowards(targetPosition);
 
         // 목표 지점 도착 확인
-        if (speed > 0 && Vector3.Distance(transform.position, _lastKnownPosition) <= arriveDistance)
+        if (Vector3.Distance(transform.position, targetPosition) <= arriveDistance)
         {
-            OnTargetHit(_lastKnownPosition);
+            OnTargetHit(targetPosition);
         }
     }
 
@@ -106,7 +116,6 @@ public class Projectile : MonoBehaviour
     {
         speed = 0;
 
-        // 타겟이 살아있을 때만 데미지, 효과, 사운드 적용
         if (!_targetIsLost && _target != null)
         {
             if (_impactSound != SfxType.None)
@@ -114,14 +123,23 @@ public class Projectile : MonoBehaviour
                 AudioManager.Instance.PlaySFXAtPoint(_impactSound, hitPosition);
             }
 
-            var enemy = _target.GetComponent<NormalEnemy>();
-            if (enemy != null)
+            // hitType에 따라 분기 처리
+            switch (hitType)
             {
-                enemy.TakeHit(_damage, _effectToApply, _effectBuildup);
+                case HitType.Direct:
+                    var enemy = _target.GetComponent<NormalEnemy>();
+                    if (enemy != null)
+                    {
+                        enemy.TakeHit(_damage, _effectToApply, _effectBuildup);
+                    }
+                    break;
+                case HitType.Explosive:
+                case HitType.GroundAoE:
+                    ApplyAoeDamage(hitPosition);
+                    break;
             }
         }
 
-        // 애니메이터가 있다면 부딪히는 모션 재생, 없다면 즉시 파괴
         if (_animator != null)
         {
             _animator.SetTrigger("onHit");
@@ -135,5 +153,17 @@ public class Projectile : MonoBehaviour
     public void OnImpactAnimationEnd()
     {
         Destroy(gameObject);
+    }
+
+    private void ApplyAoeDamage(Vector3 hitPosition)
+    {
+        if (DamageEffectManager.Instance != null)
+        {
+            Transform targetToSend = _targetIsLost ? null : _target;
+            DamageEffectManager.Instance.ApplyEffect(
+                damageEffectType, hitPosition, _damage, targetToSend,
+                radius, coneAngle, transform.right, elementType
+            );
+        }
     }
 }

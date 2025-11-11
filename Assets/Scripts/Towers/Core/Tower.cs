@@ -242,7 +242,10 @@ public class Tower : MonoBehaviour
     public void FlipTower()
     {
         isFacingRight = !isFacingRight;
-        spriteRenderer.flipX = isFacingRight;
+
+        Vector3 newScale = transform.localScale;
+        newScale.x *= -1;
+        transform.localScale = newScale;
         if (magicCircleRenderer != null && magicCircleRenderer != spriteRenderer)
         {
             magicCircleRenderer.flipX = isFacingRight;
@@ -277,6 +280,14 @@ public class Tower : MonoBehaviour
         if (currentTarget != null && CanAttack())
         {
             direction = (currentTarget.transform.position - transform.position).normalized;
+            if (direction.x > 0 && !isFacingRight)
+            {
+                FlipTower(); // 적이 오른쪽에 있는데 왼쪽을 보고 있으면 뒤집기
+            }
+            else if (direction.x < 0 && isFacingRight)
+            {
+                FlipTower(); // 적이 왼쪽에 있는데 오른쪽을 보고 있으면 뒤집기
+            }
             Attack();
             lastAttackTime = Time.time;
         }
@@ -317,8 +328,6 @@ public class Tower : MonoBehaviour
         // 감지된 모든 적을 순회
         foreach (Collider2D enemyCollider in enemiesInRange)
         {
-            // enemyCollider 자체가 null이 아닌지 한번 더 확인 (안전장치)
-            if (enemyCollider == null) continue;
             // 감지된 콜라이더가 타워 자기 자신이 아닌지 확인
             if (enemyCollider.gameObject == this.gameObject)
             {
@@ -332,9 +341,19 @@ public class Tower : MonoBehaviour
                 IDamageable damageable = enemyCollider.GetComponent<IDamageable>();
                 if (damageable != null && damageable.CurrentHealth > 0)
                 {
-                    // 살아있는 적인 경우에만 가장 가까운 타겟으로 인정
                     closestDistance = distance;
-                    nearestTarget = enemyCollider.transform;
+
+                    // 적의 'AimPoint' 자식 오브젝트를 찾습니다.
+                    Transform aimPoint = enemyCollider.transform.Find("AimPoint");
+                    if (aimPoint != null)
+                    {
+                        nearestTarget = aimPoint; // AimPoint가 있으면 거기를 조준
+                    }
+                    else
+                    {
+                        // AimPoint가 없는 적을 대비해 기존 방식도 남겨둠
+                        nearestTarget = enemyCollider.transform;
+                    }
                 }
             }
         }
@@ -419,8 +438,10 @@ public class Tower : MonoBehaviour
         // 발사체 생성 및 방향 설정 (Fire Point 사용)
         Vector3 spawnPos = firePoint.position;
         GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
-        proj.transform.right = (currentTarget.position - spawnPos).normalized;
-
+        // 스프라이트가 위를 볼 경우
+        Vector3 direction = (currentTarget.position - spawnPos).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        proj.transform.rotation = Quaternion.Euler(0, 0, angle);
         // 발사체에 정보 주입 (Setup 호출)
         var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)

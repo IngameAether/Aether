@@ -3,7 +3,14 @@ using UnityEngine;
 // 상태 이상 종류를 정의하는 열거형 (Enum)
 public enum StatusEffectType
 {
-    None, Slow, Stun, Burn, Rot, Paralyze, Fear, Bleed
+    None,
+    Slow, // 슬로우
+    Stun, // 스턴
+    Burn, // 화상
+    Rot, // 부패
+    Paralyze,// 마비
+    Fear, // 공포
+    Bleed // 출혈
 }
 
 /// <summary>

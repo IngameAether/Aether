@@ -29,21 +29,21 @@ MonoBehaviour:
     reinforceCoef: 1
   BaseRange: 2
   AttackMode: 0
-  radiant: 0
+  radiant: 0.3
   TimeDuration: 0
   Guided: 1
   Multi: 1
   attackSound: 4
-  impactSound: 0
+  impactSound: 4
   effectType: 1
   effectDuration: 2
   effectValue: 50
   effectBuildup: 20
-  projectilePrefab: {fileID: 2210761169032444417, guid: d7ef596c3dda8ad4ea60d7f23d9ab325, type: 3}
+  projectilePrefab: {fileID: 1515891154930988446, guid: 762907ce4af4c6e47bee17e3fd3b672f, type: 3}
   projectileSpeed: 10
   arcHeight: 2
-  hitType: 0
-  damageEffectType: 0
+  hitType: 1
+  damageEffectType: 1
   nextUpgradeData: {fileID: 0}
   upgradedPrefab: {fileID: 0}
   reinforcementThreshold: 10
