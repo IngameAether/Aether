@@ -123,20 +123,28 @@ public class Projectile : MonoBehaviour
                 AudioManager.Instance.PlaySFXAtPoint(_impactSound, hitPosition);
             }
 
-            // hitType에 따라 분기 처리
-            switch (hitType)
+            // target(AimPoint) 자체에서 NormalEnemy 스크립트를 먼저 찾습니다.
+            var enemy = _target.GetComponent<NormalEnemy>();
+
+            // 만약 찾지 못했다면(null이라면), 부모 오브젝트에서 다시 찾아봅니다.
+            if (enemy == null)
             {
-                case HitType.Direct:
-                    var enemy = _target.GetComponent<NormalEnemy>();
-                    if (enemy != null)
-                    {
+                enemy = _target.GetComponentInParent<NormalEnemy>();
+            }
+
+            // 최종적으로 찾은 enemy가 유효하면 TakeHit을 호출합니다.
+            if (enemy != null)
+            {
+                switch (hitType)
+                {
+                    case HitType.Direct:
                         enemy.TakeHit(_damage, _effectToApply, _effectBuildup);
-                    }
-                    break;
-                case HitType.Explosive:
-                case HitType.GroundAoE:
-                    ApplyAoeDamage(hitPosition);
-                    break;
+                        break;
+                    case HitType.Explosive:
+                    case HitType.GroundAoE:
+                        ApplyAoeDamage(hitPosition); // 광역 데미지는 별도 처리
+                        break;
+                }
             }
         }
 

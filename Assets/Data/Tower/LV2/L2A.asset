@@ -32,14 +32,14 @@ MonoBehaviour:
   radiant: 0.3
   TimeDuration: 0
   Guided: 1
-  Multi: 1
+  Multi: 0
   attackSound: 4
-  impactSound: 4
+  impactSound: 0
   effectType: 1
   effectDuration: 2
   effectValue: 50
   effectBuildup: 20
-  projectilePrefab: {fileID: 1515891154930988446, guid: 762907ce4af4c6e47bee17e3fd3b672f, type: 3}
+  projectilePrefab: {fileID: 1515891154930988446, guid: 6c80cbe34e4f88446b6b224ca76a09c1, type: 3}
   projectileSpeed: 10
   arcHeight: 2
   hitType: 1

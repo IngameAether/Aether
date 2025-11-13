@@ -207,6 +207,37 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1646028464539908514}
   m_CullTransparentMesh: 1
+--- !u!1 &4953727432372959060
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2030371260404459087}
+  m_Layer: 6
+  m_Name: Aimpoint
+  m_TagString: AimPoint
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2030371260404459087
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4953727432372959060}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2305141860781152577}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5417002623811271532
 GameObject:
   m_ObjectHideFlags: 0
@@ -243,6 +274,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3319222432458091731}
+  - {fileID: 2030371260404459087}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2169842891158783658
@@ -312,9 +344,11 @@ MonoBehaviour:
   idCode: B1
   maxHealth: 11.6
   moveSpeed: 0.5
-  magicResistance: 1
-  mentalStrength: 1
   healthBarFillImage: {fileID: 8889762675385409390}
+  aimPoint: {fileID: 2030371260404459087}
+  enemyData: {fileID: 0}
+  curEnemyIndex: 0
+  finalDamageReduction: 0
 --- !u!114 &7489497750853960891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -328,6 +362,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waypoints: []
+  points: []
+  bypassPath: 0
 --- !u!61 &2426596839584739762
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -406,8 +442,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cca1612d19bce2a4b8d2f555183d679b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  statusIconParent: {fileID: 0}
-  statusIconPrefab: {fileID: 0}
 --- !u!1 &5614385505505001528
 GameObject:
   m_ObjectHideFlags: 0

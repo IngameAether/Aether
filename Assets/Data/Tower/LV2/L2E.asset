@@ -40,8 +40,8 @@ MonoBehaviour:
   effectValue: 0
   effectBuildup: 20
   projectilePrefab: {fileID: 1566472166604849294, guid: 35f4947f0a1a0a345bde392622e48991, type: 3}
-  projectileSpeed: 5
-  arcHeight: 3
+  projectileSpeed: 3
+  arcHeight: 1
   hitType: 1
   damageEffectType: 1
   nextUpgradeData: {fileID: 0}

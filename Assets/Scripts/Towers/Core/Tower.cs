@@ -328,32 +328,18 @@ public class Tower : MonoBehaviour
         // 감지된 모든 적을 순회
         foreach (Collider2D enemyCollider in enemiesInRange)
         {
-            // 감지된 콜라이더가 타워 자기 자신이 아닌지 확인
-            if (enemyCollider.gameObject == this.gameObject)
-            {
-                continue; // 자기 자신이면 무시하고 다음 적을 찾음
-            }
+            if (enemyCollider.gameObject == this.gameObject) continue;
 
             float distance = Vector2.Distance(transform.position, enemyCollider.transform.position);
             if (distance < closestDistance)
             {
-                // 적으로부터 IDamageable 컴포넌트를 가져올 수 있는지 확인
-                IDamageable damageable = enemyCollider.GetComponent<IDamageable>();
-                if (damageable != null && damageable.CurrentHealth > 0)
+                NormalEnemy enemy = enemyCollider.GetComponent<NormalEnemy>();
+
+                // 살아있는 적인지, 그리고 조준점이 있는지 확인
+                if (enemy != null && enemy.CurrentHealth > 0)
                 {
                     closestDistance = distance;
-
-                    // 적의 'AimPoint' 자식 오브젝트를 찾습니다.
-                    Transform aimPoint = enemyCollider.transform.Find("AimPoint");
-                    if (aimPoint != null)
-                    {
-                        nearestTarget = aimPoint; // AimPoint가 있으면 거기를 조준
-                    }
-                    else
-                    {
-                        // AimPoint가 없는 적을 대비해 기존 방식도 남겨둠
-                        nearestTarget = enemyCollider.transform;
-                    }
+                    nearestTarget = enemy.AimPoint;
                 }
             }
         }
@@ -364,7 +350,17 @@ public class Tower : MonoBehaviour
     protected virtual bool isTargetAlive(Transform target)
     {
         if (target == null) return false;
+
+        // 먼저 target(AimPoint) 자체에서 IDamageable을 찾습니다.
         var damageable = target.GetComponent<IDamageable>();
+
+        // 만약 찾지 못했다면(null이라면), 부모 오브젝트에서 다시 찾아봅니다.
+        if (damageable == null)
+        {
+            damageable = target.GetComponentInParent<IDamageable>();
+        }
+
+        // 최종적으로 찾은 damageable이 유효하고, 체력이 0보다 큰지 확인합니다.
         return damageable != null && damageable.CurrentHealth > 0f;
     }
 
