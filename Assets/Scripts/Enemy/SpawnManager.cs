@@ -22,6 +22,7 @@ public class SpawnManager : MonoBehaviour
 
     private int _aliveEnemies;
     private bool _isSpawningWave;
+    private int spawnCount = 0;
 
     List<Vector3> _path;
     public static int _aliveS3Enemies = 0;
@@ -131,6 +132,9 @@ public class SpawnManager : MonoBehaviour
         }
 
         GameObject newEnemy = Instantiate(enemyPrefabs[enemyIndex], initialSpawnPosition, Quaternion.identity);
+        // 먼저 생성된 적 렌더링 순서 높게
+        newEnemy.GetComponent<SpriteRenderer>().sortingOrder = 1000 - spawnCount;
+        spawnCount++;
         EnemyMovement enemyMovement = newEnemy.GetComponent<EnemyMovement>();
 
         NormalEnemy enemy = newEnemy.GetComponent<NormalEnemy>();

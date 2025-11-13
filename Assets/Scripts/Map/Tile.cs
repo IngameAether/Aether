@@ -12,6 +12,12 @@ public class Tile : MonoBehaviour
     public Color originColor;
     public Color highlightColor = Color.black; // 타일 선택시 강조될 색상
 
+    [SerializeField] private SpriteRenderer baseRenderer;
+    [SerializeField] private SpriteRenderer highlightRenderer;
+    [SerializeField] private Sprite defaultSprite;
+    [SerializeField] private Sprite selectedSprite;
+    private Vector3 highlightOffset = new Vector3(0f, -0.5f, 0f);
+
     public ElementType CurrentLogicalElementType
     {
         get
@@ -43,10 +49,13 @@ public class Tile : MonoBehaviour
         tower = null;
 
         spriteRenderer = GetComponent<SpriteRenderer>();
+        defaultSprite = spriteRenderer.sprite;
         if (spriteRenderer != null)
         {
             originColor = spriteRenderer.color;
         }
+        if (highlightRenderer != null)
+            highlightRenderer.gameObject.SetActive(false);
         ApplyHighlight(false); // 초기 상태는 하이라이트 안함
     }
 
@@ -60,6 +69,11 @@ public class Tile : MonoBehaviour
         if(spriteRenderer != null)
         {
             spriteRenderer.color = isSelected ? highlightColor : originColor;
+            highlightRenderer.sprite = isSelected ? selectedSprite : defaultSprite;
+
+            // 타일 선택 표시 및 위치 조정
+            highlightRenderer.gameObject.SetActive(isSelected);
+            highlightRenderer.transform.localPosition = isSelected ? highlightOffset : Vector3.zero;
         }
     }
 
