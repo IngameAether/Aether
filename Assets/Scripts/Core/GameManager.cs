@@ -157,6 +157,14 @@ public class GameManager : MonoBehaviour
         UpdateLivesUI();
     }
 
+    public void SetMaxLives(int maxLives)
+    {
+        if (maxLives < 1) throw new ArgumentOutOfRangeException(nameof(maxLives));
+        initialLives = maxLives;
+        currentLives = maxLives;
+        UpdateLivesUI();
+    }
+
     private void UpdateLivesUI() // 목숨 UI 업데이트
     {
         if(livesText != null)

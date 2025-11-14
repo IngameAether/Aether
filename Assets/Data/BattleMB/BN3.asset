@@ -20,7 +20,7 @@ MonoBehaviour:
   Rank: 0
   MaxStack: 3
   Effects:
-  - EffectType: 11
+  - EffectType: 12
     ValueType: 1
     Value: 10
     TargetElement: 3

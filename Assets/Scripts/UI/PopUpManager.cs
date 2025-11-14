@@ -278,6 +278,8 @@ public class PopUpManager : MonoBehaviour
             yield return null;
         }
 
+        string popUpName = _currentActivePopUpGameObject.name;
+
         Destroy(_currentActivePopUpGameObject);
         _currentActivePopUpGameObject = null;
         _currentActivePopUpCanvasGroup = null;
@@ -290,6 +292,11 @@ public class PopUpManager : MonoBehaviour
         if (_shouldPauseGame)
         {
             Time.timeScale = _previousTimeScale;
+        }
+
+        if (popUpName == "MagicBookPopup")
+        {
+            _initialBookShown = false;
         }
 
         _isAnimating = false;

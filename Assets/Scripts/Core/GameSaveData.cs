@@ -11,6 +11,7 @@ public class SaveSlot
     public bool isEmpty;
     public DateTime lastModified;
     public int currentWave;
+    public int currentMapSeed;
 }
 /// <summary>
 /// 게임의 모든 저장 데이터를 담는 최상위 클래스

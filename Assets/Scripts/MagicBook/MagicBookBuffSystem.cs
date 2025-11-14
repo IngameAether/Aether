@@ -37,6 +37,7 @@ public class MagicBookBuffSystem : MonoBehaviour
         {
             case EBookEffectType.IncreaseFinalDamage:
             case EBookEffectType.IncreaseAttackSpeed:
+            case EBookEffectType.IncreaseAttackDuration:
             case EBookEffectType.IncreaseRange:
             case EBookEffectType.IncreaseCritChance:
                 ApplyGlobalBuff(effect.EffectType, value);
@@ -50,6 +51,7 @@ public class MagicBookBuffSystem : MonoBehaviour
             case EBookEffectType.IncreaseStatusEffectDamage:
             case EBookEffectType.IncreaseStatusEffectPotency:
             case EBookEffectType.IncreaseStatusEffectDuration:
+            case EBookEffectType.ModifyStatusEffectValue:
                 ApplyStatusEffectModifier(effect, value);
                 break;
 
@@ -61,7 +63,14 @@ public class MagicBookBuffSystem : MonoBehaviour
                 break;
 
             default:
-                if (!string.IsNullOrEmpty(effect.TargetTowerCode))
+                // TargetElement가 설정된 경우 Element 버프로 처리
+                if (effect.TargetElement != ElementType.None)
+                {
+                    string elementKey = $"element_{effect.TargetElement}";
+                    ApplyTowerSpecificBuff(elementKey, effect.EffectType, value);
+                }
+                // TargetTowerCode가 설정된 경우 타워 특정 버프로 처리
+                else if (!string.IsNullOrEmpty(effect.TargetTowerCode))
                 {
                     ApplyTowerSpecificBuff(effect.TargetTowerCode, effect.EffectType, value);
                 }
@@ -179,6 +188,9 @@ public class MagicBookBuffSystem : MonoBehaviour
                 break;
             case EBookEffectType.IncreaseStatusEffectDuration:
                 modifier.DurationBonus += value; // 초 단위로 직접 추가
+                break;
+            case EBookEffectType.ModifyStatusEffectValue:
+                modifier.PotencyMultiplier += value / 100f; // % 증가를 배수로 변환
                 break;
         }
     }
