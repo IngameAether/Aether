@@ -30,6 +30,8 @@ public class PopUpManager : MonoBehaviour
     private bool _isAnimating = false;
     private bool _shouldPauseGame = true;
     private static bool _initialBookShown = false;
+
+    // 팝업이 열리기 전의 게임 속도를 저장할 변수
     private float _previousTimeScale = 1f;
 
     [Header("Registered PopUps")]
@@ -231,7 +233,7 @@ public class PopUpManager : MonoBehaviour
 
         if (_shouldPauseGame)
         {
-            _previousTimeScale = Time.timeScale;
+            _previousTimeScale = Time.timeScale; // 현재 배속을 저장
             Time.timeScale = 0f;
         }
 
@@ -298,7 +300,8 @@ public class PopUpManager : MonoBehaviour
         }
 
         _isAnimating = false;
-        
+
+        // 코루틴 가장 마지막에 이벤트를 호출합니다.
         OnPopUpClosed?.Invoke();
     }
 }

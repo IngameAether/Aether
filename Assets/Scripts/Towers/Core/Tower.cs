@@ -242,7 +242,10 @@ public class Tower : MonoBehaviour
     public void FlipTower()
     {
         isFacingRight = !isFacingRight;
-        spriteRenderer.flipX = isFacingRight;
+
+        Vector3 newScale = transform.localScale;
+        newScale.x *= -1;
+        transform.localScale = newScale;
         if (magicCircleRenderer != null && magicCircleRenderer != spriteRenderer)
         {
             magicCircleRenderer.flipX = isFacingRight;
@@ -277,6 +280,14 @@ public class Tower : MonoBehaviour
         if (currentTarget != null && CanAttack())
         {
             direction = (currentTarget.transform.position - transform.position).normalized;
+            if (direction.x > 0 && !isFacingRight)
+            {
+                FlipTower(); // 적이 오른쪽에 있는데 왼쪽을 보고 있으면 뒤집기
+            }
+            else if (direction.x < 0 && isFacingRight)
+            {
+                FlipTower(); // 적이 왼쪽에 있는데 오른쪽을 보고 있으면 뒤집기
+            }
             Attack();
             lastAttackTime = Time.time;
         }
@@ -317,33 +328,21 @@ public class Tower : MonoBehaviour
         // 감지된 모든 적을 순회
         foreach (Collider2D enemyCollider in enemiesInRange)
         {
-            // [수정] enemyCollider 자체가 null이 아닌지 한번 더 확인 (안전장치)
-            if (enemyCollider == null) continue;
+            if (enemyCollider.gameObject == this.gameObject) continue;
 
             float distance = Vector2.Distance(transform.position, enemyCollider.transform.position);
             if (distance < closestDistance)
             {
-                // [추가] 적으로부터 IDamageable 컴포넌트를 가져올 수 있는지 확인
-                IDamageable damageable = enemyCollider.GetComponent<IDamageable>();
-                if (damageable != null && damageable.CurrentHealth > 0)
+                NormalEnemy enemy = enemyCollider.GetComponent<NormalEnemy>();
+
+                // 살아있는 적인지, 그리고 조준점이 있는지 확인
+                if (enemy != null && enemy.CurrentHealth > 0)
                 {
-                    // 살아있는 적인 경우에만 가장 가까운 타겟으로 인정
                     closestDistance = distance;
-                    nearestTarget = enemyCollider.transform;
+                    nearestTarget = enemy.AimPoint;
                 }
             }
         }
-
-        // [디버그 로그] 최종적으로 누구를 선택했는지 또는 못했는지 확인
-        if (nearestTarget != null)
-        {
-            Debug.Log($"가장 가까운 적 '{nearestTarget.name}'을(를) 타겟으로 설정!");
-        }
-        else
-        {
-            Debug.LogWarning("탐지된 적은 있으나, 유효한(살아있는) 타겟을 찾지 못했습니다.");
-        }
-
         return nearestTarget;
     }
 
@@ -351,7 +350,17 @@ public class Tower : MonoBehaviour
     protected virtual bool isTargetAlive(Transform target)
     {
         if (target == null) return false;
+
+        // 먼저 target(AimPoint) 자체에서 IDamageable을 찾습니다.
         var damageable = target.GetComponent<IDamageable>();
+
+        // 만약 찾지 못했다면(null이라면), 부모 오브젝트에서 다시 찾아봅니다.
+        if (damageable == null)
+        {
+            damageable = target.GetComponentInParent<IDamageable>();
+        }
+
+        // 최종적으로 찾은 damageable이 유효하고, 체력이 0보다 큰지 확인합니다.
         return damageable != null && damageable.CurrentHealth > 0f;
     }
 
@@ -425,8 +434,10 @@ public class Tower : MonoBehaviour
         // 발사체 생성 및 방향 설정 (Fire Point 사용)
         Vector3 spawnPos = firePoint.position;
         GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
-        proj.transform.right = (currentTarget.position - spawnPos).normalized;
-
+        // 스프라이트가 위를 볼 경우
+        Vector3 direction = (currentTarget.position - spawnPos).normalized;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        proj.transform.rotation = Quaternion.Euler(0, 0, angle);
         // 발사체에 정보 주입 (Setup 호출)
         var projectile = proj.GetComponent<Projectile>();
         if (projectile != null)

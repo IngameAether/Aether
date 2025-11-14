@@ -19,6 +19,22 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     [Header("UI")]
     public Image healthBarFillImage;
 
+    [Header("Targeting Settings")]
+    [Tooltip("타워가 조준할 몸 중앙 지점입니다. (AimPoint 자식 오브젝트)")]
+    [SerializeField] private Transform aimPoint;
+    public Transform AimPoint
+    {
+        get
+        {
+            // 안전장치
+            if (aimPoint == null)
+            {
+                return this.transform;
+            }
+            return aimPoint;
+        }
+    }
+
     // 현재 체력 (외부에서는 읽기만 가능)
     public float CurrentHealth { get; private set; }
     private float currentShield;    // 보호막 값
