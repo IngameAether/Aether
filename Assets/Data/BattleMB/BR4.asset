@@ -20,13 +20,13 @@ MonoBehaviour:
   Rank: 1
   MaxStack: 1
   Effects:
-  - EffectType: 14
+  - EffectType: 15
     ValueType: 0
     Value: 2
     TargetElement: 2
     TargetTowerCode: L3VIT
     TargetStatusEffect: 0
-  - EffectType: 14
+  - EffectType: 15
     ValueType: 0
     Value: 2
     TargetElement: 2

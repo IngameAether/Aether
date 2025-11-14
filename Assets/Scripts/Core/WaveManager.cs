@@ -246,7 +246,7 @@ public class WaveManager : MonoBehaviour
                 GameManager.Instance.AddLife((int)finalValue);
                 break;
             case EBookEffectType.FullLife:
-                GameManager.Instance.AddLife(20 - GameManager.Instance.currentLives);
+                GameManager.Instance.SetMaxLives((int)finalValue);
                 break;
         }
     }
