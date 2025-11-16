@@ -572,6 +572,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveText: {fileID: 513346482015417435}
   saveTimeText: {fileID: 256526836408191336}
+  aetherText: {fileID: 7816198047185193914}
   minimapImage: {fileID: 6873817075938589899}
   pathColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
   wallColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}

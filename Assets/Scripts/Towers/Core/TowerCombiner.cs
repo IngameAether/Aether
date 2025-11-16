@@ -263,8 +263,8 @@ private void TryCombination()
             Debug.Log($"towerData: {towerData.Level}");
 
             TileInteraction.isTowerJustCreated = true;
-            OnTowerCreated(newTower, elementType);
-            _towerSpriteController?.SetSpritesByLevel(targetLevel);
+            // OnTowerCreated(newTower, elementType);
+            // _towerSpriteController?.SetSpritesByLevel(targetLevel);
 
             Debug.Log($"{elementType} 타입의 {targetLevel}단계 타워 생성 완료{(isRandom ? " (랜덤)" : "")}!");
         }
@@ -309,17 +309,17 @@ private void TryCombination()
         ClearSelection();
     }
 
-    /// <summary>
-    /// 타워 생성 완료 시 호출
-    /// </summary>
-    private void OnTowerCreated(GameObject createdTower, ElementType elementType)
-    {
-        var towerComponent = createdTower.GetComponent<Tower>();
-        if (towerComponent != null)
-            Debug.Log($"타워 컴포넌트 설정 완료: {towerComponent.TowerName}");
-
-        _towerSpriteController = createdTower.GetComponent<TowerSpriteController>();
-    }
+    // /// <summary>
+    // /// 타워 생성 완료 시 호출
+    // /// </summary>
+    // private void OnTowerCreated(GameObject createdTower, ElementType elementType)
+    // {
+    //     var towerComponent = createdTower.GetComponent<Tower>();
+    //     if (towerComponent != null)
+    //         Debug.Log($"타워 컴포넌트 설정 완료: {towerComponent.TowerName}");
+    //
+    //     _towerSpriteController = createdTower.GetComponent<TowerSpriteController>();
+    // }
 
     /// <summary>
     /// 선택 초기화
@@ -334,4 +334,32 @@ private void TryCombination()
         _saleController.ShowSaleUI(false);
         Debug.Log("선택이 초기화되었습니다.");
     }
+
+    #region Save/Load Helper Methods
+    /// <summary>
+    /// TowerData ID로 TowerData 가져오기
+    /// </summary>
+    public TowerData GetTowerDataById(string towerId)
+    {
+        if (_towerDataMap == null || !_towerDataMap.ContainsKey(towerId))
+        {
+            Debug.LogWarning($"TowerCombiner: TowerData {towerId}를 찾을 수 없습니다.");
+            return null;
+        }
+        return _towerDataMap[towerId];
+    }
+
+    /// <summary>
+    /// ElementType에 해당하는 기본 타워 프리팹 가져오기
+    /// </summary>
+    public GameObject GetTowerPrefabByElementType(ElementType elementType)
+    {
+        if (_elementTowerMap == null || !_elementTowerMap.ContainsKey(elementType))
+        {
+            Debug.LogWarning($"TowerCombiner: ElementType {elementType}에 해당하는 프리팹을 찾을 수 없습니다.");
+            return null;
+        }
+        return _elementTowerMap[elementType];
+    }
+    #endregion
 }

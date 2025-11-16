@@ -8,6 +8,7 @@ public class SaveSlotUI : MonoBehaviour
     [Header("UI 요소")]
     public TextMeshProUGUI waveText;
     public TextMeshProUGUI saveTimeText;
+    public TextMeshProUGUI aetherText;
     public RawImage minimapImage;
 
     [Header("미니맵 설정")]
@@ -24,6 +25,8 @@ public class SaveSlotUI : MonoBehaviour
             waveText.text = "Empty Slot";
         if (saveTimeText != null)
             saveTimeText.text = "-";
+        if (aetherText != null)
+            aetherText.text = "에테르: -";
 
         if (minimapImage != null)
             minimapImage.gameObject.SetActive(false);
@@ -44,6 +47,9 @@ public class SaveSlotUI : MonoBehaviour
 
         if (saveTimeText != null)
             saveTimeText.text = info.isEmpty ? "-" : info.lastModified.ToString("yyyy-MM-dd HH:mm:ss");
+
+        if (aetherText != null)
+            aetherText.text = info.isEmpty ? "에테르: -" : $"에테르: {info.aetherAmount}";
 
         if (minimapImage != null)
         {

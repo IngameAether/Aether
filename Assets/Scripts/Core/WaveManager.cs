@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -50,12 +49,15 @@ public class WaveManager : MonoBehaviour
         if (PopUpManager.Instance != null)
             PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
 
+        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
+    }
+
+    private void Start()
+    {
         if (MagicBookManager.Instance != null)
         {
             MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
         }
-
-        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
     }
 
     private void OnDisable()
@@ -90,9 +92,19 @@ public class WaveManager : MonoBehaviour
     // FadeManager가 씬에 나타날 때까지 기다렸다가 이벤트를 구독하는 코루틴
     private IEnumerator WaitForFadeManagerAndSubscribe()
     {
-        // FadeManager 인스턴스가 생성될 때까지 기다립니다.
-        yield return new WaitUntil(() => FadeManager.Instance != null);
-        FadeManager.OnSceneTransitionComplete += StartWaveRoutine;
+        // 로드된 게임인지 확인
+        bool isLoadedGame = GameSaveManager.Instance != null && GameSaveManager.Instance.CurrentGameData != null;
+
+        if (isLoadedGame)
+        {
+            yield return new WaitForSeconds(0.5f);
+            StartWaveRoutine();
+        }
+        else
+        {
+            yield return new WaitUntil(() => FadeManager.Instance != null);
+            FadeManager.OnSceneTransitionComplete += StartWaveRoutine;
+        }
     }
 
     // FadeManager로부터 "씬 전환 완료" 신호를 받으면 호출될 함수
@@ -106,11 +118,24 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator WaveRoutine()
     {
-        // --- 1. 최초 마법책 선택 ---
-        Debug.Log("WaveManager: 최초 마법책 선택을 시작합니다.");
-        MagicBookManager.Instance.PrepareSelection(BookRequestType.Regular);
-        yield return StartCoroutine(WaitForChoice()); // 팝업을 띄우고 선택을 기다립니다.
-        Debug.Log("WaveManager: 최초 선택 완료! 게임을 시작합니다.");
+        // 로드된 게임인지 확인
+        int startWaveIndex = 0;
+        bool isLoadedGame = false;
+        if (GameSaveManager.Instance != null && GameSaveManager.Instance.CurrentGameData != null)
+        {
+            startWaveIndex = GameSaveManager.Instance.CurrentGameData.currentWave;
+            isLoadedGame = true;
+            Debug.Log($"저장된 게임 로드: Wave {startWaveIndex}부터 시작");
+        }
+
+        // --- 1. 최초 마법책 선택 (새 게임인 경우만) ---
+        if (!isLoadedGame)
+        {
+            Debug.Log("WaveManager: 최초 마법책 선택을 시작합니다.");
+            MagicBookManager.Instance.PrepareSelection(BookRequestType.Regular);
+            yield return StartCoroutine(WaitForChoice()); // 팝업을 띄우고 선택을 기다립니다.
+            Debug.Log("WaveManager: 최초 선택 완료! 게임을 시작합니다.");
+        }
 
         // --- 2. 게임 시작 준비 ---
         if (GameTimer.Instance != null)
@@ -121,7 +146,7 @@ public class WaveManager : MonoBehaviour
         yield return new WaitForSeconds(initialDelay);
 
         // --- 3. 웨이브 루프 시작 ---
-        for (int waveIndex = 0; waveIndex < spawnManager.waves.Count; waveIndex++)
+        for (int waveIndex = startWaveIndex; waveIndex < spawnManager.waves.Count; waveIndex++)
         {
             currentWaveLevel = waveIndex;
             int displayWave = waveIndex + 1;
@@ -162,12 +187,28 @@ public class WaveManager : MonoBehaviour
                 yield return StartCoroutine(WaitForChoice());
             }
 
-            if (waveIndex == 0)
+            // 매 웨이브 종료 시 선택된 슬롯에 저장
+            int slotIndex = GameSaveManager.Instance.SelectedSlotIndex;
+            if (slotIndex >= 0 && slotIndex < 3)
             {
-                Task<bool> saveTask = GameSaveManager.Instance.SaveGameAsync(2);
-                yield return new WaitUntil(() => saveTask.IsCompleted);
-                if (saveTask.IsFaulted) Debug.LogError(saveTask.Exception);
-                else Debug.Log($"Save completed: {saveTask.Result}");
+                bool saveSuccess = false;
+                yield return StartCoroutine(GameSaveManager.Instance.SaveGame(slotIndex, (success) =>
+                {
+                    saveSuccess = success;
+                }));
+
+                if (saveSuccess)
+                {
+                    Debug.Log($"Wave {waveIndex + 1} 저장 완료 (슬롯 {slotIndex})");
+                }
+                else
+                {
+                    Debug.LogError($"Wave {waveIndex + 1} 저장 실패 (슬롯 {slotIndex})");
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"유효하지 않은 슬롯 인덱스: {slotIndex}. 저장을 건너뜁니다.");
             }
 
             ResourceManager.Instance.AddCoin(_waveEndBonusCoin);
