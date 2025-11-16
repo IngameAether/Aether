@@ -318,7 +318,31 @@ public class GameSaveManager : MonoBehaviour
     }
 
     /// <summary>
-    /// 저장 슬롯 정보 조회
+    /// 저장 슬롯의 전체 데이터 조회
+    /// </summary>
+    public GameSaveDataInfo GetSaveDataInfo(int slotIndex)
+    {
+        string filePath = GetSaveFilePath(slotIndex);
+        if (!File.Exists(filePath))
+        {
+            return null;
+        }
+
+        try
+        {
+            string jsonData = File.ReadAllText(filePath);
+            GameSaveDataInfo loadedData = JsonConvert.DeserializeObject<GameSaveDataInfo>(jsonData);
+            return loadedData;
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"슬롯 {slotIndex} 데이터 읽기 실패: {e.Message}");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// 저장 슬롯 정보 조회 (UI 표시용 요약 정보)
     /// </summary>
     public SaveSlot GetSaveSlot(int slotIndex)
     {

@@ -257,7 +257,7 @@ public class MainMenuUI : MonoBehaviour
         if (saveSlotUI != null)
         {
             SaveSlot info = GameSaveManager.Instance.GetSaveSlot(currentSaveSlotIndex);
-            saveSlotUI.UpdateUI(info);
+            saveSlotUI.UpdateUI(info, currentSaveSlotIndex);
         }
     }
 
