@@ -232,6 +232,41 @@ public class MagicBookManager : MonoBehaviour
         return _ownedBooksDict;
     }
 
+    /// <summary>
+    /// 저장된 마법책 데이터를 복원
+    /// </summary>
+    public void RestoreOwnedBooks(Dictionary<string, int> savedBooks)
+    {
+        if (savedBooks == null)
+        {
+            Debug.LogWarning("MagicBookManager: 복원할 마법책 데이터가 없습니다.");
+            return;
+        }
+
+        _ownedBooksDict.Clear();
+
+        foreach (var bookPair in savedBooks)
+        {
+            string bookCode = bookPair.Key;
+            int stack = bookPair.Value;
+
+            if (!_allBooksDict.TryGetValue(bookCode, out var bookData))
+            {
+                Debug.LogWarning($"MagicBookManager: 알 수 없는 마법책 코드 {bookCode}");
+                continue;
+            }
+
+            _ownedBooksDict[bookCode] = stack;
+
+            // 마법책 효과 적용
+            ApplyBookEffect(bookData, stack);
+
+            Debug.Log($"마법책 복원: {bookCode} (Stack: {stack})");
+        }
+
+        Debug.Log($"총 {_ownedBooksDict.Count}개의 마법책 복원 완료");
+    }
+
     [System.Serializable]
     public struct OwnedBookInfo
     {

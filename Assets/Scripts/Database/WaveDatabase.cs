@@ -17,8 +17,7 @@ public static class WaveDatabase
         _waveDict = new Dictionary<int, SpawnManager.Wave>();
 
         // CSV 읽기
-        var rows = CSVReader.Read(
-            resourcePath); // CSVReader.Read는 List<Dictionary<string, object>> 반환 [attached_file:file:3]
+        var rows = CSVReader.Read(resourcePath);
         if (rows == null || rows.Count == 0)
         {
             Debug.LogError("WaveData를 불러오지 못했습니다.");
@@ -75,8 +74,6 @@ public static class WaveDatabase
             }
 
             _waveDict[waveIndex] = wave;
-            if (enemyDataCount > 0)
-                Debug.Log($"Wave {waveIndex}: {enemyDataCount}개의 적 데이터 로드됨");
         }
     }
 
@@ -188,7 +185,7 @@ public static class WaveDatabase
         return IsAllDigits(s);
     }
 
-// 010150010 → start=1.0, end=15.0, interval=1.0
+    // 010150010 → start=1.0, end=15.0, interval=1.0
     private static void Decode9Digit(string s, out float start, out float end, out float interval)
     {
         var startTimeRaw = int.Parse(s.Substring(0, 3));

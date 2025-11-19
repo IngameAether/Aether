@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
-using System.Threading.Tasks;
 using System.Collections;
 
 // Wave 데이터를 관리할 구조체 정의
@@ -145,8 +144,7 @@ public class MainMenuUI : MonoBehaviour
     // [플레이] 버튼 -> '새 게임'으로 레벨 선택 씬 로드
     public void OnPlayLevelButtonClick()
     {
-        // '새 게임'이므로 선택된 슬롯 인덱스를 -1 (없음)로 설정
-        GameSaveManager.Instance.SelectedSlotIndex = -1;
+        // 이미 OnSelectSlotButtonClick에서 SelectedSlotIndex가 설정되어 있음
         StartGame(currentSelectedWaveIndex);
     }
     public void OnLeftArrowButtonClick()
@@ -188,10 +186,12 @@ public class MainMenuUI : MonoBehaviour
             // 예 선택 -> 게임 로드
             if (userChoice.Value)
             {
-                var loadTask = GameSaveManager.Instance.LoadGameAsync(currentSaveSlotIndex);
-                yield return new WaitUntil(() => loadTask.IsCompleted);
+                GameSaveDataInfo saveData = null;
+                yield return StartCoroutine(GameSaveManager.Instance.LoadGame(currentSaveSlotIndex, (data) =>
+                {
+                    saveData = data;
+                }));
 
-                GameSaveDataInfo saveData = loadTask.Result;
                 if (saveData != null)
                 {
                     Debug.Log($"세이브 데이터 로드 성공. Wave: {saveData.currentWave}");
@@ -208,10 +208,10 @@ public class MainMenuUI : MonoBehaviour
                 ShowPanel(UIPanelState.LevelSelect);
             }
         }
-        // 세이브 파일이 없으면 레벨 선택 화면으로
+        // 세이브 파일이 없으면 바로 게임 시작 (첫 번째 웨이브)
         else
         {
-            ShowPanel(UIPanelState.LevelSelect);
+            StartGame(0);
         }
     }
 
@@ -234,13 +234,7 @@ public class MainMenuUI : MonoBehaviour
     // 게임 시작 함수 (씬 로딩)
     void StartGame(int waveIndex)
     {
-        string sceneToLoad = waveDatas[waveIndex].sceneName;
-        if (string.IsNullOrEmpty(sceneToLoad))
-        {
-            Debug.LogError($"씬 이름이 설정되지 않았습니다.");
-            return;
-        }
-        SceneManager.LoadScene(sceneToLoad); // FadeManager가 있다면 그것을 사용
+        FadeManager.Instance.TransitionToScene("GameScene");
     }
 
     // 레벨 선택 창의 웨이브 이름과 이미지 업데이트
@@ -257,7 +251,7 @@ public class MainMenuUI : MonoBehaviour
         if (saveSlotUI != null)
         {
             SaveSlot info = GameSaveManager.Instance.GetSaveSlot(currentSaveSlotIndex);
-            saveSlotUI.UpdateUI(info);
+            saveSlotUI.UpdateUI(info, currentSaveSlotIndex);
         }
     }
 

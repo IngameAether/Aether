@@ -16,7 +16,7 @@ public class SpawnManager : MonoBehaviour
 
     [Header("Wave Data")]
     [SerializeField] private bool loadFromCSV = true;
-    public List<Wave> waves;
+    [HideInInspector] public List<Wave> waveDatas;
     private WaveManager _waveManager;
     private Dictionary<string, int> _enemyIdToIndexMap;
 
@@ -92,7 +92,7 @@ public class SpawnManager : MonoBehaviour
             return;
         }
 
-        waves = WaveDatabase.GetAllWaves(_enemyIdToIndexMap);
+        waveDatas = WaveDatabase.GetAllWaves(_enemyIdToIndexMap);
     }
 
     public IEnumerator SpawnWaveEnemies(Wave wave)

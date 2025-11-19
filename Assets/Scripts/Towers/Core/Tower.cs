@@ -61,15 +61,19 @@ public class Tower : MonoBehaviour
     public int Rank => towerData.Level;
     public float CriticalHit => FormulaEvaluator.EvaluateTowerData(towerInfo.CriticalRate, lightReinforceCount, darkReinforceCount);
     public int CurrentReinforceLevel => reinforceLevel;
+    public int LightReinforceCount => lightReinforceCount;
+    public int DarkReinforceCount => darkReinforceCount;
     public int MaxReinforce => towerInfo.MaxReinforcement;
     public int UnleashingPotential => towerInfo.UnleashingPotential;
     private TowerFinalStats _cachedStats;
     private bool _statsValid = false;
+    private TowerSpriteController _spriteController;
 
     protected virtual void Awake()
     {
         // 확장 스크립트를 찾아서 연결합니다.
         _extension = GetComponent<TowerExtension>();
+        _spriteController = GetComponent<TowerSpriteController>();
 
         // 데이터 초기화는 Awake에서 먼저 실행되도록 유지
         Setup(this.towerData);
@@ -193,6 +197,20 @@ public class Tower : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 저장된 강화 데이터 복원
+    /// </summary>
+    public void RestoreReinforcement(int restoredReinforceLevel, int restoredLightCount, int restoredDarkCount)
+    {
+        reinforceLevel = restoredReinforceLevel;
+        lightReinforceCount = restoredLightCount;
+        darkReinforceCount = restoredDarkCount;
+
+        Debug.Log($"{towerData.Name} 강화 복원: Level={reinforceLevel}, Light={lightReinforceCount}, Dark={darkReinforceCount}");
+
+        _statsValid = false;
+    }
+
     /// 특정 데이터로 타워를 진화시키는 내부 함수
     private void Evolve(TowerData evolutionData)
     {
@@ -222,6 +240,7 @@ public class Tower : MonoBehaviour
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
         magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
+        _spriteController.SetSpritesByLevel(towerData.Level);
 
         EnsureFirePoint();
     }

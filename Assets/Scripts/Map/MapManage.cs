@@ -7,55 +7,74 @@ public class MapManage : MonoBehaviour
     public MapGenerator mapGenerator;
     public MapRenderer mapRenderer;
 
-    // »ý¼ºµÈ ¸Ê Å¸ÀÏ µ¥ÀÌÅÍ¿Í °æ·Î ÀÎµ¦½º¸¦ ÀúÀåÇÒ ¼Ó¼º Ãß°¡
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó¼ï¿½ ï¿½ß°ï¿½
     public int[,] MapTiles { get; private set; }
     public List<Vector2Int> PathIndices { get; private set; }
 
     void Start()
     {
-        GenerateAndRenderMap(); // ¸Ê »ý¼º ¹× ·»´õ¸µ ½ÃÀÛ
+        GenerateAndRenderMap(); // ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     }
 
-    // ¸ÊÀ» »ý¼ºÇÏ°í ·»´õ¸µÇÏ´Â ³»ºÎ ¸Þ¼­µå
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½
     private void GenerateAndRenderMap()
     {
-        // ±âÁ¸ ¸Ê µ¥ÀÌÅÍ ¹× ¿ÀºêÁ§Æ® Á¦°Å
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
         if (MapTiles != null)
         {
             mapRenderer.ClearMap();
         }
 
-        // MapGenerator¸¦ »ç¿ëÇÏ¿© ¸Ê Å¸ÀÏ µ¥ÀÌÅÍ »ý¼º
-        MapTiles = mapGenerator.generateMap();
+        int seed = -1; // ê¸°ë³¸ê°’
+        if (GameSaveManager.Instance != null && GameSaveManager.Instance.CurrentGameData != null)
+        {
+            seed = GameSaveManager.Instance.CurrentGameData.currentMapSeed;
+            Debug.Log($"ì €ìž¥ëœ ê²Œìž„ ë¡œë“œ ì¤‘: Seed = {seed}");
+        }
 
-        // MapGenerator·ÎºÎÅÍ »ý¼ºµÈ °æ·Î ÀÎµ¦½º °¡Á®¿Í ÀúÀå
+        // MapGeneratorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ Å¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        MapTiles = mapGenerator.generateMap(seed);
+
+        // MapGeneratorï¿½Îºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (MapTiles != null) PathIndices = mapGenerator.GetPathIndices();
 
-        // MapRenderer¸¦ »ç¿ëÇÏ¿© ¸Ê ½Ã°¢È­
+        // MapRendererï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ ï¿½ï¿½ ï¿½Ã°ï¿½È­
         if (MapTiles != null && MapTiles.GetLength(0) > 0)
         {
             mapRenderer.RenderMap(MapTiles);
-            Debug.Log($"¸Ê »ý¼º ¹× ·»´õ¸µ ¿Ï·á. ¸Ê Å©±â: {MapTiles.GetLength(0)}x{MapTiles.GetLength(1)}, °æ·Î ±æÀÌ: {PathIndices.Count}");
+            Debug.Log($"ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ï·ï¿½. ï¿½ï¿½ Å©ï¿½ï¿½: {MapTiles.GetLength(0)}x{MapTiles.GetLength(1)}, ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½: {PathIndices.Count}");
+
+            StartCoroutine(RestoreGameStateAfterDelay());
         }
         else
         {
-            Debug.LogError("¸Ê »ý¼º ½ÇÆÐ ¶Ç´Â µ¥ÀÌÅÍ°¡ ºñ¾îÀÖ½À´Ï´Ù.");
+            Debug.LogError("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ç´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½Ö½ï¿½ï¿½Ï´ï¿½.");
         }
     }
 
-    // ResetMap ¸Þ¼­µå´Â ±×´ë·Î À¯Áö (¸ÊÀ» Áö¿ì°í ´Ù½Ã »ý¼º ¹× ·»´õ¸µ)
+    private IEnumerator RestoreGameStateAfterDelay()
+    {
+        yield return null;
+
+        if (GameSaveManager.Instance != null)
+        {
+            GameSaveManager.Instance.RestoreGameState();
+        }
+    }
+
+    // ResetMap ï¿½Þ¼ï¿½ï¿½ï¿½ï¿½ ï¿½×´ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
     public void ResetMap()
     {
-        Debug.Log("¸Ê ¸®¼Â ¿äÃ».");
+        Debug.Log("ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ã».");
         GenerateAndRenderMap();
     }
 
-    // »ý¼ºµÈ °æ·Î ÀÎµ¦½º ¸ñ·ÏÀ» À¯´ÏÆ¼ ¿ùµå ÁÂÇ¥ ¸ñ·ÏÀ¸·Î º¯È¯ÇÏ¿© ¹ÝÈ¯ÇÏ´Â ¸Þ¼­µå Ãß°¡
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ¼ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½Ï¿ï¿½ ï¿½ï¿½È¯ï¿½Ï´ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ ï¿½ß°ï¿½
     public List<Vector3> GetPathWorldPositions()
     {
         if (PathIndices == null || PathIndices.Count == 0)
         {
-            Debug.LogWarning("MapManage: »ý¼ºµÈ °æ·Î µ¥ÀÌÅÍ°¡ ¾ø½À´Ï´Ù.");
+            Debug.LogWarning("MapManage: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í°ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
             return new List<Vector3>();
         }
 
@@ -65,16 +84,16 @@ public class MapManage : MonoBehaviour
 
         foreach (var tileIndex in PathIndices)
         {
-            // MapRendererÀÇ ÇïÆÛ ¸Þ¼­µå¸¦ »ç¿ëÇÏ¿© Å¸ÀÏ ÀÎµ¦½º¸¦ ¿ùµå ÁÂÇ¥·Î º¯È¯
-            // ÀÌ ¸Þ¼­µå´Â MapRenderer¿¡ Ãß°¡µÉ °ÍÀÔ´Ï´Ù.
+            // MapRendererï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½å¸¦ ï¿½ï¿½ï¿½ï¿½Ï¿ï¿½ Å¸ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½È¯
+            // ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½ï¿½ MapRendererï¿½ï¿½ ï¿½ß°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ô´Ï´ï¿½.
             worldPositions.Add(mapRenderer.GetTileWorldPosition(tileIndex.x, tileIndex.y, mapWidth, mapHeight));
         }
 
-        Debug.Log($"°æ·Î ÀÎµ¦½º {PathIndices.Count}°³¸¦ ¿ùµå ÁÂÇ¥ {worldPositions.Count}°³·Î º¯È¯Çß½À´Ï´Ù.");
+        Debug.Log($"ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ {PathIndices.Count}ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ç¥ {worldPositions.Count}ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È¯ï¿½ß½ï¿½ï¿½Ï´ï¿½.");
         return worldPositions;
     }
 
-    // MapRenderer ÀÎ½ºÅÏ½º¿¡ ¿ÜºÎ¿¡¼­ Á¢±Ù °¡´ÉÇÏµµ·Ï public ¼Ó¼º Ãß°¡
-    // GetPathWorldPositions¿¡¼­ MapRendererÀÇ ¸Þ¼­µå¸¦ È£ÃâÇÏ±â À§ÇØ ÇÊ¿ä
+    // MapRenderer ï¿½Î½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ public ï¿½Ó¼ï¿½ ï¿½ß°ï¿½
+    // GetPathWorldPositionsï¿½ï¿½ï¿½ï¿½ MapRendererï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½å¸¦ È£ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½
     public MapRenderer MapRendererInstance { get { return mapRenderer; } }
 }

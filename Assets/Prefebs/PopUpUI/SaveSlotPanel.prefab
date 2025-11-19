@@ -572,10 +572,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waveText: {fileID: 513346482015417435}
   saveTimeText: {fileID: 256526836408191336}
+  aetherText: {fileID: 7816198047185193914}
   minimapImage: {fileID: 6873817075938589899}
-  pathColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}
-  wallColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
-  minimapScale: 8
+  minimapResolution: 512
+  cameraSize: 30
+  minimapLayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  elementPrefabs:
+  - {fileID: 2162190162697229114, guid: c134506b61596cf408a234025fa8ee0f, type: 3}
+  - {fileID: 2162190162697229114, guid: ecfabc2675fdf834aa53a2fc13911485, type: 3}
+  - {fileID: 2162190162697229114, guid: da823f21c42e46845953c81037d6648d, type: 3}
+  - {fileID: 2162190162697229114, guid: c661fdca16a15824db821dd9b2e7b6cf, type: 3}
+  allTowerData:
+  - {fileID: 11400000, guid: a339eaaaf61ea394392fb04242ff03ad, type: 2}
+  - {fileID: 11400000, guid: ff1b19a22558161479babad7318204a0, type: 2}
+  - {fileID: 11400000, guid: 3e9bcde478196ba4ab18928bea8d526e, type: 2}
+  - {fileID: 11400000, guid: 699c526a23d75d740b240a367adf19c1, type: 2}
+  - {fileID: 11400000, guid: de7bd8e3403c9f44185836ab1d329009, type: 2}
+  - {fileID: 11400000, guid: fe6ce128d077fe34a95d9d66c1a0e214, type: 2}
+  - {fileID: 11400000, guid: 4bd9325fb78a8b243b4c17b58641acd4, type: 2}
+  - {fileID: 11400000, guid: 9ff7e58d8650a7749a49828040024d20, type: 2}
+  - {fileID: 11400000, guid: e8a7338e8ab84494d82595a53ed720db, type: 2}
+  - {fileID: 11400000, guid: cc21c1049e4fc44409a03304b198c914, type: 2}
+  - {fileID: 11400000, guid: 8de2149512e789040ad33f6483183a85, type: 2}
+  - {fileID: 11400000, guid: a7cd8e24412622a49afe6200a2dc3f79, type: 2}
+  - {fileID: 11400000, guid: 4e3d82f7282758844b79de77a8980d94, type: 2}
+  - {fileID: 11400000, guid: 99737e94bc252044fa3731e6c98acfc2, type: 2}
+  - {fileID: 11400000, guid: 492383045ae5f5244b338b389b636a19, type: 2}
+  - {fileID: 11400000, guid: 3ec28de9a7767e643b8234a93ba63e07, type: 2}
+  - {fileID: 11400000, guid: 4ffd8e94c77e8844885d60c7d6e2e93f, type: 2}
+  - {fileID: 11400000, guid: 4b3efbba888f4e749bbfdda695257058, type: 2}
+  - {fileID: 11400000, guid: 44dd501b5a2a3974b9cdce4802c0bc1d, type: 2}
+  - {fileID: 11400000, guid: 6dce6fd4978494646bea613e4ef6e147, type: 2}
+  - {fileID: 11400000, guid: c0585b0eda8434e4db9c2881be23905f, type: 2}
+  - {fileID: 11400000, guid: 169d6dbaf8a3a19478d6cf05d9dd181d, type: 2}
+  - {fileID: 11400000, guid: 3eaa7d802cee92247a08b87ed1b26e99, type: 2}
+  - {fileID: 11400000, guid: 04dcb7368de7db24e9a9ef3add7af09c, type: 2}
+  fireTowerPrefab: {fileID: 4710304639692687514, guid: 9bb5481bc03426d4cb97168e0f655063, type: 3}
+  waterTowerPrefab: {fileID: 2255666967045128489, guid: 85fdbda203c8aed4cbccf6461c1ae228, type: 3}
+  earthTowerPrefab: {fileID: 87051376619690041, guid: 407f851d9ba3201418a26153ad229f81, type: 3}
+  airTowerPrefab: {fileID: 2156860131253734831, guid: 0437ffc897e652e499c7af10157e99ec, type: 3}
 --- !u!1 &9128981041933554188
 GameObject:
   m_ObjectHideFlags: 0
