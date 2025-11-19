@@ -44,8 +44,8 @@ MonoBehaviour:
   arcHeight: 2
   hitType: 0
   damageEffectType: 0
-  nextUpgradeData: {fileID: 0}
+  nextUpgradeData: {fileID: 11400000, guid: 6dce6fd4978494646bea613e4ef6e147, type: 2}
   upgradedPrefab: {fileID: 0}
   reinforcementThreshold: 10
-  lightEvolutionData: {fileID: 0}
-  darkEvolutionData: {fileID: 0}
+  lightEvolutionData: {fileID: 11400000, guid: 4b3efbba888f4e749bbfdda695257058, type: 2}
+  darkEvolutionData: {fileID: 11400000, guid: 44dd501b5a2a3974b9cdce4802c0bc1d, type: 2}

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99113aa5da9d8de4aba1aebc35f7cb7c, type: 3}
+  m_Name: LV4_Earth
+  m_EditorClassIdentifier: 
+  requiredTowerIds:
+  - L3E
+  - L3VIT
+  - L3ROT
+  resultingTowerData: {fileID: 11400000, guid: 169d6dbaf8a3a19478d6cf05d9dd181d, type: 2}

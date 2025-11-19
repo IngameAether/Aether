@@ -21,6 +21,9 @@ public class WaveManager : MonoBehaviour
     [SerializeField] private SpawnManager spawnManager;
     [SerializeField] private TMP_Text waveText;
 
+    // 맵 배경 매니저 참조
+    [SerializeField] private MapBackgroundManager mapBackgroundManager;
+
     [Header("Config")]
     [SerializeField] private float initialDelay = 1f;
     [SerializeField] private float nextWaveDelay = 3f;
@@ -38,13 +41,22 @@ public class WaveManager : MonoBehaviour
 
     public int CurrentWaveLevel => currentWaveLevel;
 
-    private void OnEnable()
+    private void Start()
     {
+        // FadeManager가 준비될 때까지 기다린 후, 씬 전환이 끝나면 게임 루틴을 시작합니다.
         spawnManager ??= FindObjectOfType<SpawnManager>();
 
-        // FadeManager가 준비될 때까지 기다린 후, 씬 전환이 끝나면 게임 루틴을 시작합니다.
-        StartCoroutine(WaitForFadeManagerAndSubscribe());
+        // 씬에서 MapBackgroundManager를 자동으로 찾아옵니다.
+        if (mapBackgroundManager == null)
+        {
+            mapBackgroundManager = FindObjectOfType<MapBackgroundManager>();
+        }
 
+        StartCoroutine(WaveRoutine());
+    }
+
+    private void OnEnable()
+    {
         // PopUpManager의 팝업 닫힘 이벤트를 구독합니다.
         if (PopUpManager.Instance != null)
             PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
@@ -92,6 +104,7 @@ public class WaveManager : MonoBehaviour
     // FadeManager가 씬에 나타날 때까지 기다렸다가 이벤트를 구독하는 코루틴
     private IEnumerator WaitForFadeManagerAndSubscribe()
     {
+        // FadeManager 인스턴스가 생성될 때까지 기다립니다.
         yield return new WaitUntil(() => FadeManager.Instance != null);
         FadeManager.OnSceneTransitionComplete += StartWaveRoutine;
     }
@@ -107,7 +120,6 @@ public class WaveManager : MonoBehaviour
 
     private IEnumerator WaveRoutine()
     {
-        // 로드된 게임인지 확인
         int startWaveIndex = 0;
         bool isLoadedGame = false;
         if (GameSaveManager.Instance != null && GameSaveManager.Instance.CurrentGameData != null)
@@ -126,7 +138,7 @@ public class WaveManager : MonoBehaviour
             Debug.Log("WaveManager: 최초 선택 완료! 게임을 시작합니다.");
         }
 
-        // --- 2. 게임 시작 준비 ---
+        // --- 게임 시작 준비 ---
         if (GameTimer.Instance != null)
         {
             GameTimer.Instance.StartTimer();
@@ -141,6 +153,12 @@ public class WaveManager : MonoBehaviour
             int displayWave = waveIndex + 1;
             waveText.text = $"{displayWave} wave";
             GameManager.Instance.SetWave(displayWave);
+
+            // 웨이브가 시작되기 직전에 배경 업데이트를 요청합니다.
+            if (mapBackgroundManager != null)
+            {
+                mapBackgroundManager.UpdateBackground(displayWave);
+            }
 
             if (displayWave % 10 == 0)
             {
