@@ -135,7 +135,7 @@ public class WaveManager : MonoBehaviour
         yield return new WaitForSeconds(initialDelay);
 
         // --- 3. 웨이브 루프 시작 ---
-        for (int waveIndex = startWaveIndex; waveIndex < spawnManager.waves.Count; waveIndex++)
+        for (int waveIndex = startWaveIndex; waveIndex < spawnManager.waveDatas.Count; waveIndex++)
         {
             currentWaveLevel = waveIndex;
             int displayWave = waveIndex + 1;
@@ -155,8 +155,24 @@ public class WaveManager : MonoBehaviour
             }
 
             _waitingForEnemies = true;
-            yield return StartCoroutine(spawnManager.SpawnWaveEnemies(spawnManager.waves[waveIndex]));
-            while (_waitingForEnemies) yield return null;
+            yield return StartCoroutine(spawnManager.SpawnWaveEnemies(spawnManager.waveDatas[waveIndex]));
+
+            float waveTimeLimit = 60f; // Game_Data의 wave_time
+            float elapsedTime = 0f;
+            bool waveTimeLimitReached = false;
+
+            while (_waitingForEnemies)
+            {
+                elapsedTime += Time.deltaTime;
+
+                if (!waveTimeLimitReached && elapsedTime >= waveTimeLimit)
+                {
+                    waveTimeLimitReached = true;
+                    GameTimer.Instance.StopTimer(); // 60초 경과 시 타이머 멈춤
+                }
+
+                yield return null;
+            }
 
             // 웨이브가 끝나면 타이머를 멈춤
             if (GameTimer.Instance != null)
@@ -202,9 +218,9 @@ public class WaveManager : MonoBehaviour
 
             ResourceManager.Instance.AddCoin(_waveEndBonusCoin);
 
-            if (waveIndex < spawnManager.waves.Count - 1)
+            if (waveIndex < spawnManager.waveDatas.Count - 1)
             {
-                yield return new WaitForSeconds(nextWaveDelay);
+                yield return new WaitForSeconds(6f);
             }
             else
             {

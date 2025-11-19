@@ -29,7 +29,6 @@ public class PopUpManager : MonoBehaviour
 
     private bool _isAnimating = false;
     private bool _shouldPauseGame = true;
-    private static bool _initialBookShown = false;
 
     // 팝업이 열리기 전의 게임 속도를 저장할 변수
     private float _previousTimeScale = 1f;
@@ -47,7 +46,8 @@ public class PopUpManager : MonoBehaviour
 
     public static void ResetInitialBookFlag()
     {
-        _initialBookShown = false;
+        // _initialBookShown 플래그 제거로 인해 이 함수는 더 이상 필요하지 않음
+        // 하위 호환성을 위해 빈 함수로 유지
     }
 
     private void Awake()
@@ -171,13 +171,7 @@ public class PopUpManager : MonoBehaviour
 
     private void OpenPopUpInternal(string popUpType, bool pauseGame)
     {
-        if (popUpType == "MagicBookPopup" && _initialBookShown)
-        {
-            // 함수를 즉시 종료하여 두 번째 팝업이 열리는 것을 원천 차단합니다.
-            Debug.LogWarning("중복된 MagicBookPopup 호출을 차단했습니다.");
-            return;
-        }
-
+        // _isAnimating 플래그로 이미 중복 호출 방지가 되고 있음
         if (_currentActivePopUpGameObject != null || _isAnimating) return;
 
         _shouldPauseGame = pauseGame;
@@ -186,11 +180,6 @@ public class PopUpManager : MonoBehaviour
         {
             Debug.LogError($"'{popUpType}' 이름의 팝업 프리팹이 등록되어 있지 않습니다.");
             return;
-        }
-
-        if (popUpType == "MagicBookPopup")
-        {
-            _initialBookShown = true;
         }
 
         if (_currentPopUpUICanvas != null)
@@ -292,11 +281,6 @@ public class PopUpManager : MonoBehaviour
         if (_shouldPauseGame)
         {
             Time.timeScale = _previousTimeScale;
-        }
-
-        if (popUpName == "MagicBookPopup")
-        {
-            _initialBookShown = false;
         }
 
         _isAnimating = false;
