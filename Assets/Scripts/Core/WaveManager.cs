@@ -92,19 +92,8 @@ public class WaveManager : MonoBehaviour
     // FadeManager가 씬에 나타날 때까지 기다렸다가 이벤트를 구독하는 코루틴
     private IEnumerator WaitForFadeManagerAndSubscribe()
     {
-        // 로드된 게임인지 확인
-        bool isLoadedGame = GameSaveManager.Instance != null && GameSaveManager.Instance.CurrentGameData != null;
-
-        if (isLoadedGame)
-        {
-            yield return new WaitForSeconds(0.5f);
-            StartWaveRoutine();
-        }
-        else
-        {
-            yield return new WaitUntil(() => FadeManager.Instance != null);
-            FadeManager.OnSceneTransitionComplete += StartWaveRoutine;
-        }
+        yield return new WaitUntil(() => FadeManager.Instance != null);
+        FadeManager.OnSceneTransitionComplete += StartWaveRoutine;
     }
 
     // FadeManager로부터 "씬 전환 완료" 신호를 받으면 호출될 함수

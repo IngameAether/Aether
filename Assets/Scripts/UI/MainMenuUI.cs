@@ -208,10 +208,10 @@ public class MainMenuUI : MonoBehaviour
                 ShowPanel(UIPanelState.LevelSelect);
             }
         }
-        // 세이브 파일이 없으면 레벨 선택 화면으로
+        // 세이브 파일이 없으면 바로 게임 시작 (첫 번째 웨이브)
         else
         {
-            ShowPanel(UIPanelState.LevelSelect);
+            StartGame(0);
         }
     }
 
@@ -234,13 +234,7 @@ public class MainMenuUI : MonoBehaviour
     // 게임 시작 함수 (씬 로딩)
     void StartGame(int waveIndex)
     {
-        string sceneToLoad = waveDatas[waveIndex].sceneName;
-        if (string.IsNullOrEmpty(sceneToLoad))
-        {
-            Debug.LogError($"씬 이름이 설정되지 않았습니다.");
-            return;
-        }
-        SceneManager.LoadScene(sceneToLoad); // FadeManager가 있다면 그것을 사용
+        FadeManager.Instance.TransitionToScene("GameScene");
     }
 
     // 레벨 선택 창의 웨이브 이름과 이미지 업데이트
