@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2718556489220210685}
   - component: {fileID: 6108171622086180889}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Highlight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: -2361106827450320858}
   - component: {fileID: 742412471240839474}
   - component: {fileID: 2649207259652978631}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: tile_Right
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,7 +196,6 @@ MonoBehaviour:
   highlightRenderer: {fileID: 6108171622086180889}
   defaultSprite: {fileID: 0}
   selectedSprite: {fileID: 1718835360054159439, guid: 06802bd9f42b04243afb543cc73d5c87, type: 3}
-  highlightOffset: {x: 0, y: -0.5, z: 0}
 --- !u!114 &742412471240839474
 MonoBehaviour:
   m_ObjectHideFlags: 0

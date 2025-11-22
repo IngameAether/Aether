@@ -10,7 +10,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -2253911629886400664, guid: 06802bd9f42b04243afb543cc73d5c87, type: 3}
       propertyPath: m_Name
-      value: map_tile (1)
+      value: map_tile
+      objectReference: {fileID: 0}
+    - target: {fileID: -2253911629886400664, guid: 06802bd9f42b04243afb543cc73d5c87, type: 3}
+      propertyPath: m_Layer
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7878350319992209165, guid: 06802bd9f42b04243afb543cc73d5c87, type: 3}
       propertyPath: m_LocalPosition.x
@@ -117,8 +121,8 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0}
-    oldSize: {x: 0.66, y: 0.66}
-    newSize: {x: 0.66, y: 0.66}
+    oldSize: {x: 1.03125, y: 1.03125}
+    newSize: {x: 1.03125, y: 1.03125}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0

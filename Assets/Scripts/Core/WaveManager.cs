@@ -51,12 +51,12 @@ public class WaveManager : MonoBehaviour
         {
             mapBackgroundManager = FindObjectOfType<MapBackgroundManager>();
         }
-
-        StartCoroutine(WaveRoutine());
     }
 
     private void OnEnable()
     {
+        StartCoroutine(WaitForFadeManagerAndSubscribe());
+
         // PopUpManager의 팝업 닫힘 이벤트를 구독합니다.
         if (PopUpManager.Instance != null)
             PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
@@ -264,17 +264,17 @@ public class WaveManager : MonoBehaviour
         PopUpManager.Instance.OpenPopUpInGame("MagicBookPopup");
         Debug.Log("WaitForChoice: 팝업 열기 요청 완료, 닫힐 때까지 대기...");
 
-        float startTime = Time.time;
+        float startTime = Time.unscaledTime;
         while (_isWaitingForChoice)
         {
             // 30초 타임아웃 추가 (안전장치)
-            if (Time.time - startTime > 30f)
+            if (Time.unscaledTime - startTime > 30f)
             {
                 Debug.LogError("WaitForChoice: 30초 타임아웃! 팝업이 열리지 않았거나 닫히지 않았습니다.");
                 _isWaitingForChoice = false;
                 break;
             }
-            yield return null;
+            yield return new WaitForSecondsRealtime(0.1f);
         }
 
         Debug.Log("WaitForChoice: 팝업 닫힘 확인, 대기 종료");
