@@ -76,7 +76,6 @@ public class FadeManager : MonoBehaviour
         StartCoroutine(TransitionCoroutine(sceneName));
     }
 
-    // TransitionCoroutine에서 Fade In 로직 제거
     private IEnumerator TransitionCoroutine(string sceneName)
     {
         isTransitioning = true; // 전환 시작! OnSceneLoaded가 개입하지 못하도록 막음

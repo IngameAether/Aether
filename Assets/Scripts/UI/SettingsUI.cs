@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class SettingsUI : MonoBehaviour
 {
@@ -12,6 +13,10 @@ public class SettingsUI : MonoBehaviour
     public TMP_Text sfxValueText;
     public Toggle sfxMuteToggle; // SFX 음소거 토글
 
+    [Header("Scene Navigation")]
+    [SerializeField] private GameObject goToMainButton; // 메인으로 가기 버튼 오브젝트
+    [SerializeField] private Button mainButtonComponent; // 버튼의 클릭 이벤트를 위해
+
     private void OnEnable()
     {
         LoadSettingsToUI();
@@ -20,6 +25,21 @@ public class SettingsUI : MonoBehaviour
         bgmMuteToggle.onValueChanged.AddListener(OnBGMMuteToggled);
         sfxSlider.onValueChanged.AddListener(OnSFXVolumeChanged);
         sfxMuteToggle.onValueChanged.AddListener(OnSFXMuteToggled);
+
+        // 메인 메뉴 버튼 리스너 연결
+        if (mainButtonComponent != null)
+        {
+            mainButtonComponent.onClick.AddListener(OnClickGoToMain);
+        }
+        // 현재 씬이 메인 메뉴라면 버튼을 숨깁니다.
+        if (SceneManager.GetActiveScene().name == "MainMenuScene")
+        {
+            if (goToMainButton != null) goToMainButton.SetActive(false);
+        }
+        else
+        {
+            if (goToMainButton != null) goToMainButton.SetActive(true);
+        }
     }
 
     private void OnDisable()
@@ -30,7 +50,36 @@ public class SettingsUI : MonoBehaviour
         sfxSlider.onValueChanged.RemoveListener(OnSFXVolumeChanged);
         sfxMuteToggle.onValueChanged.RemoveListener(OnSFXMuteToggled);
 
+        // 버튼 리스너 해제
+        if (mainButtonComponent != null)
+        {
+            mainButtonComponent.onClick.RemoveListener(OnClickGoToMain);
+        }
+
         SaveCurrentSettings(); // 여기서 최종 저장
+    }
+
+    // 메인으로 가기 버튼 클릭 시 실행될 함수
+    private void OnClickGoToMain()
+    {
+        // 팝업을 닫는 명령을 추가합니다.
+        if (PopUpManager.Instance != null)
+        {
+            PopUpManager.Instance.CloseCurrentPopUp();
+        }
+
+        // 팝업이 열려있어서 멈춘 시간을 다시 흐르게 합니다.
+        Time.timeScale = 0.5f;
+
+        // FadeManager를 통해 부드럽게 메인 메뉴로 이동합니다.
+        if (FadeManager.Instance != null)
+        {
+            FadeManager.Instance.TransitionToScene("MainMenuScene");
+        }
+        else
+        {
+            SceneManager.LoadScene("MainMenuScene");
+        }
     }
 
     private void LoadSettingsToUI()
