@@ -51,6 +51,7 @@ public class WaveManager : MonoBehaviour
         {
             mapBackgroundManager = FindObjectOfType<MapBackgroundManager>();
         }
+
     }
 
     private void OnEnable()
@@ -60,16 +61,12 @@ public class WaveManager : MonoBehaviour
         // PopUpManager의 팝업 닫힘 이벤트를 구독합니다.
         if (PopUpManager.Instance != null)
             PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
-
-        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
-    }
-
-    private void Start()
-    {
         if (MagicBookManager.Instance != null)
         {
             MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
         }
+
+        SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
     }
 
     private void OnDisable()
