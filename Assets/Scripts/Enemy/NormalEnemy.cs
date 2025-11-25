@@ -42,6 +42,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     // 컴포넌트 참조
     private EnemyMovement enemyMovement;
     private EnemyStatusManager statusManager;
+    private EnemyHitFlicking enemyHit;
 
     public EnemyData enemyData;
     public EnemyInfoData enemyInfo;
@@ -53,6 +54,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         // 필수 컴포넌트들을 미리 찾아와서 저장합니다.
         enemyMovement = GetComponent<EnemyMovement>();
         statusManager = GetComponent<EnemyStatusManager>();
+        enemyHit = GetComponent<EnemyHitFlicking>();
 
         if (enemyMovement == null || statusManager == null)
         {
@@ -148,6 +150,8 @@ public class NormalEnemy : MonoBehaviour, IDamageable
             CurrentHealth -= finalDamage;
             CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
             UpdateHealthBar();
+
+            enemyHit.HitFlicking();
         }
 
         if (CurrentHealth <= 0)
