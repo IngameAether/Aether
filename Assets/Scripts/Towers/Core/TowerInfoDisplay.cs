@@ -111,9 +111,9 @@ public class TowerInfoDisplay : MonoBehaviour
     private void ShowTowerInfo(Tower tower)
     {
         towerStatsText.text = $"공격력: {tower.Damage}\n" +
-                              $"사거리: {tower.Range}\n" +
                               $"공격 속도: {tower.AttackSpeed}\n" +
-                              $"치명타 확률: {tower.CriticalHit}";
+                              $"치명타 확률: {tower.CriticalHit}\n" +
+                              $"사거리: {tower.Range}";
 
         UpdateReinforceUI(tower);
         infoPanelUI.SetActive(true);
