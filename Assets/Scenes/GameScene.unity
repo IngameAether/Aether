@@ -657,6 +657,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   spawnManager: {fileID: 0}
   waveText: {fileID: 553837775}
+  mapBackgroundManager: {fileID: 0}
   initialDelay: 1
   nextWaveDelay: 3
   bossWaveIndex: 29
