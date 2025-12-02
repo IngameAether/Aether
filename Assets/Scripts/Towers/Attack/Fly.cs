@@ -10,9 +10,9 @@ public class Fly : FireObjectBase
     [SerializeField] private float speed;
     [SerializeField] private float flyingAnimSpeed;
 
-    public override void Init(Vector2 tower, Transform target)
+    public override void Init(Vector2 tower, Transform target, float damage)
     {
-        base.Init(tower, target);
+        base.Init(tower, target, damage);
 
         // 지정된 애니메이션으로 바꾸기 
         SetAnimationClip();
@@ -53,8 +53,7 @@ public class Fly : FireObjectBase
 
     protected virtual void AfterMove()
     {
-        // 적 데미지 주는 로직 추가
-        Destroy(gameObject);
+        OnTargetHit();
     }
 
     protected virtual void SetAnimationClip()

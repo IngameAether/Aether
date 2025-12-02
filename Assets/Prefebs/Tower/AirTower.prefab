@@ -100,7 +100,6 @@ GameObject:
   - component: {fileID: -6281842738988306443}
   - component: {fileID: 5753639888089113247}
   - component: {fileID: 6642040424005087261}
-  - component: {fileID: 511255442813815957}
   m_Layer: 7
   m_Name: AirTower
   m_TagString: Untagged
@@ -263,18 +262,6 @@ MonoBehaviour:
   towerData: {fileID: 11400000, guid: 699c526a23d75d740b240a367adf19c1, type: 2}
   reinforceType: 0
   firePoint: {fileID: 1738412239379933292}
---- !u!114 &511255442813815957
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2156860131253734831}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cfec24e344e2624d9d08a779d0ef25b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &3810173595613539892
 GameObject:
   m_ObjectHideFlags: 0

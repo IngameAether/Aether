@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -312,7 +312,7 @@ public class MagicBookBuffSystem : MonoBehaviour
             Range = CalculateFinalRange(baseRange, buffData),
             CritChance = CalculateFinalCritChance(towerCode, baseCrit, buffData),
             ExcessCritDamageMultiplier = CalculateExcessCritDamageMultiplier(towerCode, baseCrit, buffData),
-            StatusEffect = CalculateBuffedStatusEffect(tower, buffData)
+            // StatusEffect = CalculateBuffedStatusEffect(tower, buffData)
         };
 
         return finalStats;
@@ -392,39 +392,6 @@ public class MagicBookBuffSystem : MonoBehaviour
         return 1f;
     }
 
-    private StatusEffect CalculateBuffedStatusEffect(Tower tower, TowerBuffData buffData)
-    {
-        float baseDuration = tower.towerData.effectDuration + tower.GetBonusEffectDuration();
-        float baseValue = tower.towerData.effectValue;
-
-        if (buffData.StatusEffectModifiers != null &&
-            buffData.StatusEffectModifiers.TryGetValue(tower.towerData.effectType, out var modifier))
-        {
-            float modifiedValue = baseValue;
-            float modifiedDuration = baseDuration + modifier.DurationBonus;
-
-            switch (tower.towerData.effectType)
-            {
-                case StatusEffectType.Burn:
-                case StatusEffectType.Rot:
-                case StatusEffectType.Bleed:
-                    modifiedValue *= modifier.DamageMultiplier;
-                    break;
-
-                case StatusEffectType.Slow:
-                case StatusEffectType.Stun:
-                case StatusEffectType.Paralyze:
-                case StatusEffectType.Fear:
-                    modifiedValue *= modifier.PotencyMultiplier;
-                    break;
-            }
-
-            return new StatusEffect(tower.towerData.effectType, modifiedDuration, modifiedValue, tower.transform.position);
-        }
-
-        return new StatusEffect(tower.towerData.effectType, baseDuration, baseValue, tower.transform.position);
-    }
-
     #endregion
 }
 
@@ -476,7 +443,6 @@ public struct TowerFinalStats
     public float Range;
     public float CritChance;
     public float ExcessCritDamageMultiplier;
-    public StatusEffect StatusEffect;
 }
 
 #endregion
