@@ -253,6 +253,7 @@ GameObject:
   - component: {fileID: 2426596839584739762}
   - component: {fileID: -7791701291589517412}
   - component: {fileID: -1744988287383778466}
+  - component: {fileID: 8397120231792390695}
   m_Layer: 6
   m_Name: BossKimera
   m_TagString: Enemy
@@ -445,7 +446,20 @@ MonoBehaviour:
   allEnemyData: []
   enemyPrefabs: []
   mapManage: {fileID: 0}
-  waves: []
+  loadFromCSV: 1
+  waveDatas: []
+--- !u!114 &8397120231792390695
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5417002623811271532}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62c56b77b142bbb4dbcc23b3370d035a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &5614385505505001528
 GameObject:
   m_ObjectHideFlags: 0
