@@ -21,6 +21,7 @@ public class FireObjectBase : MonoBehaviour
     protected Vector2 targetPos;
     protected Transform target;
     protected float damage;
+    public float Damage { get { return damage; } }
 
     
     //[SerializeField]
@@ -34,48 +35,84 @@ public class FireObjectBase : MonoBehaviour
 
     public virtual void Init(Vector2 tower, Transform target, float damage)
     {
-        animatorOverride = new AnimatorOverrideController(animator.runtimeAnimatorController);
-
         this.towerPos = tower;
         transform.position = towerPos;
 
         this.target = target;
         this.targetPos = target.position;
         this.damage = damage;
+
+        // 지정된 애니메이션으로 바꾸기
+        SetAnimationClip();
     }
 
-    public virtual void PlayPrepareAnim(float speed = 1.0f)
+    public (StatusEffectType type, float value) GetStatusEffectInfo()
+    {
+        return (statusEffect, effctValue);
+    }
+
+    protected void PlayPrepareAnim(float speed = 1.0f)
     {
         animator.SetTrigger("prepare");
         animator.speed = speed;
     }
-    public virtual void PlayFlyingAnim(float speed = 1.0f)
+    protected void PlayFlyingAnim(float speed = 1.0f)
     {
         animator.SetTrigger("flying");
         animator.speed = speed;
     }
-    public virtual void PlayAttackAnim(float speed = 1.0f)
+    protected void PlayAttackAnim(float speed = 1.0f)
     {
         animator.SetTrigger("attack");
         animator.speed = speed;
     }
 
+    protected virtual void SetAnimationClip()
+    {
+        if (!(animator.runtimeAnimatorController is AnimatorOverrideController))
+        {
+            animatorOverride = new AnimatorOverrideController(animator.runtimeAnimatorController);
+            animator.runtimeAnimatorController = animatorOverride;
+        }
+        else
+        {
+            animatorOverride = (AnimatorOverrideController)animator.runtimeAnimatorController;
+        }
+    }
+
     protected void OnTargetHit()
     {
-        if (target != null)
+        if (isMultiHit)
         {
-            var enemy = target.GetComponent<NormalEnemy>();
-            if (enemy == null)
+            transform.GetChild(0).gameObject.SetActive(true);
+        }
+        else
+        {
+            if (target != null)
             {
-                enemy = target.parent.GetComponent<NormalEnemy>();
-                if (enemy != null)
+                var enemy = target.GetComponent<NormalEnemy>();
+                if (enemy == null)
                 {
-                    if (statusEffect != StatusEffectType.None) enemy.TakeHit(statusEffect, effctValue, damage);
-                    else enemy.TakeDamage(damage);
+                    enemy = target.parent.GetComponent<NormalEnemy>();
+                    if (enemy != null)
+                    {
+                        if (statusEffect != StatusEffectType.None) enemy.TakeHit(statusEffect, effctValue, damage);
+                        else enemy.TakeDamage(damage);
+                    }
                 }
             }
         }
 
+        AfterTargetHit(0f);
+    }
+
+    // 공격이 완전히 끝난 뒤에 제거
+    protected virtual void AfterTargetHit(float t)
+    {
+        Invoke("DestroySelf", t);
+    }
+    private void DestroySelf()
+    {
         Destroy(gameObject);
     }
 }

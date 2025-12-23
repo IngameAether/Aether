@@ -3,8 +3,11 @@ using UnityEngine;
 
 public class FlyAttack : Fly
 {
+    [Space]
+    [Header("Attack Variables")]
     [SerializeField] private AnimationClip attackAnim;
     [SerializeField] private float AttackAnimSpeed;
+    [SerializeField] private bool needRotation;
     private bool isFlyingEnd = false;
 
     protected override void Update()
@@ -18,25 +21,23 @@ public class FlyAttack : Fly
     {
         isFlyingEnd = true;
         transform.position = targetPos;
+        if (!needRotation) transform.rotation = Quaternion.identity;
         PlayAttackAnim(AttackAnimSpeed);
+
+        base.AfterMove();
     }
 
-    // 애니메이터에서 이벤트로 호출
-    private void AfterAttack()
+    // Attack 애니메이션 끝날 때까지 대기
+    protected override void AfterTargetHit(float t)
     {
-        Destroy(gameObject);
+        base.AfterTargetHit(attackAnim.length);
     }
 
     protected override void SetAnimationClip()
     {
-        var overrides = new List<KeyValuePair<AnimationClip, AnimationClip>>();
-        animatorOverride.GetOverrides(overrides);
-        for (int i = 0; i < overrides.Count; i++)
-        {
-            if (overrides[i].Key.name == "Flying")
-                overrides[i] = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, flyingAnim);
-            else if (overrides[i].Key.name == "Attack")
-                overrides[i] = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, attackAnim);
-        }
+        base.SetAnimationClip();
+
+        animatorOverride["L1F_flying"] = flyingAnim;
+        animatorOverride["L2F_attack"] = attackAnim;
     }
 }

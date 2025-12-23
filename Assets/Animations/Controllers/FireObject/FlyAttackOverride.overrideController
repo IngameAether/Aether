@@ -8,4 +8,8 @@ AnimatorOverrideController:
   m_PrefabAsset: {fileID: 0}
   m_Name: FlyAttackOverride
   m_Controller: {fileID: 9100000, guid: 88e92a271d619364dbb5a051b15b6fbc, type: 2}
-  m_Clips: []
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 35dad480a813ca04d9bf2ce6f211968b, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 33976589fd7094c42976f1ffb6324de2, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: d4a9e43973e4eec41af238bcfc70ec96, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 0680c9299c77bc14aaa2e70bcdcb22f7, type: 2}

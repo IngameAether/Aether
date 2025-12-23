@@ -3,19 +3,15 @@ using UnityEngine;
 
 public class Fly : FireObjectBase
 {
-    [SerializeField] protected AnimationClip flyingAnim;
-
     [Space]
-    [Header("Variables")]
+    [Header("Flying Variables")]
+    [SerializeField] protected AnimationClip flyingAnim;
     [SerializeField] private float speed;
     [SerializeField] private float flyingAnimSpeed;
 
     public override void Init(Vector2 tower, Transform target, float damage)
     {
         base.Init(tower, target, damage);
-
-        // 지정된 애니메이션으로 바꾸기 
-        SetAnimationClip();
 
         // 방향 정하기
         Rotate();
@@ -27,6 +23,14 @@ public class Fly : FireObjectBase
     protected virtual void Update()
     {
         Move();
+
+        AnimatorClipInfo[] clipInfo = animator.GetCurrentAnimatorClipInfo(0);
+        if (clipInfo.Length > 0)
+        {
+            // 현재 가장 영향력이 큰(첫 번째) 클립의 이름을 출력
+            string currentClipName = clipInfo[0].clip.name;
+            Debug.Log("현재 재생 중인 클립: " + currentClipName);
+        }
     }
 
     protected void Move()
@@ -56,14 +60,10 @@ public class Fly : FireObjectBase
         OnTargetHit();
     }
 
-    protected virtual void SetAnimationClip()
+    protected override void SetAnimationClip()
     {
-        var overrides = new List<KeyValuePair<AnimationClip, AnimationClip>>();
-        animatorOverride.GetOverrides(overrides);
-        for (int i = 0; i < overrides.Count; i++)
-        {
-            if (overrides[i].Key.name == "Flying")
-                overrides[i] = new KeyValuePair<AnimationClip, AnimationClip>(overrides[i].Key, flyingAnim);
-        }
+        base.SetAnimationClip();
+
+        if (flyingAnim != null) animatorOverride["L1F_flying"] = flyingAnim;
     }
 }
