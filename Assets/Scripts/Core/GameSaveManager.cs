@@ -617,4 +617,12 @@ public class GameSaveManager : MonoBehaviour
             tile.isElementBuild = false;
         }
     }
+
+    /// <summary>
+    /// 현재 로드된 게임 데이터를 초기화
+    /// </summary>
+    public void ClearCurrentGameData()
+    {
+        CurrentGameData = null;
+    }
 }
