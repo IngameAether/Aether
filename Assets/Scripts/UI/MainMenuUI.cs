@@ -167,6 +167,7 @@ public class MainMenuUI : MonoBehaviour
 
     private IEnumerator HandleSlotSelection()
     {
+        GameSaveManager.Instance.ClearCurrentGameData();
         GameSaveManager.Instance.SelectedSlotIndex = currentSaveSlotIndex;
         SaveSlot slotInfo = GameSaveManager.Instance.GetSaveSlot(currentSaveSlotIndex);
 
