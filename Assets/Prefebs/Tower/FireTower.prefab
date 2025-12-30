@@ -206,7 +206,6 @@ GameObject:
   - component: {fileID: 1407164335372021098}
   - component: {fileID: 8768647810141785125}
   - component: {fileID: -3361127631089178800}
-  - component: {fileID: 3427042812864870713}
   m_Layer: 7
   m_Name: FireTower
   m_TagString: Untagged
@@ -369,18 +368,6 @@ MonoBehaviour:
   towerData: {fileID: 11400000, guid: 3e9bcde478196ba4ab18928bea8d526e, type: 2}
   reinforceType: 0
   firePoint: {fileID: 4900260835950074317}
---- !u!114 &3427042812864870713
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4710304639692687514}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7cfec24e344e2624d9d08a779d0ef25b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &6555064300628505403
 GameObject:
   m_ObjectHideFlags: 0

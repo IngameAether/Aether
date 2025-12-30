@@ -11,6 +11,9 @@ public class TowerData : ScriptableObject
     public int Level; // 이 데이터가 몇 단계용인지 표시
     public int MaxReinforce = 3; // 1~3단계 타워의 최대 강화 횟수
 
+    [Header("발사체 정보")]
+    public GameObject fireObjectPrefeb;
+
     [Header("조합 정보")]
     public List<string> RequiredTowerIds = new List<string>(); // 조합에 필요한 타워 ID들
 
@@ -30,27 +33,10 @@ public class TowerData : ScriptableObject
     public float TimeDuration;
     public bool Guided;
     public bool Multi;
-
+    
     [Header("사운드 설정")]
     public SfxType attackSound; // 이 타워가 사용할 공격 사운드
     public SfxType impactSound; // 적과 부딪힐 때 나는 소리
-
-    [Header("상태 이상 설정")]
-    public StatusEffectType effectType; 
-    public float effectDuration;     
-    public float effectValue;
-
-    [Tooltip("공격 시 상태이상 게이지를 얼마나 깎을지에 대한 값입니다.")]
-    public float effectBuildup = 20f; // 예: 공격마다 20씩 깎음
-
-    [Header("발사체 정보")]
-    public GameObject projectilePrefab;
-
-    [Header("발사체 상세 설정")]
-    public float projectileSpeed = 10f; // 발사체 속도
-    public float arcHeight = 2f;      // 포물선 높이 (AttackMode가 Parabolic일 때)
-    public HitType hitType = HitType.Direct; // 명중 방식 (직격, 폭발 등)
-    public DamageEffectType damageEffectType = DamageEffectType.SingleTarget;
 
     [Header("업그레이드 정보")]
     public TowerData nextUpgradeData; // 4단계 TowerData를 여기에 연결

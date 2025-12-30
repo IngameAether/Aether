@@ -98,21 +98,21 @@ public class TowerStatManager : MonoBehaviour
         foreach (Tower tower in allTowers)
         {
             // [핵심] 타워의 상태이상 타입이 마법책이 지정한 타겟 상태이상과 일치하는지 확인합니다.
-            if (tower.towerData.effectType == effect.TargetStatusEffect)
-            {
-                // % 증가 로직 (finalValue가 20이면 20% 증가)
-                if (effect.ValueType == EValueType.Percentage)
-                {
-                    // 타워의 '기본' 누적치를 기준으로 증가량을 계산
-                    float increaseAmount = tower.towerData.effectBuildup * (finalValue / 100f);
-                    tower.AddBonusBuildup(increaseAmount);
-                }
-                // 고정값 증가 로직
-                else if (effect.ValueType == EValueType.Flat)
-                {
-                    tower.AddBonusBuildup(finalValue);
-                }
-            }
+            //if (tower.towerData.effectType == effect.TargetStatusEffect)
+            //{
+            //    // % 증가 로직 (finalValue가 20이면 20% 증가)
+            //    if (effect.ValueType == EValueType.Percentage)
+            //    {
+            //        // 타워의 '기본' 누적치를 기준으로 증가량을 계산
+            //        float increaseAmount = tower.towerData.effectBuildup * (finalValue / 100f);
+            //        tower.AddBonusBuildup(increaseAmount);
+            //    }
+            //    // 고정값 증가 로직
+            //    else if (effect.ValueType == EValueType.Flat)
+            //    {
+            //        tower.AddBonusBuildup(finalValue);
+            //    }
+            //}
         }
     }
 }

@@ -23,9 +23,9 @@ public class TowerExtension : MonoBehaviour
     public float BuffedRange => _tower.Range + _bonusRange;
     public float BuffedDamage => _tower.Damage * _bonusDamageMultiplier;
     public float BuffedAttackSpeed => _tower.AttackSpeed * _bonusAttackSpeedMultiplier;
-    public float BuffedEffectBuildup => _tower.towerData.effectBuildup + _bonusBuildup;
-    public float BuffedEffectDuration => _tower.towerData.effectDuration + _bonusEffectDuration;
-    public float BuffedEffectValue => _tower.towerData.effectValue + _bonusEffectValue;
+    //public float BuffedEffectBuildup => _tower.towerData.effectBuildup + _bonusBuildup;
+    //public float BuffedEffectDuration => _tower.towerData.effectDuration + _bonusEffectDuration;
+    //public float BuffedEffectValue => _tower.towerData.effectValue + _bonusEffectValue;
 
     private void Awake()
     {
@@ -39,65 +39,65 @@ public class TowerExtension : MonoBehaviour
     }
 
     // --- 외부 시스템(TowerStatManager 등)이 호출할 함수들 ---
-    public void AddBonusRange(float amount) { _bonusRange += amount; }
-    public void AddBonusBuildup(float amount) { _bonusBuildup += amount; }
-    public void AddBonusEffectDuration(float amount) { _bonusEffectDuration += amount; }
+    //public void AddBonusRange(float amount) { _bonusRange += amount; }
+    //public void AddBonusBuildup(float amount) { _bonusBuildup += amount; }
+    //public void AddBonusEffectDuration(float amount) { _bonusEffectDuration += amount; }
 
     // Tower로부터 공격 신호를 받아 애니메이션을 재생하거나 직접 발사합니다.
-    public void TriggerAttackAnimation()
-    {
-        if (_animator != null)
-        {
-            // 애니메이터가 있다면 "Attack" 신호를 보냅니다.
-            // 실제 발사는 애니메이션 이벤트에 연결된 FireProjectile()이 담당합니다.
-            _animator.SetTrigger("Attack");
-        }
-        else
-        {
-            // 애니메이터가 없다면 Tower의 FireProjectile을 직접 호출합니다.
-            _tower.FireProjectile();
-        }
+    //public void TriggerAttackAnimation()
+    //{
+    //    if (_animator != null)
+    //    {
+    //        // 애니메이터가 있다면 "Attack" 신호를 보냅니다.
+    //        // 실제 발사는 애니메이션 이벤트에 연결된 FireProjectile()이 담당합니다.
+    //        _animator.SetTrigger("Attack");
+    //    }
+    //    else
+    //    {
+    //        // 애니메이터가 없다면 Tower의 FireProjectile을 직접 호출합니다.
+    //        _tower.FireProjectile();
+    //    }
 
-        Animator mouthAnimator = transform.Find("Mouth")?.GetComponent<Animator>();
-        Animator scaleAnimator = GetComponent<Animator>();
-        if (mouthAnimator != null && scaleAnimator != null)
-        {
-            mouthAnimator.SetTrigger("CanAttack");
-            scaleAnimator.SetTrigger("CanAttack");
-            Debug.Log("Animation 실행");
-        }
-    }
+    //    Animator mouthAnimator = transform.Find("Mouth")?.GetComponent<Animator>();
+    //    Animator scaleAnimator = GetComponent<Animator>();
+    //    if (mouthAnimator != null && scaleAnimator != null)
+    //    {
+    //        mouthAnimator.SetTrigger("CanAttack");
+    //        scaleAnimator.SetTrigger("CanAttack");
+    //        Debug.Log("Animation 실행");
+    //    }
+    //}
 
     // --- 강화 및 진화 로직 ---
-    public void Reinforce(ReinforceType type)
-    {
-        var towerData = _tower.towerData;
-        if (type == ReinforceType.Light)
-        {
-            _lightReinforceCount++;
-            Debug.Log($"{towerData.Name} Light 강화! ({_lightReinforceCount}/{towerData.reinforcementThreshold})");
-            if (towerData.lightEvolutionData != null && _lightReinforceCount >= towerData.reinforcementThreshold)
-            {
-                Evolve(towerData.lightEvolutionData);
-            }
-        }
-        else if (type == ReinforceType.Dark)
-        {
-            _darkReinforceCount++;
-            Debug.Log($"{towerData.Name} Dark 강화! ({_darkReinforceCount}/{towerData.reinforcementThreshold})");
-            if (towerData.darkEvolutionData != null && _darkReinforceCount >= towerData.reinforcementThreshold)
-            {
-                Evolve(towerData.darkEvolutionData);
-            }
-        }
-    }
+    //public void Reinforce(ReinforceType type)
+    //{
+    //    var towerData = _tower.towerData;
+    //    if (type == ReinforceType.Light)
+    //    {
+    //        _lightReinforceCount++;
+    //        Debug.Log($"{towerData.Name} Light 강화! ({_lightReinforceCount}/{towerData.reinforcementThreshold})");
+    //        if (towerData.lightEvolutionData != null && _lightReinforceCount >= towerData.reinforcementThreshold)
+    //        {
+    //            Evolve(towerData.lightEvolutionData);
+    //        }
+    //    }
+    //    else if (type == ReinforceType.Dark)
+    //    {
+    //        _darkReinforceCount++;
+    //        Debug.Log($"{towerData.Name} Dark 강화! ({_darkReinforceCount}/{towerData.reinforcementThreshold})");
+    //        if (towerData.darkEvolutionData != null && _darkReinforceCount >= towerData.reinforcementThreshold)
+    //        {
+    //            Evolve(towerData.darkEvolutionData);
+    //        }
+    //    }
+    //}
 
-    private void Evolve(TowerData evolutionData)
-    {
-        Debug.Log($"{_tower.towerData.Name}이(가) {evolutionData.Name}(으)로 진화합니다!");
-        GameObject prefabToSpawn = evolutionData.upgradedPrefab != null ? evolutionData.upgradedPrefab : this.gameObject;
-        GameObject newTowerObject = Instantiate(prefabToSpawn, transform.position, transform.rotation);
-        newTowerObject.GetComponent<Tower>()?.Setup(evolutionData);
-        Destroy(gameObject);
-    }
+    //private void Evolve(TowerData evolutionData)
+    //{
+    //    Debug.Log($"{_tower.towerData.Name}이(가) {evolutionData.Name}(으)로 진화합니다!");
+    //    GameObject prefabToSpawn = evolutionData.upgradedPrefab != null ? evolutionData.upgradedPrefab : this.gameObject;
+    //    GameObject newTowerObject = Instantiate(prefabToSpawn, transform.position, transform.rotation);
+    //    newTowerObject.GetComponent<Tower>()?.Setup(evolutionData);
+    //    Destroy(gameObject);
+    //}
 }
