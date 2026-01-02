@@ -95,6 +95,22 @@ public class MagicBookManager : MonoBehaviour
             }
         }
 
+        // 넣을려고 했는데 어처피 csv에 raritySettings 첫번째밖에 없어서 안넣는걸로
+        // if (GameDataDatabase.HasData("magic_book_tier_probability"))
+        // {
+        //     int[] csvProbs = GameDataDatabase.GetIntArray("magic_book_tier_probability");
+        //     if (csvProbs != null && csvProbs.Length >= 3)
+        //     {
+        //         // CSV 값으로 새로운 RarityByWave 생성
+        //         currentRarity = new RarityByWave
+        //         {
+        //             normalChance = csvProbs[0],
+        //             rareChance = csvProbs[1],
+        //             epicChance = csvProbs[2]
+        //         };
+        //     }
+        // }
+
         // 위 확률에 따라 3개의 등급을 먼저 뽑음
         List<EBookRank> ranksToPick = new List<EBookRank>();
         for (int i = 0; i < count; i++)
