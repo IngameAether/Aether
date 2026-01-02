@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public enum ReinforceType { None, Light, Dark };
 
@@ -24,6 +26,7 @@ public class Tower : MonoBehaviour
 
     protected SpriteRenderer spriteRenderer;
     protected SpriteRenderer magicCircleRenderer;
+    protected Animator animator;
 
     protected float lastAttackTime;
     protected bool isFacingRight = true;
@@ -31,11 +34,8 @@ public class Tower : MonoBehaviour
     protected Vector3 direction; // 적 방향
     private bool isDisable = false;
     private float disableTimer = 0f;
-
-    [Header("Firing")]
-    [SerializeField] protected Transform firePoint;
-
-    public Transform FirePoint => firePoint != null ? firePoint : transform;
+    private Vector3 originalScale;
+    private Vector3 firePoint;
 
     // 초기화 완료 상태를 저장할 변수
     private bool _isInitialized = false;
@@ -52,8 +52,8 @@ public class Tower : MonoBehaviour
     // 외부 효과로 추가된 상태이상 지속시간을 저장할 변수
     private float bonusEffectDuration = 0f;
     // 최종 지속시간은 '기본 지속시간'과 '추가 지속시간'을 더한 값입니다.
-    public float EffectDuration => towerData.effectDuration + bonusEffectDuration;
-    public float EffectBuildup => towerData.effectBuildup + bonusBuildup;
+    //public float EffectDuration => towerData.effectDuration + bonusEffectDuration;
+    //public float EffectBuildup => towerData.effectBuildup + bonusBuildup;
     public string TowerName => towerData.Name;
     public float Damage => FormulaEvaluator.EvaluateTowerData(towerInfo.Attack, lightReinforceCount, darkReinforceCount);
     public float AttackSpeed => towerInfo.Speed;
@@ -74,6 +74,7 @@ public class Tower : MonoBehaviour
         // 확장 스크립트를 찾아서 연결합니다.
         _extension = GetComponent<TowerExtension>();
         _spriteController = GetComponent<TowerSpriteController>();
+        animator = GetComponent<Animator>();
 
         // 데이터 초기화는 Awake에서 먼저 실행되도록 유지
         Setup(this.towerData);
@@ -82,6 +83,9 @@ public class Tower : MonoBehaviour
 
     protected virtual void Start()
     {
+        originalScale = transform.localScale;
+        Vector3 offset = new Vector3(0f, -0.2f, 0f);
+        firePoint = transform.position + offset;
         Debug.Log($"[5] {gameObject.name}: Start() 함수 호출됨");
     }
 
@@ -241,18 +245,6 @@ public class Tower : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         magicCircleRenderer = GetComponentInChildren<SpriteRenderer>();
         _spriteController.SetSpritesByLevel(towerData.Level);
-
-        EnsureFirePoint();
-    }
-
-    protected void EnsureFirePoint()
-    {
-        if (firePoint == null)
-        {
-            var found = transform.Find("FirePoint");
-            if (found != null) firePoint = found;
-            else firePoint = transform; // 최후 대체
-        }
     }
 
     /// <summary>
@@ -323,7 +315,7 @@ public class Tower : MonoBehaviour
     }
 
     /// <summary>
-    ///     가장 가까운 적을 찾는 함수
+    /// 가장 가까운 적을 찾는 함수
     /// </summary>
     protected virtual Transform FindNearestTarget()
     {
@@ -384,7 +376,7 @@ public class Tower : MonoBehaviour
     }
 
     /// <summary>
-    ///     공격 가능한지 확인 (딜레이 체크)
+    /// 공격 가능한지 확인 (딜레이 체크)
     /// </summary>
     protected virtual bool CanAttack()
     {
@@ -395,19 +387,53 @@ public class Tower : MonoBehaviour
     }
 
     /// <summary>
-    ///     타워 공격
+    /// 타워 공격
     /// </summary>
     protected virtual void Attack()
     {
-        // TowerExtension 스크립트가 있다면 애니메이션을 통해 발사를 시도합니다.
-        if (_extension != null)
+        StartCoroutine(ChangeScaleCoroutine(1.2f, 0.15f,
+            before: () => PlayAttackAnimation(),
+            after: () => {
+                FireProjectile();
+                StartCoroutine(ChangeScaleCoroutine(1.0f, 0.1f));
+            }
+            ));
+        
+        //// TowerExtension 스크립트가 있다면 애니메이션을 통해 발사를 시도합니다.
+        //if (_extension != null)
+        //{
+        //    _extension.TriggerAttackAnimation();
+        //}
+        //else // 없다면 직접 발사합니다.
+        //{
+        //    FireProjectile();
+        //}
+    }
+    private void PlayAttackAnimation()
+    {
+        if (animator != null)
         {
-            _extension.TriggerAttackAnimation();
+            animator.SetTrigger("Attack");
         }
-        else // 없다면 직접 발사합니다.
+    }
+    private IEnumerator ChangeScaleCoroutine(float targetValue, float duration, Action before = null, Action after = null)
+    {
+        before?.Invoke();
+
+        Vector3 startScale = transform.localScale;
+        Vector3 targetScale = originalScale * targetValue;
+        float timer = 0f;
+
+        while (timer < duration)
         {
-            FireProjectile();
+            timer += Time.deltaTime;
+            transform.localScale = Vector3.Lerp(startScale, targetScale, timer / duration);
+            yield return null;
         }
+
+        transform.localScale = targetScale;
+
+        after?.Invoke();
     }
 
     public void AddBonusRange(float amount)
@@ -437,8 +463,9 @@ public class Tower : MonoBehaviour
         // 발사 직전 타겟 유효성 검사
         if (currentTarget == null || !isTargetAlive(currentTarget)) return;
 
+        FireObjectBase fireObject = towerData.fireObjectPrefeb.GetComponent<FireObjectBase>();
         // 프리팹 확인
-        if (towerData.projectilePrefab == null)
+        if (fireObject == null)
         {
             Debug.LogWarning($"{towerData.Name}: 발사체 프리팹이 지정되지 않았습니다.");
             return;
@@ -450,26 +477,37 @@ public class Tower : MonoBehaviour
             AudioManager.Instance.PlaySFX(towerData.attackSound);
         }
 
-        // 발사체 생성 및 방향 설정 (Fire Point 사용)
-        Vector3 spawnPos = firePoint.position;
-        GameObject proj = Instantiate(towerData.projectilePrefab, spawnPos, Quaternion.identity);
-        // 스프라이트가 위를 볼 경우
-        Vector3 direction = (currentTarget.position - spawnPos).normalized;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        proj.transform.rotation = Quaternion.Euler(0, 0, angle);
-        // 발사체에 정보 주입 (Setup 호출)
-        var projectile = proj.GetComponent<Projectile>();
-        if (projectile != null)
-        {
-            // 버프가 적용된 최종 능력치를 계산합니다.
-            var buffedEffect = GetBuffedStatusEffect();
-            float buffedDamage = GetBuffedDamage();
-            float excessCritMultiplier = GetExcessCritDamageMultiplier();
-            buffedDamage *= excessCritMultiplier;
+        // 데미지 계산
+        float buffedDamage = GetBuffedDamage();
+        // 무슨 함수지???
+        float excessCritMultiplier = GetExcessCritDamageMultiplier();
+        buffedDamage *= excessCritMultiplier;
 
-            // 최종 계산된 능력치와 정보를 projectile에 한번만 전달합니다.
-            projectile.Setup(currentTarget, buffedDamage, buffedEffect, this.EffectBuildup, towerData.impactSound, this.towerData);
-        }
+        var fireObj = FireObjectFactory.Spawn(fireObject, firePoint, currentTarget, buffedDamage);
+
+        //// 발사체 생성 및 방향 설정 (Fire Point 사용)
+        //Vector3 spawnPos = firePoint.position;
+        //GameObject proj = Instantiate(towerData.freObject, spawnPos, Quaternion.identity);
+
+        //// 스프라이트가 위를 볼 경우
+        //Vector3 direction = (currentTarget.position - spawnPos).normalized;
+        //float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        //proj.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+
+        //// 발사체에 정보 주입 (Setup 호출)
+        //var projectile = proj.GetComponent<Projectile>();
+        //if (projectile != null)
+        //{
+        //    // 버프가 적용된 최종 능력치를 계산합니다.
+        //    var buffedEffect = GetBuffedStatusEffect();
+        //    float buffedDamage = GetBuffedDamage();
+        //    float excessCritMultiplier = GetExcessCritDamageMultiplier();
+        //    buffedDamage *= excessCritMultiplier;
+
+        //    // 최종 계산된 능력치와 정보를 projectile에 한번만 전달합니다.
+        //    projectile.Setup(currentTarget, buffedDamage, buffedEffect, this.EffectBuildup, towerData.impactSound, this.towerData);
+        //}
     }
     #endregion
 
@@ -526,11 +564,11 @@ public class Tower : MonoBehaviour
         return _cachedStats.ExcessCritDamageMultiplier;
     }
 
-    public StatusEffect GetBuffedStatusEffect()
-    {
-        EnsureStatsValid();
-        return _cachedStats.StatusEffect;
-    }
+    //public StatusEffect GetBuffedStatusEffect()
+    //{
+    //    EnsureStatsValid();
+    //    return _cachedStats.StatusEffect;
+    //}
 
     // 기존 보너스 값들 접근용 public 메서드 추가
     public float GetBonusRange() => bonusRange;

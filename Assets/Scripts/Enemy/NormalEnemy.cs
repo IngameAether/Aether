@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,12 +11,26 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     public string idCode;
     public string GetEnemyId => idCode;
 
+    [Space]
     [Header("능력치")]
     public float maxHealth = 10f;
     public float moveSpeed = 2f;
     [Range(0, 50)] private int magicResistance = 5;
     [Range(0, 100)] private int mentalStrength = 10;
 
+    [Space]
+    [Header("상태이상 관련")]
+    [SerializeField] private float slowThreshold;
+    [SerializeField] private float burnThreshold;
+    [SerializeField] private float stunThreshold;
+    [SerializeField] private float bleedThreshold;
+    float slowGauge = 0;
+    float burnGauge = 0;
+    float stunGauge = 0;
+    float bleedGauge = 0;
+    int checkStatusEffect = 0b0000;
+
+    [Space]
     [Header("UI")]
     public Image healthBarFillImage;
 
@@ -41,7 +56,6 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 
     // 컴포넌트 참조
     private EnemyMovement enemyMovement;
-    private EnemyStatusManager statusManager;
     private EnemyHitFlicking enemyHit;
 
     public EnemyData enemyData;
@@ -53,10 +67,9 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     {
         // 필수 컴포넌트들을 미리 찾아와서 저장합니다.
         enemyMovement = GetComponent<EnemyMovement>();
-        statusManager = GetComponent<EnemyStatusManager>();
         enemyHit = GetComponent<EnemyHitFlicking>();
 
-        if (enemyMovement == null || statusManager == null)
+        if (enemyMovement == null)
         {
             Debug.LogError($"{gameObject.name}에서 필수 컴포넌트(EnemyMovement 또는 EnemyStatusManager)를 찾을 수 없습니다.");
         }
@@ -88,7 +101,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
             magicResistance = FormulaEvaluator.EvaluateToInt(enemyInfo.DamageReduction, currentWave);
             mentalStrength = FormulaEvaluator.EvaluateToInt(enemyInfo.ControlResistance, currentWave);
 
-            Debug.Log($"{currentWave}, {CurrentHealth}, {magicResistance}, {mentalStrength}");
+            //Debug.Log($"{currentWave}, {CurrentHealth}, {magicResistance}, {mentalStrength}");
         }
     }
 
@@ -130,19 +143,18 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     }
 
     /// <summary>
-    /// 데미지를 받는 함수. 부패, 마법 저항력 순서로 최종 데미지를 계산합니다.
+    /// 마법 저항력 -> 특수 능력 -> 최종 적용 순서로 최종 데미지를 계산합니다.
     /// </summary>
     public void TakeDamage(float damageAmount)
     {
+        Debug.Log(CurrentHealth);
+
         float finalDamage = damageAmount;
 
-        // 1. 상태 이상 효과 적용 (부패 등)
-        finalDamage = ApplyStatusEffects(finalDamage);
-
-        // 2. 마법 저항력 적용
+        // 1. 마법 저항력 적용
         finalDamage = CalculateDamageAfterResistance(finalDamage);
 
-        // 3. 특수 능력 적용
+        // 2. 특수 능력 적용
         finalDamage = ApplySpecialAbilities(finalDamage);
 
         if (finalDamage > 0)
@@ -158,17 +170,6 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         {
             Die();
         }
-    }
-
-    // 상태 이상으로 인한 데미지 증폭/감소 효과를 적용합니다.
-    private float ApplyStatusEffects(float damage)
-    {
-        if (statusManager != null)
-        {
-            // 부패(Rot) 효과 등으로 변경된 데미지 배율을 가져와 적용합니다.
-            damage *= statusManager.DamageTakenMultiplier;
-        }
-        return damage;
     }
 
     /// <summary>
@@ -192,13 +193,10 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     }
 
     // 공격을 받는 새로운 진입점. Projectile이 이 함수를 호출해야 합니다.
-    public void TakeHit(float damageAmount, StatusEffect effect, float buildupValue)
+    public void TakeHit(StatusEffectType statusEffect, float effectValue, float damageAmount)
     {
-        // 상태이상 효과가 있는 공격이라면, StatusManager에 누적치를 전달
-        if (effect != null && effect.Type != StatusEffectType.None)
-        {
-            statusManager.AddBuildup(effect, buildupValue);
-        }
+        // 상태이상 효과 적용
+        SetStatusEffect(statusEffect, effectValue);
 
         // 데미지 처리 로직은 그대로 실행
         TakeDamage(damageAmount);
@@ -234,6 +232,79 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     }
 
     /// <summary>
+    /// 상태이상 처리함수 수치 이상이 되면 적용 각 상태이상 독립적으로 작용
+    /// </summary>
+    private void SetStatusEffect(StatusEffectType statusEffect, float value)
+    {
+        int checker;
+        switch (statusEffect)
+        {
+            case StatusEffectType.Slow:
+                checker = checkStatusEffect & 0b0001;
+                if (checker != 1) slowGauge += value;
+                if (slowThreshold < slowGauge)
+                {
+                    slowGauge = 0;
+                    checker = checkStatusEffect | 0b0001;
+                    checkStatusEffect = checker;
+                    GetStatusEffect(statusEffect);
+                }
+                break;
+            case StatusEffectType.Burn:
+                checker = checkStatusEffect & 0b0010;
+                if (checker != 1) burnGauge += value;
+                if (burnThreshold < slowGauge)
+                {
+                    burnGauge = 0;
+                    checker = checkStatusEffect | 0b0010;
+                    checkStatusEffect = checker;
+                    GetStatusEffect(statusEffect);
+                }
+                break;
+            case StatusEffectType.Stun:
+                checker = checkStatusEffect & 0b0100;
+                if (checker != 1) stunGauge += value;
+                if (stunThreshold < slowGauge)
+                {
+                    stunGauge = 0;
+                    checker = checkStatusEffect | 0b0100;
+                    checkStatusEffect = checker;
+                    GetStatusEffect(statusEffect);
+                }
+                break;
+            case StatusEffectType.Bleed:
+                checker = checkStatusEffect & 0b1000;
+                if (checker != 1) bleedGauge += value;
+                if (bleedThreshold < slowGauge)
+                {
+                    bleedGauge = 0;
+                    checker = checkStatusEffect | 0b1000;
+                    checkStatusEffect = checker;
+                    GetStatusEffect(statusEffect);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    private void GetStatusEffect(StatusEffectType statusEffect)
+    {
+        switch (statusEffect)
+        {
+            case StatusEffectType.Slow:
+                break;
+            case StatusEffectType.Burn:
+                break;
+            case StatusEffectType.Stun:
+                break;
+            case StatusEffectType.Bleed:
+                break;
+            default:
+                break;
+        }
+    }
+
+    /// <summary>
     /// 사망 처리 함수. 상태 이상 효과를 먼저 정리하고 오브젝트를 파괴합니다.
     /// </summary>
     private void Die()
@@ -243,7 +314,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         Debug.Log(gameObject.name + "가 죽었습니다.");
 
         // 사망 시 모든 상태 이상 효과를 즉시 정리하여 오류를 방지합니다.
-        statusManager?.ClearAllEffectsOnDeath();
+        // 비트마스킹을 통해 정리할거임 ㄱㄷ
 
         int bonus = ResourceManager.Instance.IsBossRewardDouble ? 2 : 1;
 
