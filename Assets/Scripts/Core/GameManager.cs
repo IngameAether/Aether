@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         InitializeLives();
+        TileInteraction.InitializeTileData();
         IsGameOver = false; // <- 게임 시작 시 게임 오버 아님으로 초기화
         PlayBgmIfNotPlaying("BGM_main");
     }
@@ -84,8 +85,9 @@ public class GameManager : MonoBehaviour
 
     public void ResetForNewGame()
     {
-        currentLives = initialLives; // 목숨을 최대로
-        CurrentWave = 1;             // 웨이브를 1로
+        currentLives = GameDataDatabase.GetInt("life", 5);
+        CurrentWave = GameDataDatabase.GetInt("wave", 1);
+        TileInteraction.InitializeTileData();
         IsGameOver = false;          // 게임오버 상태 해제
         Time.timeScale = 1f;         // 시간 흐르게
         UpdateLivesUI();
@@ -127,10 +129,12 @@ public class GameManager : MonoBehaviour
 
     private void InitializeLives()
     {
-        currentLives = initialLives;
+        initialLives = GameDataDatabase.GetInt("life_max", 5);
+        currentLives = GameDataDatabase.GetInt("life", 5);
+        
         UpdateLivesUI();
         IsGameOver = false;
-        CurrentWave = 1; // 게임 시작 시 웨이브를 1로 초기화
+        CurrentWave = GameDataDatabase.GetInt("wave", 1);
         Debug.Log("게임 시작. 초기 목숨 및 웨이브 설정 완료.");
     }
 

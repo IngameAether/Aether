@@ -203,10 +203,10 @@ public class MainMenuUI : MonoBehaviour
                     Debug.LogError("세이브 데이터 로드 실패!");
                 }
             }
-            // 아니오 선택할시 레벨 선택 화면으로
+            // 아니오 선택할시 바로 게임 시작 (처음부터)
             else
             {
-                ShowPanel(UIPanelState.LevelSelect);
+                StartGame(0);
             }
         }
         // 세이브 파일이 없으면 바로 게임 시작 (첫 번째 웨이브)

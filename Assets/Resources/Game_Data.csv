@@ -1,0 +1,22 @@
+List,data type,default value,Range
+life_max,int,5,"5, 20"
+life,int,5,"0, life_max"
+wave,int,1,"1, 100"
+wave_time,float,60,"0, 60"
+maintenance,float,6,-
+aether,int,100,"0, 9999"
+light_element,int,0,"0, 99"
+darkness_element,int,0,"0, 99"
+light_element_probability,float,0.5,-
+darkness_element_probability,float,0.5,-
+fire_element_probability,float,0.25,-
+water_element_probability,float,0.25,-
+air_element_probability,float,0.25,-
+earth_element_probability,float,0.25,-
+element_summon,int,10,-
+element_sell,int,0,-
+Lv0_element_sell,int,0,-
+Lv1_tower_sell,int,10,-
+Lv2_tower_sell,int,30,-
+Lv3_tower_sell,int,120,-
+magic_book_tier_probability,array,"[100, 0, 0]",-

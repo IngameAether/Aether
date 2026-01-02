@@ -136,6 +136,23 @@ public class TowerDragSale : MonoBehaviour
 
                 if (isOverSaleZone) // 판매 확정 시
                 {
+                    int sellPrice = 0;
+                    
+                    var tower = GetComponent<Tower>();
+                    if (tower != null)
+                    {
+                        int level = tower.Rank;
+                        sellPrice = GameDataDatabase.GetInt($"Lv{level}_tower_sell", 10);
+                    }
+                    else
+                    {
+                        var element = GetComponent<ElementController>();
+                        if (element != null)
+                        {
+                            sellPrice = GameDataDatabase.GetInt("element_sell", 0);
+                        }
+                    }
+
                     if (selectTile != null)
                     {
                         _boxCollider2D.enabled = true;
@@ -143,8 +160,8 @@ public class TowerDragSale : MonoBehaviour
                         selectTile.element = null;
                         selectTile.isElementBuild = true;
                     }
-                    Debug.Log($"{gameObject.name} 판매됨");
-                    ResourceManager.Instance.AddCoin(20 + _towerSellBonusCoin);
+                    Debug.Log($"{gameObject.name} 판매됨. 가격: {sellPrice}");
+                    ResourceManager.Instance.AddCoin(sellPrice + _towerSellBonusCoin);
                     Destroy(gameObject);
                 }
                 else // 판매 취소 시

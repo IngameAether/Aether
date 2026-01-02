@@ -13,10 +13,10 @@ public class ResourceManager : MonoBehaviour
     public int MaxElementUpgrade { get; private set; } = 0;
     public bool IsBossRewardDouble { get; private set; } = false;
 
-    private int _lightElementChance = 5;
-    private int _darkElementChance = 5;
-    private int _lightElementRate = 50;
-    private int _darkElementRate = 50;
+    private float _lightElementChance = 5f;
+    private float _darkElementChance = 5f;
+    private float _lightElementRate = 50f;
+    private float _darkElementRate = 50f;
 
     // 이벤트
     public static event Action<int> OnCoinChanged;
@@ -26,6 +26,11 @@ public class ResourceManager : MonoBehaviour
     {
         if (Instance != null) return;
         Instance = this;
+    }
+
+    private void Start()
+    {
+        ResetAllResources();
     }
 
     private void OnEnable()
@@ -152,18 +157,18 @@ public class ResourceManager : MonoBehaviour
         switch (effect.EffectType)
         {
             case EBookEffectType.LightElementChance:
-                _lightElementChance = value;
+                _lightElementChance = finalValue;
                 break;
             case EBookEffectType.DarkElementChance:
-                _darkElementChance = value;
+                _darkElementChance = finalValue;
                 break;
             case EBookEffectType.LightElementRate:
-                _lightElementRate = value;
-                _darkElementRate = 100 - value;
+                _lightElementRate = finalValue;
+                _darkElementRate = 100f - finalValue;
                 break;
             case EBookEffectType.DarkElementRate:
-                _darkElementRate = value;
-                _lightElementRate = 100 - value;
+                _darkElementRate = finalValue;
+                _lightElementRate = 100f - finalValue;
                 break;
             case EBookEffectType.KillAetherBonus:
                 EnemyKillBonusCoin = value;
@@ -179,13 +184,17 @@ public class ResourceManager : MonoBehaviour
 
     public void ResetAllResources()
     {
-        Coin = 0;
-        LightElement = 0;
-        DarkElement = 0;
-        _lightElementChance = 5;
-        _darkElementChance = 5;
-        _lightElementRate = 50;
-        _darkElementRate = 50;
+        // Game_Data.csv에서 초기값 로드
+        Coin = GameDataDatabase.GetInt("aether", 0);
+        LightElement = GameDataDatabase.GetInt("light_element", 0);
+        DarkElement = GameDataDatabase.GetInt("darkness_element", 0);
+
+        // 확률 데이터 로드
+        _lightElementChance = GameDataDatabase.GetFloat("light_element_probability", 5f);
+        _darkElementChance = GameDataDatabase.GetFloat("darkness_element_probability", 5f);
+
+        _lightElementRate = 50f;
+        _darkElementRate = 50f;
         MaxElementUpgrade = 10;
 
         OnCoinChanged?.Invoke(Coin);
