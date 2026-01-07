@@ -19,6 +19,7 @@ public class TowerInfoDisplay : MonoBehaviour
     [SerializeField] private TMP_Text reinforceText;
     [SerializeField] private Button hideButton;
     [SerializeField] private GameObject towerIndicateImg;
+    [SerializeField] private GameObject towerRangeIndicator;
 
     [Header("Position Settings")]
     [SerializeField] private Vector2 offsetFromTower = new Vector2(10f, 0f);
@@ -76,7 +77,8 @@ public class TowerInfoDisplay : MonoBehaviour
         currentSelectedTower = tower;
         PositionInfoPanelNearTower(tower);
         ShowTowerInfo(tower);
-        ShowTowerCircle(tower);
+        //ShowTowerCircle(tower);
+        ShowRange(tower);
     }
 
     /// <summary>
@@ -153,6 +155,17 @@ public class TowerInfoDisplay : MonoBehaviour
 
         towerIndicateImg.transform.position = targetScreenPos;
         towerIndicateImg.SetActive(true);
+    }
+
+    private void ShowRange(Tower tower)
+    {
+        towerRangeIndicator.transform.position = tower.transform.position;
+
+        // 사거리에 맞게 크기 조정
+        float range = tower.Range;
+        towerRangeIndicator.transform.localScale = Vector3.one * (range * 1.85f);
+
+        towerRangeIndicator.SetActive(true);
     }
 
     /// <summary>

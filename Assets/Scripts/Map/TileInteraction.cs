@@ -7,6 +7,22 @@ public class TileInteraction : MonoBehaviour
     public Tile tile;
     public static GameObject[] staticElementPrefabs;  // 전역 변수로 선언(모든 tile이 공유할 내용이므로)
     public static bool isTowerJustCreated = false;  // 타워 생성 플래그
+
+    public static int ElementSummonCost = 10;
+    public static float FireProb = 0.25f;
+    public static float WaterProb = 0.25f;
+    public static float EarthProb = 0.25f;
+    public static float AirProb = 0.25f;
+
+    public static void InitializeTileData()
+    {
+        ElementSummonCost = GameDataDatabase.GetInt("element_summon", 10);
+        FireProb = GameDataDatabase.GetFloat("fire_element_probability", 0.25f);
+        WaterProb = GameDataDatabase.GetFloat("water_element_probability", 0.25f);
+        EarthProb = GameDataDatabase.GetFloat("earth_element_probability", 0.25f);
+        AirProb = GameDataDatabase.GetFloat("air_element_probability", 0.25f);
+    }
+
     private BoxCollider2D _boxCollider2D;
     private bool _isDirectPlaceTower = false;
 
@@ -49,20 +65,49 @@ public class TileInteraction : MonoBehaviour
         }
         else
         {
-            int ranNum = Random.Range(0, staticElementPrefabs.Length);
-            ElementType assignedElementType = ElementType.None;
-            GameObject selectedPrefab = staticElementPrefabs[ranNum];
-            ElementController ecFromPrefab = selectedPrefab.GetComponent<ElementController>();
+            // 비용 확인 및 차감
+            if (ResourceManager.Instance == null || !ResourceManager.Instance.SpendCoin(ElementSummonCost))
+            {
+                Debug.Log($"에테르가 부족합니다. (필요: {ElementSummonCost})");
+                return;
+            }
 
-            if (ecFromPrefab != null)
+            // 가중치 확률로 원소 선택
+            float rand = Random.value;
+            ElementType selectedType = ElementType.Fire;
+
+            if (rand < FireProb) selectedType = ElementType.Fire;
+            else if (rand < FireProb + WaterProb) selectedType = ElementType.Water;
+            else if (rand < FireProb + WaterProb + EarthProb) selectedType = ElementType.Earth;
+            else selectedType = ElementType.Air;
+
+            // 선택된 타입에 맞는 프리팹 찾기
+            GameObject selectedPrefab = null;
+            if (staticElementPrefabs != null)
             {
-                assignedElementType = ecFromPrefab.type;
+                foreach (var prefab in staticElementPrefabs)
+                {
+                    if (prefab.TryGetComponent<ElementController>(out var elementController))
+                    {
+                        if (elementController.type == selectedType)
+                        {
+                            selectedPrefab = prefab;
+                            break;
+                        }
+                    }
+                }
             }
-            else
+
+            // Fallback: 못 찾으면 랜덤 or 첫번째
+            if (selectedPrefab == null && staticElementPrefabs != null && staticElementPrefabs.Length > 0)
             {
-                Debug.LogWarning("프리팹에 ElementController가 없음 or type 할당되지 않음");
-                assignedElementType = ElementType.None;
+                Debug.LogWarning($"선택된 원소 타입({selectedType})의 프리팹을 찾지 못해 기본값 사용");
+                selectedPrefab = staticElementPrefabs[0];
             }
+
+            if (selectedPrefab == null) return;
+
+            ElementType assignedElementType = selectedType;
 
             GameObject elementObj = Instantiate(selectedPrefab, tile.transform.position, Quaternion.identity);
 
@@ -76,7 +121,7 @@ public class TileInteraction : MonoBehaviour
                 Debug.LogWarning("생성된 elementObj에 ElementController 컴포넌트가 없음, 초기화 불가능");
             }
 
-            Debug.Log($"소환된 원소: {staticElementPrefabs[ranNum]}");
+            Debug.Log($"소환된 원소: {selectedPrefab.name} (Type: {selectedType})");
             _boxCollider2D.enabled = false;
             tile.isElementBuild = false;
             tile.element = elementObj;

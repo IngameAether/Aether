@@ -27,6 +27,14 @@ public class WaveManager : MonoBehaviour
     [Header("Config")]
     [SerializeField] private float initialDelay = 1f;
     [SerializeField] private float nextWaveDelay = 3f;
+    private float waveTimeLimit = 60f;
+
+    public void InitializeWaveData()
+    {
+        waveTimeLimit = GameDataDatabase.GetFloat("wave_time", 60f);
+        nextWaveDelay = GameDataDatabase.GetFloat("maintenance", 6f);
+        Debug.Log($"Wave Data Initialized: Time={waveTimeLimit}, Delay={nextWaveDelay}");
+    }
 
     [Header("Boss Config")]
     [SerializeField] private int bossWaveIndex = 29;
@@ -43,6 +51,7 @@ public class WaveManager : MonoBehaviour
 
     private void Start()
     {
+        InitializeWaveData();
         // FadeManager가 준비될 때까지 기다린 후, 씬 전환이 끝나면 게임 루틴을 시작합니다.
         spawnManager ??= FindObjectOfType<SpawnManager>();
 
@@ -52,6 +61,10 @@ public class WaveManager : MonoBehaviour
             mapBackgroundManager = FindObjectOfType<MapBackgroundManager>();
         }
 
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        }
     }
 
     private void OnEnable()
@@ -61,10 +74,6 @@ public class WaveManager : MonoBehaviour
         // PopUpManager의 팝업 닫힘 이벤트를 구독합니다.
         if (PopUpManager.Instance != null)
             PopUpManager.Instance.OnPopUpClosed += OnPopupClosed;
-        if (MagicBookManager.Instance != null)
-        {
-            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
-        }
 
         SpawnManager.OnAllEnemiesCleared += HandleWaveCleared;
     }
@@ -88,6 +97,7 @@ public class WaveManager : MonoBehaviour
     // 초기화 함수
     public void ResetForNewGame()
     {
+        InitializeWaveData();
         // 최초 선택 상태를 '미완료'로 되돌립니다.
         _initialChoiceMade = false;
 
@@ -172,7 +182,7 @@ public class WaveManager : MonoBehaviour
             _waitingForEnemies = true;
             yield return StartCoroutine(spawnManager.SpawnWaveEnemies(spawnManager.waveDatas[waveIndex]));
 
-            float waveTimeLimit = 60f; // Game_Data의 wave_time
+            // float waveTimeLimit = 60f; // Using class field
             float elapsedTime = 0f;
             bool waveTimeLimitReached = false;
 
@@ -235,7 +245,7 @@ public class WaveManager : MonoBehaviour
 
             if (waveIndex < spawnManager.waveDatas.Count - 1)
             {
-                yield return new WaitForSeconds(6f);
+                yield return new WaitForSeconds(nextWaveDelay);
             }
             else
             {
