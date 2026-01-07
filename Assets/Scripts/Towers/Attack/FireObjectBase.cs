@@ -51,8 +51,10 @@ public class FireObjectBase : MonoBehaviour
         return (statusEffect, effctValue);
     }
 
-    protected void PlayPrepareAnim(float speed = 1.0f)
+    protected void PlayPrepareAnim(float speed = 1.0f, float offsetX = 0f, float offsetY = 0f)
     {
+        Vector3 offset = new Vector3 (offsetX, offsetY);
+        transform.position = transform.position + offset;
         animator.SetTrigger("prepare");
         animator.speed = speed;
     }
@@ -61,8 +63,16 @@ public class FireObjectBase : MonoBehaviour
         animator.SetTrigger("flying");
         animator.speed = speed;
     }
-    protected void PlayAttackAnim(float speed = 1.0f)
+    protected void PlayAttackAnim(float speed = 1.0f, float offsetX = 0f, float offsetY = 0f)
     {
+        Vector3 offset = new Vector3(offsetX, offsetY);
+        transform.position = transform.position + offset;
+        animator.SetTrigger("attack");
+        animator.speed = speed;
+    }
+    protected void PlayAttackAnim(Vector3 newTargetPos, float speed = 1.0f)
+    {
+        transform.position = newTargetPos;
         animator.SetTrigger("attack");
         animator.speed = speed;
     }

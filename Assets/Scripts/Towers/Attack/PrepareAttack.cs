@@ -8,17 +8,24 @@ public class PrepareAttack : FireObjectBase
     [Header("Prepare Variables")]
     [SerializeField] private AnimationClip prepareAnim;
     [SerializeField] private float prepareAnimSpeed;
+    [SerializeField] private float prepareOffsetX;
+    [SerializeField] private float prepareOffsetY;
 
     [Space]
     [Header("Attack Variables")]
     [SerializeField] private AnimationClip attackAnim;
+    [SerializeField] private bool changePosToTower = false;
     [SerializeField] private float attackAnimSpeed;
+    [SerializeField] private float attackOffsetX;
+    [SerializeField] private float attackOffsetY;
+    [SerializeField] private float attackOffsetWait;
+
     public override void Init(Vector2 tower, Transform target, float damage)
     {
         base.Init(tower, target, damage);
 
         // prepare 애니메이션 재생
-        PlayPrepareAnim(prepareAnimSpeed);
+        PlayPrepareAnim(prepareAnimSpeed, prepareOffsetX, prepareOffsetY);
 
         // prepare 에서 attack 애니메이션으로 전환
         StartCoroutine(TransPrepareToAttack(prepareAnim.length + 0.05f));
@@ -32,14 +39,15 @@ public class PrepareAttack : FireObjectBase
         animatorOverride["L2F_attack"] = attackAnim;
     }
 
-    private IEnumerator TransPrepareToAttack(float t)
+    private IEnumerator TransPrepareToAttack(float waitAttack)
     {
-        yield return new WaitForSeconds(t);
+        yield return new WaitForSeconds(waitAttack);
 
-        this.transform.position = targetPos;
+        if (!changePosToTower) this.transform.position = targetPos;
+        PlayAttackAnim(attackAnimSpeed, attackOffsetX, attackOffsetY);
+
+        yield return new WaitForSeconds(attackOffsetWait);
         OnTargetHit();
-
-        PlayAttackAnim(attackAnimSpeed);
     }
 
     protected override void AfterTargetHit(float t)
