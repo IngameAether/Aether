@@ -10,6 +10,17 @@ public class FlyAttack : Fly
     [SerializeField] private bool needRotation;
     private bool isFlyingEnd = false;
 
+    public override void Init(Vector2 tower, Transform target, float damage)
+    {
+        base.Init(tower, target, damage);
+    }
+
+    public override float GetAroundTime()
+    {
+        aroundTime = attackAnim.length + flyingAnim.length;
+        return aroundTime;
+    }
+
     protected override void Update()
     {
         if (isFlyingEnd) { return; }

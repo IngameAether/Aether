@@ -36,6 +36,7 @@ public class Tower : MonoBehaviour
     private float disableTimer = 0f;
     private Vector3 originalScale;
     private Vector3 firePoint;
+    private float fireObjectAroundTime = 0;
 
     // 초기화 완료 상태를 저장할 변수
     private bool _isInitialized = false;
@@ -86,6 +87,9 @@ public class Tower : MonoBehaviour
         originalScale = transform.localScale;
         Vector3 offset = new Vector3(0f, -0.2f, 0f);
         firePoint = transform.position + offset;
+
+        fireObjectAroundTime = towerData.GetAroundTime();
+
         Debug.Log($"[5] {gameObject.name}: Start() 함수 호출됨");
     }
 
@@ -382,7 +386,7 @@ public class Tower : MonoBehaviour
     {
         float currentAttackSpeed = (_extension != null) ? _extension.BuffedAttackSpeed : this.AttackSpeed;
         if (currentAttackSpeed <= 0f) return false;
-        float attackInterval = 1f / currentAttackSpeed;
+        float attackInterval = 1f / currentAttackSpeed + fireObjectAroundTime;
         return Time.time >= lastAttackTime + attackInterval;
     }
 

@@ -208,6 +208,13 @@ public class GameManager : MonoBehaviour
     public void SetWave(int waveNumber)
     {
         CurrentWave = waveNumber;
+
+        if (CurrentWave == 100)
+        {
+            WaveManager.Instance.SetThankYouScreen();
+            GameSaveManager.Instance.ClearGameDataForNewGame(GameSaveManager.Instance.SelectedSlotIndex);
+        }
+
         Debug.Log($"Wave {CurrentWave} 시작!");
     }
 }

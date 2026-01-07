@@ -26,6 +26,16 @@ public class TowerData : ScriptableObject
     public float GetDamage(int reinforceLevel) => Damage.CalculateStat(reinforceLevel);
     public float GetAttackSpeed(int reinforceLevel) => AttackSpeed.CalculateStat(reinforceLevel);
     public float GetCriticalRate(int reinforceLevel) => CriticalRate.CalculateStat(reinforceLevel);
+    public float GetAroundTime()
+    {
+        FireObjectBase fireObject;
+        if (fireObjectPrefeb != null) fireObject = fireObjectPrefeb.GetComponent<FireObjectBase>();
+        else return 0;
+
+        float aroundTime = fireObject.GetAroundTime();
+
+        return aroundTime;
+    }
 
     [Header("공격 정보")]
     public AttackMode AttackMode;
@@ -33,6 +43,7 @@ public class TowerData : ScriptableObject
     public float TimeDuration;
     public bool Guided;
     public bool Multi;
+    private float aroundTime;
     
     [Header("사운드 설정")]
     public SfxType attackSound; // 이 타워가 사용할 공격 사운드

@@ -20,6 +20,12 @@ public class Fly : FireObjectBase
         PlayFlyingAnim(flyingAnimSpeed);
     }
 
+    public override float GetAroundTime()
+    {
+        aroundTime = flyingAnim.length;
+        return aroundTime;
+    }
+
     protected virtual void Update()
     {
         Move();

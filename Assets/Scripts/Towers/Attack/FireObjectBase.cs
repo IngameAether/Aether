@@ -23,6 +23,13 @@ public class FireObjectBase : MonoBehaviour
     protected float damage;
     public float Damage { get { return damage; } }
 
+    // 공격 속도에 반영
+    protected float aroundTime;
+    public virtual float GetAroundTime()
+    {
+        aroundTime = 0;
+        return aroundTime;
+    }
     
     //[SerializeField]
     protected Animator animator;

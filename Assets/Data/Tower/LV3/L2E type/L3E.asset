@@ -17,6 +17,7 @@ MonoBehaviour:
   ElementType: 2
   Level: 3
   MaxReinforce: 20
+  fireObjectPrefeb: {fileID: 2853705126803052256, guid: 5be9f2dd4dd2d2942b4d26a6f78ef58f, type: 3}
   RequiredTowerIds: []
   Damage:
     baseValue: 400
@@ -35,15 +36,6 @@ MonoBehaviour:
   Multi: 1
   attackSound: 5
   impactSound: 8
-  effectType: 2
-  effectDuration: 1.5
-  effectValue: 0
-  effectBuildup: 50
-  projectilePrefab: {fileID: 1566472166604849294, guid: 360b90fc33cb4464fba21b8d2fa0bd2a, type: 3}
-  projectileSpeed: 10
-  arcHeight: 2
-  hitType: 1
-  damageEffectType: 1
   nextUpgradeData: {fileID: 0}
   upgradedPrefab: {fileID: 0}
   reinforcementThreshold: 10

@@ -31,6 +31,12 @@ public class PrepareAttack : FireObjectBase
         StartCoroutine(TransPrepareToAttack(prepareAnim.length + 0.05f));
     }
 
+    public override float GetAroundTime()
+    {
+        aroundTime = prepareAnim.length + attackAnim.length;
+        return aroundTime;
+    }
+
     protected override void SetAnimationClip()
     {
         base.SetAnimationClip();

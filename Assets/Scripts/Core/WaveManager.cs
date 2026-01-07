@@ -24,6 +24,12 @@ public class WaveManager : MonoBehaviour
     // 맵 배경 매니저 참조
     [SerializeField] private MapBackgroundManager mapBackgroundManager;
 
+    [SerializeField] private GameObject ThankYou;
+    public void SetThankYouScreen()
+    {
+        ThankYou.SetActive(true);
+    }
+
     [Header("Config")]
     [SerializeField] private float initialDelay = 1f;
     [SerializeField] private float nextWaveDelay = 3f;
@@ -37,7 +43,7 @@ public class WaveManager : MonoBehaviour
     }
 
     [Header("Boss Config")]
-    [SerializeField] private int bossWaveIndex = 29;
+    [SerializeField] private int bossWaveIndex = 25;
     [SerializeField] private string bossRewardBookCode = "YourBossRewardBookCode";
 
     private int currentWaveLevel = 0;
@@ -210,12 +216,16 @@ public class WaveManager : MonoBehaviour
                 GameManager.Instance.AddLife();
             }
 
-            if (waveIndex == bossWaveIndex)
-            {
-                Debug.Log("보스 처치! 특별 보상을 제공합니다.");
-                MagicBookManager.Instance.PrepareSelection(BookRequestType.Specific, bossRewardBookCode);
-                yield return StartCoroutine(WaitForChoice());
-            }
+            //if (waveIndex == bossWaveIndex)
+            //{
+            //    Debug.Log("보스 처치! 특별 보상을 제공합니다.");
+            //    MagicBookManager.Instance.PrepareSelection(BookRequestType.Specific, bossRewardBookCode);
+
+            //    if (bossWaveIndex == 25) bossWaveIndex = 50;
+            //    else if (bossWaveIndex == 50) bossWaveIndex = 75;
+
+            //    yield return StartCoroutine(WaitForChoice());
+            //}
 
             // 매 웨이브 종료 시 선택된 슬롯에 저장
             int slotIndex = GameSaveManager.Instance.SelectedSlotIndex;

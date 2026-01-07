@@ -625,4 +625,42 @@ public class GameSaveManager : MonoBehaviour
     {
         CurrentGameData = null;
     }
+
+    public void ClearGameDataForNewGame(int slotIndex)
+    {
+        if (slotIndex < 0 || slotIndex >= MAX_SAVE_SLOTS)
+        {
+            Debug.LogError($"GameSaveManager: Invalid save slot: {slotIndex}");
+            return;
+        }
+
+        string filePath = GetSaveFilePath(slotIndex);
+
+        try
+        {
+            // 1. 파일이 존재하는지 먼저 확인
+            if (File.Exists(filePath))
+            {
+                // 2. 파일 삭제 실행
+                File.Delete(filePath);
+
+                // 3. (선택 사항) 메모리에 현재 데이터가 올라와 있다면 초기화
+                if (CurrentGameData != null)
+                {
+                    CurrentGameData = null;
+                }
+
+                Debug.Log($"GameSaveManager: Save file at slot {slotIndex} deleted successfully.");
+            }
+            else
+            {
+                Debug.LogWarning($"GameSaveManager: No file to delete at slot {slotIndex}");
+            }
+        }
+        catch (Exception e)
+        {
+            // 파일이 사용 중이거나 권한 문제가 있을 경우를 대비한 예외 처리
+            Debug.LogError($"GameSaveManager: Delete failed: {e.Message}");
+        }
+    }
 }
