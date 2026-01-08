@@ -186,6 +186,7 @@ public class GameManager : MonoBehaviour
     {
         Debug.Log("Game Over");
         IsGameOver = true; // <- 게임 오버 상태로 설정
+        GameSaveManager.Instance.ClearGameDataForNewGame(GameSaveManager.Instance.SelectedSlotIndex);
         Time.timeScale = 0f; // <- 게임 시간 정지
 
         if (AudioManager.Instance != null)

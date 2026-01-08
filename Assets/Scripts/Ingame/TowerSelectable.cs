@@ -67,6 +67,11 @@ public class TowerSelectable : MonoBehaviour, ISelectable
         return null;
     }
 
+    public string GetName()
+    {
+        return name;
+    }
+
     public void SetSelected(bool selected)
     {
         isSelected = selected;

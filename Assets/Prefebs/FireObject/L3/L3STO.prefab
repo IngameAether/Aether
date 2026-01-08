@@ -56,7 +56,8 @@ MonoBehaviour:
   prepareOffsetY: 0
   attackAnim: {fileID: 7400000, guid: 6beb529c0c2bb3a4ebb61470a05432ed, type: 2}
   changePosToTower: 0
-  attackAnimSpeed: 1
+  needRotation: 0
+  attackAnimSpeed: 1.2
   attackOffsetX: 0
   attackOffsetY: 0
   attackOffsetWait: 0

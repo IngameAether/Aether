@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 529019895
   m_SortingLayer: 6
   m_SortingOrder: 0
-  m_Sprite: {fileID: 163215237, guid: 09c93a9fe688e8a4bb809e6d5ca430fc, type: 3}
+  m_Sprite: {fileID: -1947673612, guid: 5793e7e47516a4149a7001a42b4c648b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -123,9 +123,9 @@ MonoBehaviour:
   isMultiHit: 0
   statusEffect: 4
   effctValue: 10
-  flyingAnim: {fileID: 7400000, guid: 5c35bc0315dcb584a8d2f0665cd7a762, type: 2}
-  speed: 1
-  flyingAnimSpeed: 1
+  flyingAnim: {fileID: 7400000, guid: 1a4a9a52e3e776440ad153feb99390be, type: 2}
+  speed: 7
+  flyingAnimSpeed: 1.2
   attackAnim: {fileID: 7400000, guid: 058284510aa6a164db9ace5705a6e27d, type: 2}
   AttackAnimSpeed: 1
   needRotation: 0

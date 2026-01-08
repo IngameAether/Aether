@@ -14,19 +14,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uD0DC\uCD08\uC758 \uBD88\uAF43"
   ID: L4F
-  Level: 4
   ElementType: 0
+  Level: 4
   MaxReinforce: 0
+  fireObjectPrefeb: {fileID: 2853705126803052256, guid: d2b6024ecd3ae5344b3ad59aae338e74, type: 3}
   RequiredTowerIds:
   - L3F
   - L3SOL
   - L3MET
-  BaseDamage: 40
+  Damage:
+    baseValue: 0
+    reinforceCoef: 0
+  AttackSpeed:
+    baseValue: 0
+    reinforceCoef: 0
+  CriticalRate:
+    baseValue: 0
+    reinforceCoef: 0
   BaseRange: 3
-  BaseAttackSpeed: 1.5
-  BaseCriticalRate: 10
   AttackMode: 0
   radiant: 0
   TimeDuration: 0
   Guided: 0
   Multi: 0
+  attackSound: 0
+  impactSound: 0
+  nextUpgradeData: {fileID: 0}
+  upgradedPrefab: {fileID: 0}
+  reinforcementThreshold: 10
+  lightEvolutionData: {fileID: 0}
+  darkEvolutionData: {fileID: 0}

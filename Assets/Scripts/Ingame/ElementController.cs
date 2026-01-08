@@ -51,6 +51,10 @@ public class ElementController : MonoBehaviour, ISelectable
     {
         return parentTile;
     }
+    public string GetName()
+    {
+        return name;
+    }
 
     public GameObject GetGameObject()
     {

@@ -15,6 +15,7 @@ public class PrepareAttack : FireObjectBase
     [Header("Attack Variables")]
     [SerializeField] private AnimationClip attackAnim;
     [SerializeField] private bool changePosToTower = false;
+    [SerializeField] private bool needRotation;
     [SerializeField] private float attackAnimSpeed;
     [SerializeField] private float attackOffsetX;
     [SerializeField] private float attackOffsetY;
@@ -49,7 +50,9 @@ public class PrepareAttack : FireObjectBase
     {
         yield return new WaitForSeconds(waitAttack);
 
+        if (needRotation) Rotate();
         if (!changePosToTower) this.transform.position = targetPos;
+        
         PlayAttackAnim(attackAnimSpeed, attackOffsetX, attackOffsetY);
 
         yield return new WaitForSeconds(attackOffsetWait);

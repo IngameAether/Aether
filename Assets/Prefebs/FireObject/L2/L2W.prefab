@@ -50,7 +50,7 @@ MonoBehaviour:
   statusEffect: 0
   effctValue: 0
   flyingAnim: {fileID: 7400000, guid: 33976589fd7094c42976f1ffb6324de2, type: 2}
-  speed: 5
+  speed: 6
   flyingAnimSpeed: 1
   attackAnim: {fileID: 7400000, guid: 7cd9de15c36458f4ab31b6c5e926a441, type: 2}
   AttackAnimSpeed: 1

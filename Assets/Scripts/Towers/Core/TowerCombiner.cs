@@ -77,110 +77,110 @@ public class TowerCombiner : MonoBehaviour
     /// 통합 선택 로직 (원소/타워 모두 처리)
     /// </summary>
     public void SelectItem(ISelectable item)
-{
-    if (item == null) return;
+    {
+        if (item == null) return;
 
-    var itemTile = item.GetTile();
-    if (itemTile == null)
-    {
-        Debug.LogWarning("선택된 아이템에 유효한 타일 정보가 없습니다.");
-        return;
-    }
-
-    // 첫 번째 선택
-    if (_selectedItems.Count == 0)
-    {
-        _selectedItems.Add(item);
-        item.SetSelected(true);
-        Debug.Log($"첫 번째 아이템 선택: {item.GetElementType()} Lv{item.GetLevel()}. 현재 선택: {_selectedItems.Count}/3");
-    }
-    // 이미 아이템이 선택되어 있는 경우
-    else
-    {
-        // 이미 선택된 아이템을 다시 클릭한 경우만 무시
-        if (_selectedItems.Contains(item))
+        var itemTile = item.GetTile();
+        if (itemTile == null)
         {
-            Debug.Log("이미 선택된 아이템입니다. 중복 선택을 무시합니다.");
+            Debug.LogWarning("선택된 아이템에 유효한 타일 정보가 없습니다.");
             return;
         }
 
-        // 3개가 아직 안 찼으면 타입/레벨 상관없이 계속 선택
-        if (_selectedItems.Count < 3)
+        // 첫 번째 선택
+        if (_selectedItems.Count == 0)
         {
             _selectedItems.Add(item);
             item.SetSelected(true);
-            Debug.Log($"아이템 추가 선택: {item.GetElementType()} Lv{item.GetLevel()}. 현재 선택: {_selectedItems.Count}/3");
+            Debug.Log($"첫 번째 아이템 선택: {item.GetElementType()} Lv{item.GetLevel()}. 현재 선택: {_selectedItems.Count}/3");
         }
-        // 3개가 이미 선택된 상태에서 추가 클릭시
+        // 이미 아이템이 선택되어 있는 경우
         else
         {
-            Debug.LogWarning("이미 3개의 아이템이 선택되었습니다. 조합을 진행하거나 기다려주세요.");
-            return;
+            // 이미 선택된 아이템을 다시 클릭한 경우만 무시
+            if (_selectedItems.Contains(item))
+            {
+                Debug.Log("이미 선택된 아이템입니다. 중복 선택을 무시합니다.");
+                return;
+            }
+
+            // 3개가 아직 안 찼으면 타입/레벨 상관없이 계속 선택
+            if (_selectedItems.Count < 3)
+            {
+                _selectedItems.Add(item);
+                item.SetSelected(true);
+                Debug.Log($"아이템 추가 선택: {item.GetElementType()} Lv{item.GetLevel()}. 현재 선택: {_selectedItems.Count}/3");
+            }
+            // 3개가 이미 선택된 상태에서 추가 클릭시
+            else
+            {
+                Debug.LogWarning("이미 3개의 아이템이 선택되었습니다. 조합을 진행하거나 기다려주세요.");
+                return;
+            }
+        }
+
+        // 3개가 모두 선택되면 즉시 조합 시도
+        if (_selectedItems.Count == 3)
+        {
+            TryCombination();
         }
     }
 
-    // 3개가 모두 선택되면 즉시 조합 시도
-    if (_selectedItems.Count == 3)
+    /// <summary>
+    /// 조합 시도 (3개 선택 완료 후 판정)
+    /// </summary>
+    private void TryCombination()
     {
-        TryCombination();
-    }
-}
+        if (_selectedItems.Count != 3) return;
 
-/// <summary>
-/// 조합 시도 (3개 선택 완료 후 판정)
-/// </summary>
-private void TryCombination()
-{
-    if (_selectedItems.Count != 3) return;
+        var item1 = _selectedItems[0];
+        var item2 = _selectedItems[1];
+        var item3 = _selectedItems[2];
 
-    var item1 = _selectedItems[0];
-    var item2 = _selectedItems[1];
-    var item3 = _selectedItems[2];
+        // 모든 아이템이 같은 타입과 레벨인지 확인
+        bool allSameType = (item1.GetElementType() == item2.GetElementType() &&
+                           item2.GetElementType() == item3.GetElementType());
+        bool allSameLevel = (item1.GetLevel() == item2.GetLevel() &&
+                            item2.GetLevel() == item3.GetLevel());
 
-    // 모든 아이템이 같은 타입과 레벨인지 확인
-    bool allSameType = (item1.GetElementType() == item2.GetElementType() &&
-                       item2.GetElementType() == item3.GetElementType());
-    bool allSameLevel = (item1.GetLevel() == item2.GetLevel() &&
-                        item2.GetLevel() == item3.GetLevel());
+        Debug.Log(item1.GetName() + "선택");
+        Debug.Log(item2.GetName() + "선택");
+        Debug.Log(item3.GetName() + "선택");
 
-    if (allSameType && allSameLevel)
-    {
-        var elementType = item1.GetElementType();
-        var level = item1.GetLevel();
-
-        Debug.Log($"🎉 조합 성공! {elementType} Lv{level} 아이템 3개가 조합됩니다.");
-
-        switch (level)
+        if (allSameType && allSameLevel)
         {
-            case 0: // 원소 → Lv1 타워
-                CreateUpgradedTower(elementType, 1, false);
-                break;
-            case 1: // Lv1 타워 → Lv2 타워
-                CreateUpgradedTower(elementType, 2, false);
-                break;
-            case 2: // Lv2 타워 → Lv3 타워
-                CreateUpgradedTower(elementType, 3, false);
-                break;
-            case 3: // Lv3 타워 → Lv4 타워
-                TryCreateLevel4Tower();
-                break;
-            default:
+            var elementType = item1.GetElementType();
+            var level = item1.GetLevel();
+
+            Debug.Log($"조합 성공! {elementType} Lv{level} 아이템 3개가 조합됩니다.");
+
+            if (level < 0 || level > 3)
+            {
                 Debug.LogWarning($"지원되지 않는 레벨: {level}");
                 ClearSelection();
-                break;
+            }
+            else if (level == 3)
+            {
+                bool allDifferentTower = !((item1.GetName() == item2.GetName()) &&
+                    (item1.GetName() == item3.GetName()) && item2.GetName() == item3.GetName());
+                if (allDifferentTower)
+                {
+                    CreateUpgradedTower(elementType, 4, false);
+                }
+            }
+            else CreateUpgradedTower(elementType, level + 1, false);
+        }
+        else
+        {
+            // 원소와 동일한 실패 메시지
+            Debug.LogWarning($"조합 실패! 같은 타입/레벨의 아이템 3개가 아닙니다.");
+            Debug.LogWarning($"선택된 아이템들: " +
+                $"{item1.GetElementType()} Lv{item1.GetLevel()}, " +
+                $"{item2.GetElementType()} Lv{item2.GetLevel()}, " +
+                $"{item3.GetElementType()} Lv{item3.GetLevel()}");
+            ClearSelection();
         }
     }
-    else
-    {
-        // 원소와 동일한 실패 메시지
-        Debug.LogWarning($"❌ 조합 실패! 같은 타입/레벨의 아이템 3개가 아닙니다.");
-        Debug.LogWarning($"선택된 아이템들: " +
-            $"{item1.GetElementType()} Lv{item1.GetLevel()}, " +
-            $"{item2.GetElementType()} Lv{item2.GetLevel()}, " +
-            $"{item3.GetElementType()} Lv{item3.GetLevel()}");
-        ClearSelection();
-    }
-}
 
     /// <summary>
     /// 랜덤 Lv1 타워 생성 (기존 호환성 유지)
@@ -207,6 +207,7 @@ private void TryCombination()
         TileInteraction tileInteraction = null, Tile tile = null)
     {
         string towerId = GetTowerId(elementType, targetLevel);
+
 
         // 타워 데이터 검색 (스탯용)
         TowerData towerData = null;
@@ -283,14 +284,25 @@ private void TryCombination()
     /// <summary>
     /// 원소 타입과 레벨에 따른 타워 ID 반환
     /// </summary>
+    private List<List<string>> L3TowerList = new List<List<string>>()
+    {
+        new List<string> {"F", "SOL", "MET"},
+        new List<string> {"A", "MOO", "GLA"},
+        new List<string> {"W", "LIG", "STO"},
+        new List<string> {"E", "VIT", "ROT"},
+    };
     private string GetTowerId(ElementType elementType, int level)
     {
-        string prefix = elementType switch
+        string prefix;
+        int randInt = 0;
+        if (level == 3) randInt = Random.Range(0, 3);
+
+        prefix = elementType switch
         {
-            ElementType.Fire => "F",
-            ElementType.Water => "A",
-            ElementType.Air => "W",
-            ElementType.Earth => "E",
+            ElementType.Fire => L3TowerList[0][randInt],
+            ElementType.Water => L3TowerList[1][randInt],
+            ElementType.Air => L3TowerList[2][randInt],
+            ElementType.Earth => L3TowerList[3][randInt],
             _ => ""
         };
 

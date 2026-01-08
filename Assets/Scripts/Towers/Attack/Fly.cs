@@ -53,13 +53,7 @@ public class Fly : FireObjectBase
         }
     }
 
-    private void Rotate()
-    {
-        // 타겟 방향 투사체 회전
-        Vector2 dir = (targetPos - (Vector2)transform.position).normalized;
-        float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
-    }
+    
 
     protected virtual void AfterMove()
     {
