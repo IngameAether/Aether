@@ -34,12 +34,20 @@ public class TileInteraction : MonoBehaviour
 
     private void OnEnable()
     {
-        MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        // MagicBookManager.Instance가 존재하는지 먼저 확인
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        }
     }
 
     private void OnDisable()
     {
-        MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+        // 게임 종료 시 매니저가 먼저 파괴되었을 수 있으므로 여기서도 확인합니다.
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+        }
     }
 
     /// <summary>

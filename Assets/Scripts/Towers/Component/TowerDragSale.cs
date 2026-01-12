@@ -14,7 +14,7 @@ public class TowerDragSale : MonoBehaviour
     private Vector3 _mouseDownPosition;
     private SaleController saleZone;
     private bool isOverSaleZone; // 판매 구역 위에 있는지 판단
-
+    
     private Camera _camera;
     public Tile selectTile; // 이 타워가 배치된 타일 참조
     private BoxCollider2D _boxCollider2D;
@@ -25,16 +25,7 @@ public class TowerDragSale : MonoBehaviour
 
     private void Awake()
     {
-        Debug.Log("TowerDragSale Awake 함수 호출됨! SaleController 찾기 시도.");
         saleZone = FindObjectOfType<SaleController>();
-        if (saleZone == null)
-        {
-            Debug.LogError("SaleController가 포함된 오브젝트를 씬에 추가하거나 활성화해야 합니다.");
-        }
-        else
-        {
-            Debug.Log("SaleController를 성공적으로 찾았습니다!");
-        }
     }
 
     private void Start()
@@ -55,12 +46,20 @@ public class TowerDragSale : MonoBehaviour
 
     private void OnEnable()
     {
-        MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        // MagicBookManager가 존재할 때만 이벤트를 구독합니다.
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        }
     }
 
     private void OnDisable()
     {
-        MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+        // MagicBookManager가 존재할 때만 이벤트를 해제합니다.
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+        }
     }
 
     private void OnMouseDown()
@@ -72,8 +71,13 @@ public class TowerDragSale : MonoBehaviour
         _mouseDownPosition = GetMouseWorldPosition();
         offset = transform.position - _mouseDownPosition;
 
-        // OnMouseDown에서는 UI를 띄우지 않고 드래그 시작만 준비
-        // saleZone.ShowSaleUI(true); // 이 부분을 제거했습니다.
+        // 터치/클릭하자마자 정보창을 띄웁니다.
+        // 현재 타워 컴포넌트를 가져와서 넘겨줍니다.
+        Tower myTower = GetComponent<Tower>();
+        if (TowerInfoDisplay.Instance != null && myTower != null)
+        {
+            TowerInfoDisplay.Instance.ShowTowerInfo(myTower);
+        }
     }
 
     private void OnMouseDrag()
@@ -171,13 +175,12 @@ public class TowerDragSale : MonoBehaviour
             }
             // 드래그가 아닌 단순 클릭인 경우, 이 부분에서는 아무것도 하지 않음.
             // (TowerSelectable 스크립트가 UI를 관리하도록 설계되어 있어야 함)
-            else
-            {
-                // 단순히 타워를 클릭했을 때의 로직 (예: 타워 정보 UI)이
-                // 이 스크립트의 OnMouseUp이 아닌 다른 스크립트에서 처리되도록 해야 합니다.
-                // 만약 이 스크립트에서 처리해야 한다면 여기에 추가 로직을 넣습니다.
-                // 예를 들어, GetComponent<TowerSelectable>().ShowInfoUI(); 등을 호출할 수 있습니다.
-            }
+        }
+
+        // 손을 떼면 정보창을 끕니다.
+        if (TowerInfoDisplay.Instance != null)
+        {
+            TowerInfoDisplay.Instance.HideUI();
         }
 
         // 상태 리셋

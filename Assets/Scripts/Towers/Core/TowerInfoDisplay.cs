@@ -1,34 +1,40 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.EventSystems;
 
 /// <summary>
 /// 타워 정보와 사거리를 표시하는 UI 매니저 (더블클릭 방식)
 /// </summary>
 public class TowerInfoDisplay : MonoBehaviour
 {
+    // 어디서든 접근하기 쉽게 싱글톤 패턴 적용
+    public static TowerInfoDisplay Instance { get; private set; }
+
     [Header("Info Panel UI")]
     [SerializeField] private Canvas mainCanvas;
     [SerializeField] private GameObject infoPanelUI;
     [SerializeField] private TMP_Text towerStatsText;
-    [SerializeField] private Button flipButton;
-    [SerializeField] private Button lightButton;
-    [SerializeField] private Button darkButton;
-    [SerializeField] private Button reinforceButton;
-    [SerializeField] private TMP_Text reinforceText;
-    [SerializeField] private Button hideButton;
+
+    [Header("Indicators")]
     [SerializeField] private GameObject towerIndicateImg;
     [SerializeField] private GameObject towerRangeIndicator;
 
     [Header("Position Settings")]
-    [SerializeField] private Vector2 offsetFromTower = new Vector2(10f, 0f);
+    [SerializeField] private Vector2 offsetFromTower = new Vector2(0f, 250f);
+
+    // 화면 밖으로 나가는 것을 방지하기 위한 여백
     [SerializeField] private Vector2 screenMargin = new Vector2(50f, 50f);
 
     private Tower currentSelectedTower;
     private Camera _camera;
     private RectTransform _infoPanelRect;
-    private Color reinforceBtnColor;
+
+    private void Awake()
+    {
+        // 싱글톤 초기화
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
 
     private void Start()
     {
@@ -36,20 +42,19 @@ public class TowerInfoDisplay : MonoBehaviour
         InitializeUI();
     }
 
-    private void OnEnable()
+    private void Update()
     {
-        ClickManager.Instance.OnTowerDoubleClicked += ShowTowerInfoAndRange;
-        ClickManager.Instance.OnClickOutside += HideUI;
+        // 정보창이 켜져 있고 타워가 선택된 상태라면, 매 프레임 위치를 갱신하여 따라다니게 함
+        if (infoPanelUI.activeSelf && currentSelectedTower != null)
+        {
+            PositionInfoPanelNearTower(currentSelectedTower);
 
-        Tower.OnTowerDestroyed += HideUI;
-    }
-
-    private void OnDisable()
-    {
-        ClickManager.Instance.OnTowerDoubleClicked -= ShowTowerInfoAndRange;
-        ClickManager.Instance.OnClickOutside -= HideUI;
-
-        Tower.OnTowerDestroyed -= HideUI;
+            // 사거리 표시도 타워를 따라다녀야 함
+            if (towerRangeIndicator.activeSelf)
+            {
+                towerRangeIndicator.transform.position = currentSelectedTower.transform.position;
+            }
+        }
     }
 
     /// <summary>
@@ -58,27 +63,12 @@ public class TowerInfoDisplay : MonoBehaviour
     private void InitializeUI()
     {
         infoPanelUI.SetActive(false);
-        towerIndicateImg.SetActive(false);
-
-        flipButton.onClick.AddListener(FlipSelectedTower);
-        lightButton.onClick.AddListener(LightReinforce);
-        darkButton.onClick.AddListener(DarkReinforce);
-        reinforceButton.onClick.AddListener(ReinforceLevelUpgrade);
-        hideButton.onClick.AddListener(HideUI);
+        if(towerIndicateImg != null)
+            towerIndicateImg.SetActive(false);
+        if (towerRangeIndicator != null)
+            towerRangeIndicator.SetActive(false);
 
         _infoPanelRect = infoPanelUI.GetComponent<RectTransform>();
-    }
-
-    /// <summary>
-    /// 타워 정보 표시 (더블클릭시에만 호출)
-    /// </summary>
-    private void ShowTowerInfoAndRange(Tower tower)
-    {
-        currentSelectedTower = tower;
-        PositionInfoPanelNearTower(tower);
-        ShowTowerInfo(tower);
-        //ShowTowerCircle(tower);
-        ShowRange(tower);
     }
 
     /// <summary>
@@ -88,14 +78,26 @@ public class TowerInfoDisplay : MonoBehaviour
     {
         Vector3 towerWorldPos = tower.transform.position;
         Vector3 towerScreenPos = _camera.WorldToScreenPoint(towerWorldPos);
+
+        // 타워 위치에서 Y축으로 offset만큼 위로 올림
         Vector2 targetScreenPos = new Vector2(towerScreenPos.x, towerScreenPos.y) + offsetFromTower;
+
+        // 화면 밖으로 나가지 않도록 Clamp(가두기) 처리
+        // 정보창의 크기 절반을 구합니다.
         Vector2 panelSize = _infoPanelRect.sizeDelta;
+        float halfWidth = panelSize.x * 0.5f;
+        float halfHeight = panelSize.y * 0.5f;
 
-        float maxX = Screen.width - screenMargin.x - panelSize.x * 0.5f;
+        // X축 제한 (화면 좌우 밖으로 안 나가게)
+        float minX = screenMargin.x + halfWidth;
+        float maxX = Screen.width - screenMargin.x - halfWidth;
+        targetScreenPos.x = Mathf.Clamp(targetScreenPos.x, minX, maxX);
 
-        // 화면 오른쪽으로 정보창 벗어나면 타워 왼쪽으로 위치
-        if (targetScreenPos.x > maxX)
-            targetScreenPos.x = towerScreenPos.x - offsetFromTower.x;
+        // Y축 제한 (화면 위 밖으로 안 나가게)
+        // 위쪽으로 너무 올라가서 잘리면 안 되므로 상단 한계점 설정
+        float maxY = Screen.height - screenMargin.y - halfHeight;
+        // 보통 드래그 중인 타워는 화면 중앙~하단에 있으므로 위쪽 제한(Clamp)만
+        targetScreenPos.y = Mathf.Clamp(targetScreenPos.y, 0, maxY);
 
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             (RectTransform)mainCanvas.transform,
@@ -108,57 +110,40 @@ public class TowerInfoDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// 타워 정보 UI 업데이트
+    /// 외부(TowerDragSale)에서 호출할 정보 표시 함수
     /// </summary>
-    private void ShowTowerInfo(Tower tower)
+    public void ShowTowerInfo(Tower tower)
     {
-        towerStatsText.text = $"공격력: {tower.Damage}\n" +
+        currentSelectedTower = tower;
+
+        // 텍스트 업데이트
+        UpdateTowerStatsText(tower);
+
+        // 위치 잡기 (Update에서도 계속 호출됨)
+        PositionInfoPanelNearTower(tower);
+
+        // UI 켜기
+        infoPanelUI.SetActive(true);
+        ShowRange(tower);
+    }
+
+    private void UpdateTowerStatsText(Tower tower)
+    {
+        towerStatsText.text = $"<size=120%>{tower.TowerName}</size>\n\n" +
+                              $"공격력: {tower.Damage}\n" +
                               $"공격 속도: {tower.AttackSpeed}\n" +
                               $"치명타 확률: {tower.CriticalHit}\n" +
                               $"사거리: {tower.Range}";
-
-        UpdateReinforceUI(tower);
-        infoPanelUI.SetActive(true);
-    }
-
-    // 타워 강화 타입에 따라 UI 조정
-    private void UpdateReinforceUI(Tower tower)
-    { 
-        if (tower.reinforceType == ReinforceType.None)
-        {
-            lightButton.gameObject.SetActive(true);
-            darkButton.gameObject.SetActive(true);
-            reinforceButton.gameObject.SetActive(false);
-        }
-        else
-        {
-            lightButton.gameObject.SetActive(false);
-            darkButton.gameObject.SetActive(false);
-            reinforceButton.gameObject.SetActive(true);
-        }
-
-        reinforceBtnColor = (tower.reinforceType == ReinforceType.Light) ?
-            lightButton.colors.normalColor : darkButton.colors.normalColor;
-        ColorBlock cb = reinforceButton.colors;
-        cb.normalColor = reinforceBtnColor;
-        reinforceButton.colors = cb;
-
-        reinforceText.text = $"{tower.TowerName} + {tower.CurrentReinforceLevel}";
-    }
-
-    // 타워 가리키는 원 표시
-    private void ShowTowerCircle(Tower tower)
-    {
-        Vector3 towerWorldPos = tower.transform.position;
-        Vector3 towerScreenPos = _camera.WorldToScreenPoint(towerWorldPos);
-        Vector2 targetScreenPos = new Vector2(towerScreenPos.x, towerScreenPos.y);
-
-        towerIndicateImg.transform.position = targetScreenPos;
-        towerIndicateImg.SetActive(true);
     }
 
     private void ShowRange(Tower tower)
     {
+        if(towerRangeIndicator == null)
+        {
+            Debug.LogWarning("Tower Range Indicator가 할당되지 않았습니다.");
+            return;
+        }
+
         towerRangeIndicator.transform.position = tower.transform.position;
 
         // 사거리에 맞게 크기 조정
@@ -169,81 +154,19 @@ public class TowerInfoDisplay : MonoBehaviour
     }
 
     /// <summary>
-    /// 선택된 타워 좌우반전
-    /// </summary>
-    private void FlipSelectedTower()
-    {
-        if (currentSelectedTower != null)
-        {
-            currentSelectedTower.FlipTower();
-        }
-    }
-
-    /// <summary>
     /// UI 숨기기
     /// </summary>
     public void HideUI()
     {
         // infoPanelUI가 파괴되지 않고 존재할 때만 SetActive(false)를 호출합니다.
-        if (infoPanelUI != null)
-        {
-            infoPanelUI.SetActive(false);
-        }
+        if (infoPanelUI != null) infoPanelUI.SetActive(false);
 
         // towerIndicateImg가 파괴되지 않고 존재할 때만 SetActive(false)를 호출합니다.
-        if (towerIndicateImg != null)
-        {
-            towerIndicateImg.SetActive(false);
-        }
+        if (towerIndicateImg != null) towerIndicateImg.SetActive(false);
+
+        // 사거리 표시 끄기
+        if (towerRangeIndicator != null) towerRangeIndicator.SetActive(false); 
 
         currentSelectedTower = null;
-    }
-
-    // 빛 강화 선택
-    private void LightReinforce()
-    {
-        if (currentSelectedTower != null)
-        {
-            var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
-            towerReinforce.AssignReinforceType(ReinforceType.Light);
-            towerReinforce.ReinforceTower();
-
-            currentSelectedTower.type = "빛";
-            UpdateReinforceUI(currentSelectedTower);
-        }
-    }
-
-    // 어둠 강화 선택
-    private void DarkReinforce()
-    {
-        if (currentSelectedTower != null)
-        {
-            var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
-            towerReinforce.AssignReinforceType(ReinforceType.Dark);
-            towerReinforce.ReinforceTower();
-
-            currentSelectedTower.type = "어둠";
-            UpdateReinforceUI(currentSelectedTower);
-        }
-    }
-
-    // 강화 레벨업
-    private void ReinforceLevelUpgrade()
-    {
-        if (currentSelectedTower != null)
-        {
-            var towerReinforce = currentSelectedTower.GetComponent<TowerReinforce>();
-            if (towerReinforce != null)
-            {
-                // 강화 실행 '요청' (이 부분은 그대로)
-                towerReinforce.ReinforceTower();
-            }
-
-            // 강화 레벨을 Tower.cs에서 직접 가져오기
-            int reinforce = currentSelectedTower.CurrentReinforceLevel;
-
-            // 텍스트 업데이트 (tower.type 대신 tower.TowerName 사용 권장)
-            reinforceText.text = $"{currentSelectedTower.TowerName} + {reinforce + 1}"; // reinforce가 0부터 시작하므로 +1 해줘야 UI에 1레벨로 표시됩니다.
-        }
     }
 }
