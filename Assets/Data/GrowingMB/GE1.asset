@@ -14,10 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uD3ED\uC2DD"
   Code: GE1
-  Description: "\uC801 \uACA9\uD1F4 \uC2DC \uC5BB\uB294 \uC5D0\uD14C\uB974 +2"
+  Description: "\uC801 \uACA9\uD1F4 \uC2DC \uC5BB\uB294 \uC5D0\uD14C\uB974 +5"
   Icon: {fileID: 0}
   Rank: 2
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 7
     ValueType: 0

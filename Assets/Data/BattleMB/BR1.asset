@@ -14,11 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uCF8C\uCCAD"
   Code: BR1
-  Description: "\uD0DC\uC591\uD0C0\uC6CC\uC758 \uC0AC\uAC70\uB9AC\uAC00 \uBB34\uD55C\uC774
-    \uB418\uACE0 \uACF5\uACA9\uC18D\uB3C4 1 \uC99D\uAC00"
+  Description: "\uD0DC\uC591\uD0C0\uC6CC\uC758 \uACF5\uACA9\uC18D\uB3C4 +0.25\n\uC0DD\uBA85\uD0C0\uC6CC\uC758
+    \uACF5\uACA9\uC18D\uB3C4 +0.25"
   Icon: {fileID: 0}
   Rank: 1
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 12
     ValueType: 0
@@ -32,4 +37,4 @@ MonoBehaviour:
     TargetElement: 0
     TargetTowerCode: L3SOL
     TargetStatusEffect: 0
-  EffectValuesByStack: 0100000001000000
+  EffectValuesByStack: 01000000

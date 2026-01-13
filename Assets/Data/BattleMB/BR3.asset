@@ -15,10 +15,15 @@ MonoBehaviour:
   Name: "\uC545\uCC9C\uD6C4"
   Code: BR3
   Description: "\uBC88\uAC1C\uD0C0\uC6CC\uC640 \uD3ED\uD48D\uD0C0\uC6CC\uC758 \uCD5C\uC885\uB370\uBBF8\uC9C0
-    +20%"
+    +25%"
   Icon: {fileID: 0}
   Rank: 1
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 11
     ValueType: 1

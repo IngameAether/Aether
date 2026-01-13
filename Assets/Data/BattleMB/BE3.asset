@@ -16,14 +16,19 @@ MonoBehaviour:
   Code: BE3
   Description: "\uB2E4\uB978 \uB300\uAE30 \uC18D\uC131 \uD0C0\uC6CC \uD558\uB098\uB2F9
     \uB300\uAE30 \uC18D\uC131 \uCD08\uC6D4\uD0C0\uC6CC\uC758 \uACF5\uACA9 \uC18D\uB3C4
-    0.2\uCD08 \uC99D\uAC00"
+    +0.05"
   Icon: {fileID: 0}
   Rank: 2
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 25
     ValueType: 0
-    Value: 0.2
+    Value: 0.05
     TargetElement: 3
     TargetTowerCode: L4W
     TargetStatusEffect: 0

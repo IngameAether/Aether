@@ -14,15 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uC790\uC5F0\uC758 \uC740\uD61C"
   Code: GN1
-  Description: "wave \uD074\uB9AC\uC5B4 \uC2DC \uCD94\uAC00 \uC5D0\uD14C\uB974 {0}"
+  Description: "wave \uD074\uB9AC\uC5B4 \uC2DC \uC5D0\uD14C\uB974 +{0}"
   Icon: {fileID: 0}
   Rank: 0
   MaxStack: 2
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 0
     ValueType: 0
-    Value: 10
+    Value: 1
     TargetElement: 4
     TargetTowerCode: 
     TargetStatusEffect: 0
-  EffectValuesByStack: 0100000003000000
+  EffectValuesByStack: 0500000014000000

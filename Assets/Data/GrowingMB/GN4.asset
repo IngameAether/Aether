@@ -12,10 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
   m_Name: GN4
   m_EditorClassIdentifier: 
-  Name: "\uAC15\uC778\uD55C \uC2E0\uCCB4"
+  Name: "\uC790\uC5F0 \uCE58\uC720"
   Code: GN4
-  Description: "\uCD5C\uB300 Life\uC640 \uB0A8\uC740 Life\uAC00 \uBAA8\uB450 20\uC774
-    \uB428"
+  Description: "wave \uD074\uB9AC\uC5B4 \uC2DC \uB0A8\uC740 Life +3"
   Icon: {fileID: 0}
   Rank: 0
   MaxStack: 1

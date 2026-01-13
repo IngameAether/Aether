@@ -14,10 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uC644\uC804 \uC5F0\uC18C"
   Code: GN2
-  Description: "\uD0C0\uC6CC \uD310\uB9E4 \uC2DC \uC5D0\uD14C\uB974 {0}"
+  Description: "\uD0C0\uC6CC \uD310\uB9E4 \uC2DC \uC5D0\uD14C\uB974 +{0}"
   Icon: {fileID: 0}
   Rank: 0
   MaxStack: 2
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 1
     ValueType: 0
@@ -25,4 +30,4 @@ MonoBehaviour:
     TargetElement: 4
     TargetTowerCode: 
     TargetStatusEffect: 0
-  EffectValuesByStack: 0100000002000000
+  EffectValuesByStack: 050000000a000000

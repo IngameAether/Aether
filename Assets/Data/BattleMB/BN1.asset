@@ -12,13 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
   m_Name: BN1
   m_EditorClassIdentifier: 
-  Name: "\uBD88\uC758 \uAE30\uCD08\uC6D0\uC18C\uD559"
+  Name: "\uAE30\uCD08\uC6D0\uC18C\uD559: \uBD88"
   Code: BN1
   Description: "\uBD88 \uC18D\uC131 \uD0C0\uC6CC\uC758 \uCD5C\uC885 \uB370\uBBF8\uC9C0
     {0}"
   Icon: {fileID: 0}
   Rank: 0
   MaxStack: 3
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 12
     ValueType: 1
@@ -26,4 +31,4 @@ MonoBehaviour:
     TargetElement: 0
     TargetTowerCode: 
     TargetStatusEffect: 0
-  EffectValuesByStack: 010000000200000003000000
+  EffectValuesByStack: 050000000a00000014000000

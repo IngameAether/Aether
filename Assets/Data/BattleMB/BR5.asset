@@ -14,12 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uB2EC\uBE5B\uAC80"
   Code: BR5
-  Description: "\uB2EC\uBE5B\uD0C0\uC6CC\uC758 \uACF5\uACA9 \uBC94\uC704 \uB0B4\uC758
-    \uAC15\uCCA0\uD0C0\uC6CC \uD558\uB098\uB2F9 \uC11C\uB85C\uC758 \uCD5C\uC885\uB370\uBBF8\uC9C0
-    +10%"
+  Description: "\uB2EC\uBE5B\uD0C0\uC6CC \uD558\uB098\uB2F9 \uAC15\uCCA0\uD0C0\uC6CC\uC758
+    \uCD5C\uC885 \uB370\uBBF8\uC9C0 +30%\n\uAC15\uCCA0\uD0C0\uC6CC \uD558\uB098\uB2F9
+    \uB2EC\uBE5B\uD0C0\uC6CC\uC758 \uCD5C\uC885 \uB370\uBBF8\uC9C0 +30%"
   Icon: {fileID: 0}
   Rank: 1
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 28
     ValueType: 1

@@ -12,13 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
   m_Name: BR4
   m_EditorClassIdentifier: 
-  Name: "\uC138\uACC4\uC218"
+  Name: "\uBD80\uD328\uD55C \uC138\uACC4\uC218"
   Code: BR4
-  Description: "\uC0DD\uBA85\uD0C0\uC6CC\uC640 \uBD80\uD328\uD0C0\uC6CC\uC758 \uACF5\uACA9
-    \uBC18\uACBD\uC774 +1.5"
+  Description: "\uBD80\uD328\uD0C0\uC6CC\uC758 \uB454\uD654, \uAE30\uC808, \uCD9C\uD608
+    \uC218\uCE58 +30"
   Icon: {fileID: 0}
   Rank: 1
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 15
     ValueType: 0

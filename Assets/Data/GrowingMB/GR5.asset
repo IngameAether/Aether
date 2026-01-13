@@ -12,12 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
   m_Name: GR5
   m_EditorClassIdentifier: 
-  Name: "\uC790\uC5F0 \uCE58\uC720"
+  Name: "\uAC15\uC778\uD55C \uC2E0\uCCB4"
   Code: GR5
-  Description: "wave \uD074\uB9AC\uC5B4\uB9C8\uB2E4 \uB0A8\uC740 Life +1"
+  Description: "\uCD5C\uB300 Life\uC640 \uB0A8\uC740 Life\uAC00 \uBAA8\uB450 20\uC774
+    \uB428"
   Icon: {fileID: 0}
   Rank: 1
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 10
     ValueType: 0

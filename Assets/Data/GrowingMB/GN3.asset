@@ -14,11 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uACC4\uB2E8\uC2DD \uC131\uC7A5 "
   Code: GN3
-  Description: "\uBCF4\uC2A4 wave \uC5D0\uD14C\uB974, \uBE5B\uACFC \uC5B4\uB460 \uC6D0\uC18C
-    2\uBC30 \uD68D\uB4DD"
+  Description: "\uBCF4\uC2A4 wave \uC5D0\uD14C\uB974 2\uBC30 \uD68D\uB4DD"
   Icon: {fileID: 0}
   Rank: 0
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 4
     ValueType: 1

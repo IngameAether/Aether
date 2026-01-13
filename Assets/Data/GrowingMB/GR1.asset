@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
   m_Name: GR1
   m_EditorClassIdentifier: 
-  Name: "\uC131\uC120\uC124"
+  Name: "\uC6D0\uC18C\uC751\uC6A9\uD559: \uBD88"
   Code: GR1
-  Description: "\uC801 \uACA9\uD1F4 \uC2DC \uBE5B \uC6D0\uC18C +1 \uC5BB\uC744 \uD655\uB960
-    {0}"
+  Description: "\uBD88 \uC18D\uC131 \uD0C0\uC6CC \uC18C\uD658 \uC2DC \uC5D0\uD14C\uB974
+    +{0}"
   Icon: {fileID: 0}
   Rank: 1
   MaxStack: 2
@@ -31,4 +31,4 @@ MonoBehaviour:
     TargetElement: 4
     TargetTowerCode: 
     TargetStatusEffect: 0
-  EffectValuesByStack: 0200000005000000
+  EffectValuesByStack: 050000000f000000

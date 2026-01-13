@@ -10,26 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
-  m_Name: BS2
+  m_Name: GN5
   m_EditorClassIdentifier: 
-  Name: "\uBBFC\uC8FC\uC8FC\uC758"
-  Code: BS2
-  Description: "\uBAA8\uB4E0 \uD0C0\uC6CC \uC911 \uAC00\uC7A5 \uB9CE\uC740 \uAC1C\uC218\uB97C
-    \uAC00\uC9C0\uB294 \uD0C0\uC6CC\uC758 \uAC1C\uC218\uB2F9 \uCD5C\uC885 \uB370\uBBF8\uC9C0
-    +4%"
+  Name: "\uC9C0\uC6D0\uAE08 \uB3C4\uCC29"
+  Code: GN5
+  Description: "\uC5D0\uD14C\uB974 +{0}"
   Icon: {fileID: 0}
-  Rank: 3
+  Rank: 0
   MaxStack: 1
   condition:
-    type: 2
+    type: 0
     requiredBookCodes: []
     bossIndex: 
-    requiredTowerCount: 9
+    requiredTowerCount: 0
   Effects:
-  - EffectType: 24
-    ValueType: 1
-    Value: 4
+  - EffectType: 11
+    ValueType: 0
+    Value: 20
     TargetElement: 4
     TargetTowerCode: 
     TargetStatusEffect: 0
-  EffectValuesByStack: 01000000
+  EffectValuesByStack: 64000000

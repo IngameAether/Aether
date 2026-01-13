@@ -12,13 +12,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 28e726b829134cae90099bc32f0ce196, type: 3}
   m_Name: GR3
   m_EditorClassIdentifier: 
-  Name: "\uBE5B\uC758 \uAD8C\uC18D"
+  Name: "\uC6D0\uC18C\uC751\uC6A9\uD559: \uB300\uAE30"
   Code: GR3
-  Description: "\uBE5B \uC6D0\uC18C \uB4F1\uC7A5\uD655\uB960 {0}%(\uC5B4\uB460\uC6D0\uC18C\uAC00
-    {0}% \uB428)"
+  Description: "\uB300\uAE30 \uC18D\uC131 \uD0C0\uC6CC \uC18C\uD658 \uC2DC \uC5D0\uD14C\uB974
+    +{0}"
   Icon: {fileID: 0}
   Rank: 1
-  MaxStack: 1
+  MaxStack: 2
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 5
     ValueType: 1
@@ -32,4 +37,4 @@ MonoBehaviour:
     TargetElement: 4
     TargetTowerCode: 
     TargetStatusEffect: 0
-  EffectValuesByStack: 0100000001000000
+  EffectValuesByStack: 050000000f000000

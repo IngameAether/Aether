@@ -15,11 +15,16 @@ MonoBehaviour:
   Name: "\uBC14\uB2E5 \uC5C6\uB294 \uC2EC\uD574"
   Code: BE2
   Description: "\uB2E4\uB978 \uBB3C \uC18D\uC131 \uD0C0\uC6CC \uD558\uB098\uB2F9
-    \uBB3C \uC18D\uC131 \uCD08\uC6D4\uD0C0\uC6CC\uC758 \uACF5\uACA9 \uC9C0\uC18D\uC2DC\uAC04
-    0.2\uCD08 \uC99D\uAC00"
+    \uBB3C \uC18D\uC131 \uCD08\uC6D4\uD0C0\uC6CC\uC5D0 \uCD94\uAC00\uB85C \uAE30\uC808
+    \uC218\uCE58 +5"
   Icon: {fileID: 0}
   Rank: 2
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 24
     ValueType: 0

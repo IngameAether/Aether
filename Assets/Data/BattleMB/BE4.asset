@@ -16,12 +16,16 @@ MonoBehaviour:
   Code: BE4
   Description: "\uB2E4\uB978 \uB300\uC9C0 \uC18D\uC131 \uD0C0\uC6CC \uD558\uB098\uB2F9
     \uB300\uC9C0 \uC18D\uC131 \uCD08\uC6D4\uD0C0\uC6CC\uC758 \uCE58\uBA85\uD0C0\uD655\uB960
-    5%\uC529 \uC99D\uAC00\uD558\uACE0 \uCE58\uBA85\uD0C0\uD655\uB960\uC774 100%\uB97C
-    \uCD08\uACFC\uD558\uBA74 \uCD08\uACFC\uD55C \uC218\uCE58\uB9CC\uD07C \uCD5C\uC885
-    \uB370\uBBF8\uC9C0 \uC99D\uAC00"
+    +5%\n\uCD94\uAC00\uB85C \uCE58\uBA85\uD0C0\uD655\uB960\uC774 100%\uB97C \uCD08\uACFC\uD558\uBA74
+    \uCD08\uACFC\uD55C \uC218\uCE58\uB9CC\uD07C \uCD5C\uC885 \uB370\uBBF8\uC9C0 \uC99D\uAC00"
   Icon: {fileID: 0}
   Rank: 2
   MaxStack: 1
+  condition:
+    type: 0
+    requiredBookCodes: []
+    bossIndex: 
+    requiredTowerCount: 0
   Effects:
   - EffectType: 26
     ValueType: 1
