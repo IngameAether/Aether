@@ -15,20 +15,8 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     [Header("능력치")]
     public float maxHealth = 10f;
     public float moveSpeed = 2f;
+    public float MoveSpeed { get { return moveSpeed; } set { moveSpeed = value; } }
     [Range(0, 50)] private int magicResistance = 5;
-    [Range(0, 100)] private int mentalStrength = 10;
-
-    [Space]
-    [Header("상태이상 관련")]
-    [SerializeField] private float slowThreshold;
-    [SerializeField] private float burnThreshold;
-    [SerializeField] private float stunThreshold;
-    [SerializeField] private float bleedThreshold;
-    float slowGauge = 0;
-    float burnGauge = 0;
-    float stunGauge = 0;
-    float bleedGauge = 0;
-    int checkStatusEffect = 0b0000;
 
     [Space]
     [Header("UI")]
@@ -57,6 +45,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
     // 컴포넌트 참조
     private EnemyMovement enemyMovement;
     private EnemyHitFlicking enemyHit;
+    private EnemyStatusEffect enemyStatusEffect;
 
     public EnemyData enemyData;
     public EnemyInfoData enemyInfo;
@@ -68,6 +57,7 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         // 필수 컴포넌트들을 미리 찾아와서 저장합니다.
         enemyMovement = GetComponent<EnemyMovement>();
         enemyHit = GetComponent<EnemyHitFlicking>();
+        enemyStatusEffect = GetComponent<EnemyStatusEffect>();
 
         if (enemyMovement == null)
         {
@@ -99,9 +89,9 @@ public class NormalEnemy : MonoBehaviour, IDamageable
 
             // 저항력, 정신력 계산
             magicResistance = FormulaEvaluator.EvaluateToInt(enemyInfo.DamageReduction, currentWave);
-            mentalStrength = FormulaEvaluator.EvaluateToInt(enemyInfo.ControlResistance, currentWave);
 
-            //Debug.Log($"{currentWave}, {CurrentHealth}, {magicResistance}, {mentalStrength}");
+            // 상태이상 관련 초기화
+            enemyStatusEffect.Initialize(enemyInfo);
         }
     }
 
@@ -182,21 +172,11 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         return damageAmount * damageMultiplier;
     }
 
-    /// <summary>
-    /// 정신력(강인함)을 기반으로 CC기(상태 이상)의 지속 시간을 감소시킵니다.
-    /// </summary>
-    public float CalculateReducedCCDuration(float baseDuration)
-    {
-        // 정신력이 10이면 10% 시간 감소 -> 원래 시간의 90%만 적용
-        float durationMultiplier = 1.0f - (mentalStrength / 100f);
-        return baseDuration * durationMultiplier;
-    }
-
     // 공격을 받는 새로운 진입점. Projectile이 이 함수를 호출해야 합니다.
     public void TakeHit(StatusEffectType statusEffect, float effectValue, float damageAmount)
     {
         // 상태이상 효과 적용
-        SetStatusEffect(statusEffect, effectValue);
+        enemyStatusEffect.TakeStatusEffect(statusEffect, effectValue);
 
         // 데미지 처리 로직은 그대로 실행
         TakeDamage(damageAmount);
@@ -228,79 +208,6 @@ public class NormalEnemy : MonoBehaviour, IDamageable
         if (healthBarFillImage != null)
         {
             healthBarFillImage.fillAmount = CurrentHealth / maxHealth;
-        }
-    }
-
-    /// <summary>
-    /// 상태이상 처리함수 수치 이상이 되면 적용 각 상태이상 독립적으로 작용
-    /// </summary>
-    private void SetStatusEffect(StatusEffectType statusEffect, float value)
-    {
-        int checker;
-        switch (statusEffect)
-        {
-            case StatusEffectType.Slow:
-                checker = checkStatusEffect & 0b0001;
-                if (checker != 1) slowGauge += value;
-                if (slowThreshold < slowGauge)
-                {
-                    slowGauge = 0;
-                    checker = checkStatusEffect | 0b0001;
-                    checkStatusEffect = checker;
-                    GetStatusEffect(statusEffect);
-                }
-                break;
-            case StatusEffectType.Burn:
-                checker = checkStatusEffect & 0b0010;
-                if (checker != 1) burnGauge += value;
-                if (burnThreshold < slowGauge)
-                {
-                    burnGauge = 0;
-                    checker = checkStatusEffect | 0b0010;
-                    checkStatusEffect = checker;
-                    GetStatusEffect(statusEffect);
-                }
-                break;
-            case StatusEffectType.Stun:
-                checker = checkStatusEffect & 0b0100;
-                if (checker != 1) stunGauge += value;
-                if (stunThreshold < slowGauge)
-                {
-                    stunGauge = 0;
-                    checker = checkStatusEffect | 0b0100;
-                    checkStatusEffect = checker;
-                    GetStatusEffect(statusEffect);
-                }
-                break;
-            case StatusEffectType.Bleed:
-                checker = checkStatusEffect & 0b1000;
-                if (checker != 1) bleedGauge += value;
-                if (bleedThreshold < slowGauge)
-                {
-                    bleedGauge = 0;
-                    checker = checkStatusEffect | 0b1000;
-                    checkStatusEffect = checker;
-                    GetStatusEffect(statusEffect);
-                }
-                break;
-            default:
-                break;
-        }
-    }
-    private void GetStatusEffect(StatusEffectType statusEffect)
-    {
-        switch (statusEffect)
-        {
-            case StatusEffectType.Slow:
-                break;
-            case StatusEffectType.Burn:
-                break;
-            case StatusEffectType.Stun:
-                break;
-            case StatusEffectType.Bleed:
-                break;
-            default:
-                break;
         }
     }
 

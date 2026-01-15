@@ -3,11 +3,11 @@ using UnityEngine;
 
 public enum StatusEffectType
 {
-    None,
     Slow, // 둔화
     Stun, // 기절
     Burn, // 화상
-    Bleed // 출혈
+    Bleed, // 출혈
+    None,
 }
 
 public class FireObjectBase : MonoBehaviour
