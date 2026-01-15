@@ -17,7 +17,7 @@ MonoBehaviour:
   Description: "\uC5D0\uD14C\uB974 +{0}"
   Icon: {fileID: 0}
   Rank: 0
-  MaxStack: 1
+  MaxStack: 2
   condition:
     type: 0
     requiredBookCodes: []
@@ -30,4 +30,4 @@ MonoBehaviour:
     TargetElement: 4
     TargetTowerCode: 
     TargetStatusEffect: 0
-  EffectValuesByStack: 64000000
+  EffectValuesByStack: 64000000c8000000

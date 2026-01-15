@@ -48,12 +48,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMultiHit: 1
-  statusEffect: 0
+  statusEffect: 4
   effctValue: 0
   prepareAnim: {fileID: 7400000, guid: 30eda2a3320554b47baeec705c7b2b06, type: 2}
   prepareAnimSpeed: 1
+  prepareOffsetX: 0
+  prepareOffsetY: 0
   attackAnim: {fileID: 7400000, guid: fd5962e38fc052947b06182383cfe277, type: 2}
+  changePosToTower: 0
+  needRotation: 0
   attackAnimSpeed: 1
+  attackOffsetX: 0
+  attackOffsetY: 0
+  attackOffsetWait: 0
 --- !u!212 &6310077618534088023
 SpriteRenderer:
   m_ObjectHideFlags: 0

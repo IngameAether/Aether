@@ -30,6 +30,8 @@ public class EnemyStatusEffect : MonoBehaviour
         statusEffectThreshold[2] = enemyInfo.BurnGauge;
         statusEffectThreshold[3] = enemyInfo.BleedingGauge;
 
+        Debug.Log($"상태이상 {statusEffectThreshold[0]} {statusEffectThreshold[1]} {statusEffectThreshold[2]} {statusEffectThreshold[3]}");
+
         originalSpeed = enemy.MoveSpeed;
 
         slowSpeed = StatusEffectController.Instance.GetSlowSpeed(originalSpeed);
@@ -48,7 +50,11 @@ public class EnemyStatusEffect : MonoBehaviour
             enemy.MoveSpeed = slowSpeed;
             statusEffectTimer[0] -= Time.deltaTime;
 
-            if (statusEffectTimer[0] <= 0f) statusEffectIcon[0].SetActive(false);
+            if (statusEffectTimer[0] <= 0f)
+            {
+                enemy.MoveSpeed = originalSpeed;
+                statusEffectIcon[0].SetActive(false);
+            }
         }
 
         // Stun
@@ -57,7 +63,11 @@ public class EnemyStatusEffect : MonoBehaviour
             enemy.MoveSpeed = 0f;
             statusEffectTimer[1] -= Time.deltaTime;
 
-            if (statusEffectTimer[1] <= 0f) statusEffectIcon[1].SetActive(false);
+            if (statusEffectTimer[1] <= 0f)
+            {
+                enemy.MoveSpeed = originalSpeed;
+                statusEffectIcon[1].SetActive(false);
+            }
         }
 
         // Burn
@@ -105,6 +115,7 @@ public class EnemyStatusEffect : MonoBehaviour
                 statusEffectGauge[index] = 0f;
                 statusEffectIcon[index].SetActive(true);
             }
+            Debug.Log($"{statusEffect} 상태이상 적용됨!!!");
         }
     }
 }

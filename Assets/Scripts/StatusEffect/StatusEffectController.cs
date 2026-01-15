@@ -49,7 +49,7 @@ public class StatusEffectController : MonoBehaviour
 
     public float GetBurnDamage()
     {
-        return (float)(GameManager.Instance.CurrentWave * 10) * burnCoef;
+        return (float)(GameManager.Instance.CurrentWave * 5) * burnCoef;
     }
 
     public float GetAdditionalBleedGauge()

@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMultiHit: 1
-  statusEffect: 3
+  statusEffect: 2
   effctValue: 20
   flyingAnim: {fileID: 7400000, guid: a257ef224de3df0429090a2096493dfa, type: 2}
   speed: 5
