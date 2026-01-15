@@ -218,14 +218,26 @@ public class AudioManager : MonoBehaviour
     }
 
     #region Playback Methods
+
+    // AudioClip을 직접 받아서 재생하는 오버로딩 함수
+    public void PlayBGM(AudioClip clip, bool loop = true)
+    {
+        if (bgmAudioSource == null || clip == null) return;
+
+        // 이미 똑같은 음악이 재생 중이고, 반복 설정도 같다면 끊지 않고 유지
+        if (bgmAudioSource.clip == clip && bgmAudioSource.isPlaying && bgmAudioSource.loop == loop)
+            return;
+
+        bgmAudioSource.clip = clip;
+        bgmAudioSource.loop = loop; // 반복 여부 설정 (true: 계속 재생, false: 1번만 재생)
+        bgmAudioSource.Play();
+    }
+
     public void PlayBGM(string bgmName, bool loop = true)
     {
         if (bgmAudioSource == null) return;
         if (!bgmClipDictionary.ContainsKey(bgmName)) return;
-
-        bgmAudioSource.clip = bgmClipDictionary[bgmName];
-        bgmAudioSource.loop = loop;
-        bgmAudioSource.Play();
+        PlayBGM(bgmClipDictionary[bgmName], loop);
     }
 
     public void PlaySFX(SfxType sfxType)

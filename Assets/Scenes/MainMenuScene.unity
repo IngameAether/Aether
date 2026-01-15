@@ -182,6 +182,7 @@ MonoBehaviour:
   arrowActiveSprite: {fileID: 21300000, guid: 378bff5193d3448408e55d7ca8211fdc, type: 3}
   arrowInactiveSprite: {fileID: 21300000, guid: 51bbf2c3978cb5844acc3b4a6dc50632, type: 3}
   waveDatas: []
+  mainBgmClip: {fileID: 8300000, guid: 489b11444f286214aad7c08444ed653a, type: 3}
 --- !u!1 &50688731
 GameObject:
   m_ObjectHideFlags: 0

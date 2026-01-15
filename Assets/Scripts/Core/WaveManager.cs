@@ -55,6 +55,15 @@ public class WaveManager : MonoBehaviour
 
     public int CurrentWaveLevel => currentWaveLevel;
 
+    [Header("BGM Clips")]
+    [SerializeField] private AudioClip gameStartBgm; // 3초 짧은 브금
+    [SerializeField] private AudioClip stage1Bgm;    // 1~25 Wave
+    [SerializeField] private AudioClip stage2Bgm;    // 26~50 Wave
+    [SerializeField] private AudioClip stage3Bgm;    // 51~75 Wave
+    [SerializeField] private AudioClip stage4Bgm;    // 76~ Wave
+    [SerializeField] private AudioClip bossBgm;      // 보스전
+    [SerializeField] private AudioClip gameOverBgm;  // 게임 오버 브금
+
     private void Start()
     {
         InitializeWaveData();
@@ -142,13 +151,22 @@ public class WaveManager : MonoBehaviour
             Debug.Log($"저장된 게임 로드: Wave {startWaveIndex}부터 시작");
         }
 
-        // --- 1. 최초 마법책 선택 (새 게임인 경우만) ---
+        // --- 최초 마법책 선택 (새 게임인 경우만) ---
         if (!isLoadedGame)
         {
+            // Game Start BGM 재생 (반복 X)
+            if (AudioManager.Instance != null && gameStartBgm != null)
+            {
+                AudioManager.Instance.PlayBGM(gameStartBgm, false);
+            }
+
+            // 3초 대기 (브금 듣는 시간)
+            yield return new WaitForSeconds(3f);
+
+            // 마법서 선택창 띄우기
             Debug.Log("WaveManager: 최초 마법책 선택을 시작합니다.");
             MagicBookManager.Instance.PrepareSelection(BookRequestType.Regular);
-            yield return StartCoroutine(WaitForChoice()); // 팝업을 띄우고 선택을 기다립니다.
-            Debug.Log("WaveManager: 최초 선택 완료! 게임을 시작합니다.");
+            yield return StartCoroutine(WaitForChoice());
         }
 
         // --- 게임 시작 준비 ---
@@ -159,11 +177,14 @@ public class WaveManager : MonoBehaviour
 
         yield return new WaitForSeconds(initialDelay);
 
-        // --- 3. 웨이브 루프 시작 ---
+        // --- 웨이브 루프 시작 ---
         for (int waveIndex = startWaveIndex; waveIndex < spawnManager.waveDatas.Count; waveIndex++)
         {
             currentWaveLevel = waveIndex;
             int displayWave = waveIndex + 1;
+            // 웨이브 숫자에 맞춰 BGM 자동 교체
+            PlayStageBGM(displayWave);
+
             waveText.text = $"{displayWave} wave";
             GameManager.Instance.SetWave(displayWave);
 
@@ -262,6 +283,43 @@ public class WaveManager : MonoBehaviour
                 Debug.Log("모든 웨이브 완료!");
                 SceneManager.LoadScene("MainMenuScene");
             }
+        }
+    }
+
+    // 웨이브 단계별 BGM 선택 함수
+    private void PlayStageBGM(int wave)
+    {
+        if (AudioManager.Instance == null) return;
+
+        AudioClip targetBgm = null;
+
+        // 보스 웨이브인지 먼저 체크 (25, 50, 75, 100)
+        if (wave == 25 || wave == 50 || wave == 75 || wave == 100)
+        {
+            targetBgm = bossBgm;
+        }
+        // 보스가 아니라면 기존 규칙대로 스테이지 BGM 선택
+        else
+        {
+            if (wave >= 76) targetBgm = stage4Bgm;
+            else if (wave >= 51) targetBgm = stage3Bgm;
+            else if (wave >= 26) targetBgm = stage2Bgm;
+            else targetBgm = stage1Bgm;
+        }
+
+        // AudioManager가 "이미 재생 중인 음악이면 끊지 않음" 처리를 해주므로 안심하고 호출
+        if (targetBgm != null)
+        {
+            AudioManager.Instance.PlayBGM(targetBgm, true);
+        }
+    }
+
+    // 게임 오버 시 외부(GameManager)에서 호출할 함수
+    public void PlayGameOverBGM()
+    {
+        if (AudioManager.Instance != null && gameOverBgm != null)
+        {
+            AudioManager.Instance.PlayBGM(gameOverBgm, false); // 3초간 재생, 반복 X
         }
     }
 

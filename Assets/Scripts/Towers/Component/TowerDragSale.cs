@@ -266,6 +266,12 @@ public class TowerDragSale : MonoBehaviour
         }
         Debug.Log($"{gameObject.name} 판매됨. 가격: {sellPrice}");
         ResourceManager.Instance.AddCoin(sellPrice + _towerSellBonusCoin);
+
+        // 타워 판매 효과음 재생
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.PlaySFX(SfxType.Tower_Sell);
+        }
         Destroy(gameObject);
     }
 

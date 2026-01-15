@@ -218,6 +218,12 @@ public class MagicBookManager : MonoBehaviour
         {
             _ownedBooksDict[bookCode] = currentStack + 1;
             ApplyBookEffect(bookData, currentStack + 1);
+
+            // 마법서 획득(선택) 효과음 재생
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(SfxType.Magicbook_get);
+            }
         }
     }
 

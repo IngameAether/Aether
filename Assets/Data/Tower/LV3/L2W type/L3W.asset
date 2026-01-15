@@ -34,7 +34,7 @@ MonoBehaviour:
   TimeDuration: 0
   Guided: 1
   Multi: 0
-  attackSound: 13
+  attackSound: 32
   impactSound: 0
   nextUpgradeData: {fileID: 0}
   upgradedPrefab: {fileID: 0}
