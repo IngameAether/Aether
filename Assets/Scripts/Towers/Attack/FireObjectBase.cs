@@ -86,15 +86,29 @@ public class FireObjectBase : MonoBehaviour
 
     protected virtual void SetAnimationClip()
     {
-        if (!(animator.runtimeAnimatorController is AnimatorOverrideController))
+        //if (!(animator.runtimeAnimatorController is AnimatorOverrideController))
+        //{
+        //    animatorOverride = new AnimatorOverrideController(animator.runtimeAnimatorController);
+        //    animator.runtimeAnimatorController = animatorOverride;
+        //}
+        //else
+        //{
+        //    animatorOverride = (AnimatorOverrideController)animator.runtimeAnimatorController;
+        //}
+
+        // Lv.3 타워 공격 이펙트가 겹쳐 애니메이션 독립되게 생성되도록 수정
+        AnimatorOverrideController baseController = animator.runtimeAnimatorController as AnimatorOverrideController;
+
+        if (baseController != null)
         {
-            animatorOverride = new AnimatorOverrideController(animator.runtimeAnimatorController);
-            animator.runtimeAnimatorController = animatorOverride;
+            animatorOverride = new AnimatorOverrideController(baseController);
         }
         else
         {
-            animatorOverride = (AnimatorOverrideController)animator.runtimeAnimatorController;
+            animatorOverride = new AnimatorOverrideController(animator.runtimeAnimatorController);
         }
+
+        animator.runtimeAnimatorController = animatorOverride;
     }
 
     protected void Rotate()

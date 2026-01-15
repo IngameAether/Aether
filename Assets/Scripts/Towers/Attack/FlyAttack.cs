@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -36,6 +37,13 @@ public class FlyAttack : Fly
         PlayAttackAnim(AttackAnimSpeed);
 
         base.AfterMove();
+        //StartCoroutine(WaitAttackEnd());
+    }
+
+    private IEnumerator WaitAttackEnd()
+    {
+        yield return new WaitForSeconds(attackAnim.length);
+        OnTargetHit();
     }
 
     // Attack 애니메이션 끝날 때까지 대기
