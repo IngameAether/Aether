@@ -1,24 +1,33 @@
 using UnityEngine;
+using System; // Enum.Parse를 쓰기 위해 필요
 
 public class UISoundPlayer : MonoBehaviour
 {
-    // 버튼 클릭 효과음을 재생하는 단일 함수
+    // 기본 클릭 소리
     public void PlayClickSound()
     {
-        // 프로젝트의 AudioManager를 호출하여 기본 버튼 클릭 사운드를 재생합니다.
-        // SfxType.ButtonClick 등 미리 정해둔 효과음 이름을 사용합니다.
         if (AudioManager.Instance != null)
         {
             AudioManager.Instance.PlaySFX(SfxType.Screen_touch);
         }
     }
 
-    // (선택) 다른 종류의 사운드가 필요하면 함수를 추가할 수 있습니다.
-    //public void PlayCancelSound()
-    //{
-    //    if (AudioManager.Instance != null)
-    //    {
-    //        AudioManager.Instance.PlaySFX(SfxType.ButtonCancel);
-    //    }
-    //}
+    // 외부에서 이름(String)으로 소리를 지정하는 만능 함수
+    public void PlaySoundByName(string soundName)
+    {
+        if (AudioManager.Instance == null) return;
+
+        try
+        {
+            // 입력받은 문자열(soundName)을 SfxType(Enum)으로 변환합니다.
+            SfxType type = (SfxType)Enum.Parse(typeof(SfxType), soundName);
+
+            AudioManager.Instance.PlaySFX(type);
+        }
+        catch
+        {
+            // 오타가 났을 경우 오류 로그 출력
+            Debug.LogError($"[UISoundPlayer] '{soundName}'라는 이름의 SfxType을 찾을 수 없습니다! 스펠링을 확인하세요.");
+        }
+    }
 }

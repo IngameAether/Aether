@@ -8,21 +8,6 @@ public enum SfxType
 {
     None,
 
-    // 공격 사운드
-    L1E_attack,
-    L1F_attack,
-    L1W_attack,
-    L2A_attack,
-    L2E_attack_Fly,
-    L2E_attack_Impact,
-    L2W_attack,
-    L3E_attack_Impact,
-    L3GLA_attack_Impact,
-    L3LIF_attack,
-    L3LIG_attack,
-    L3MET_attack,
-    L3W_attack,
-
     // UI 사운드
     Magicbook_get,
     PopUp_close,
@@ -30,7 +15,52 @@ public enum SfxType
 
     // 플레이 사운드
     Screen_touch,
-    Tower_combination
+    Tower_combination,
+    Tower_reinforce,
+    Lose_life,
+    Tower_Sell,
+
+    // 게임 시작과 끝
+    Game_start,
+    Game_over,
+
+    // 아쿠아 공격 사운드
+    L1A,
+    L2A_Flying,
+    L2A_Attack,
+    L3A_Attack,
+    L4A_Attack,
+    L4A_Prepare,
+    // 대지 공격 사운드
+    L1E_Flying,
+    L2E_Prepare,
+    L2E_Attack,
+    L3E_Attack,
+    L3E_Prepare,
+    L4E_Attack,
+    // 불 공격 사운드
+    L1F,
+    L2F_Flying,
+    L2F_Attack,
+    L3F_Attack,
+    L4F_Attack,
+    L4F_Prepare,
+    // 공기 공격 사운드
+    L1W,
+    L2W_Flying,
+    L2W_Attack,
+    L3W_Attack,
+    L4W_Attack,
+    // 3단계 공격 사운드
+    L3GLA_Attack,
+    L3LIG_Prepare,
+    L3LIG_Attack,
+    L3MET_Prepare,
+    L3MET_Attack,
+    L3SOL_Prepare,
+    L3STO_Flying,
+    L3VIT_Prepare,
+    L3VIT_Attack,
 }
 public class AudioManager : MonoBehaviour
 {

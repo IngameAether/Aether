@@ -548,9 +548,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34755a4ed3b22844cb7cb2b7e79e3f64, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnManager: {fileID: 0}
+  spawnManager: {fileID: 1078006102}
   waveText: {fileID: 553837775}
-  mapBackgroundManager: {fileID: 0}
+  mapBackgroundManager: {fileID: 1978969228}
   ThankYou: {fileID: 113897578}
   initialDelay: 1
   nextWaveDelay: 3
@@ -791,9 +791,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 406a30e934308584983963b495d012bb, type: 2}
   - {fileID: 11400000, guid: 0d5967f073a3a1d4fa0791be02085090, type: 2}
   - {fileID: 11400000, guid: 7e25811f06bb4eb4abc4f2fc97c963cb, type: 2}
-  - {fileID: 11400000, guid: e444a6ab051ced849a120e163a947c75, type: 2}
-  - {fileID: 11400000, guid: 9851c0bd92d34f9429707a163325da20, type: 2}
-  - {fileID: 11400000, guid: bb7af05b25396a045a7fe78277207e7d, type: 2}
   - {fileID: 11400000, guid: bf2f9a47356a15b409eab3bdd718fbbf, type: 2}
   - {fileID: 11400000, guid: 241efcd12ffbd314ead2b796a0d54a09, type: 2}
   - {fileID: 11400000, guid: ca92760642bc33444bfc93a6f69f0a8a, type: 2}
@@ -811,8 +808,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3763e5881e09a42469c17e8f52e38d21, type: 2}
   - {fileID: 11400000, guid: 23820312ea24fda4d9fff622f83a96b3, type: 2}
   - {fileID: 11400000, guid: 3af715b91f02c234eaaf2ab46ef66b43, type: 2}
-  - {fileID: 11400000, guid: 2439b91415e057f419beb13425d1b3e1, type: 2}
-  - {fileID: 11400000, guid: 538bf9a09de6fc04899018b816567e31, type: 2}
   rarityTable: {fileID: 11400000, guid: c803b70486041bd45a69d19561c8617c, type: 2}
 --- !u!114 &365221779
 MonoBehaviour:
@@ -1939,7 +1934,7 @@ GameObject:
   - component: {fileID: 915740719}
   - component: {fileID: 915740718}
   m_Layer: 0
-  m_Name: WinterForest
+  m_Name: Stage3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1986,12 +1981,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: f4dd908589670ec4fab2637296fdb9d3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 578b54f256ae1624e85f9ad699adcff7, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.8, y: 24.041739}
+  m_Size: {x: 10.24, y: 15.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2006,8 +2001,8 @@ Transform:
   m_GameObject: {fileID: 915740717}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 5}
-  m_LocalScale: {x: 1.03, y: 0.81, z: 1}
+  m_LocalPosition: {x: 0.0211, y: -0.0219, z: 5}
+  m_LocalScale: {x: 1.065104, y: 1.263731, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1978969227}
@@ -2798,7 +2793,7 @@ GameObject:
   - component: {fileID: 1320414248}
   - component: {fileID: 1320414247}
   m_Layer: 0
-  m_Name: DeathForest
+  m_Name: Stage4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2845,12 +2840,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 37cc1a0b4bbb55d45b2d00cf50af42c9, type: 3}
+  m_Sprite: {fileID: 21300000, guid: decf4dd8c6402e34db1905b4047a7216, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.8, y: 24.041739}
+  m_Size: {x: 10.24, y: 15.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2865,8 +2860,8 @@ Transform:
   m_GameObject: {fileID: 1320414246}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 5}
-  m_LocalScale: {x: 1.03, y: 0.81, z: 1}
+  m_LocalPosition: {x: 0.0211, y: -0.0219, z: 5}
+  m_LocalScale: {x: 1.065104, y: 1.263731, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1978969227}
@@ -2926,7 +2921,7 @@ GameObject:
   - component: {fileID: 1442445232}
   - component: {fileID: 1442445231}
   m_Layer: 0
-  m_Name: forest
+  m_Name: Stage2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2973,12 +2968,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: ef94e2d05b5ce06449de726c0249073a, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 29309985cdbcd4f4482856514ca6919c, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.8, y: 24.041739}
+  m_Size: {x: 10.24, y: 15.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -2993,8 +2988,8 @@ Transform:
   m_GameObject: {fileID: 1442445230}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 5}
-  m_LocalScale: {x: 1.03, y: 0.81, z: 1}
+  m_LocalPosition: {x: 0.0211, y: -0.0219, z: 5}
+  m_LocalScale: {x: 1.065104, y: 1.263731, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1978969227}
@@ -3725,7 +3720,7 @@ GameObject:
   - component: {fileID: 1758790090}
   - component: {fileID: 1758790089}
   m_Layer: 0
-  m_Name: spring
+  m_Name: Stage1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3772,12 +3767,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: b23122d8ff5f38548ac726def23dcf65, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 611bf8dbbf5940c4ea75fe8722f569e8, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 10.8, y: 24.041739}
+  m_Size: {x: 10.24, y: 15.36}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -3792,8 +3787,8 @@ Transform:
   m_GameObject: {fileID: 1758790088}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 5}
-  m_LocalScale: {x: 1.03, y: 0.81, z: 1}
+  m_LocalPosition: {x: 0.0211, y: -0.0219, z: 5}
+  m_LocalScale: {x: 1.0651037, y: 1.2637308, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1978969227}
