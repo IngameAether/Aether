@@ -792,9 +792,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 406a30e934308584983963b495d012bb, type: 2}
   - {fileID: 11400000, guid: 0d5967f073a3a1d4fa0791be02085090, type: 2}
   - {fileID: 11400000, guid: 7e25811f06bb4eb4abc4f2fc97c963cb, type: 2}
-  - {fileID: 11400000, guid: e444a6ab051ced849a120e163a947c75, type: 2}
-  - {fileID: 11400000, guid: 9851c0bd92d34f9429707a163325da20, type: 2}
-  - {fileID: 11400000, guid: bb7af05b25396a045a7fe78277207e7d, type: 2}
   - {fileID: 11400000, guid: bf2f9a47356a15b409eab3bdd718fbbf, type: 2}
   - {fileID: 11400000, guid: 241efcd12ffbd314ead2b796a0d54a09, type: 2}
   - {fileID: 11400000, guid: ca92760642bc33444bfc93a6f69f0a8a, type: 2}
@@ -812,8 +809,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 3763e5881e09a42469c17e8f52e38d21, type: 2}
   - {fileID: 11400000, guid: 23820312ea24fda4d9fff622f83a96b3, type: 2}
   - {fileID: 11400000, guid: 3af715b91f02c234eaaf2ab46ef66b43, type: 2}
-  - {fileID: 11400000, guid: 2439b91415e057f419beb13425d1b3e1, type: 2}
-  - {fileID: 11400000, guid: 538bf9a09de6fc04899018b816567e31, type: 2}
   rarityTable: {fileID: 11400000, guid: c803b70486041bd45a69d19561c8617c, type: 2}
 --- !u!114 &365221779
 MonoBehaviour:
@@ -1463,7 +1458,6 @@ GameObject:
   - component: {fileID: 657062458}
   - component: {fileID: 657062459}
   - component: {fileID: 657062460}
-  - component: {fileID: 657062461}
   m_Layer: 5
   m_Name: sale_UIPanel
   m_TagString: Untagged
@@ -1547,20 +1541,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &657062461
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 657062455}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b290d99ae77b22044b88c6f316920141, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  lightElementText: {fileID: 0}
-  darkElementText: {fileID: 0}
 --- !u!1 &686532813
 GameObject:
   m_ObjectHideFlags: 0
