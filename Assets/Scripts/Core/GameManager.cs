@@ -28,8 +28,6 @@ public class GameManager : MonoBehaviour
     [Header("UI에 목숨을 표시")]
     [SerializeField] private TextMeshProUGUI livesText; // 텍스트로 남은 목숨을 표시
 
-    private string BGM_main;
-
     private void Awake()
     {
         if (Instance == null)
@@ -48,7 +46,6 @@ public class GameManager : MonoBehaviour
         InitializeLives();
         TileInteraction.InitializeTileData();
         IsGameOver = false; // <- 게임 시작 시 게임 오버 아님으로 초기화
-        PlayBgmIfNotPlaying("BGM_main");
     }
 
     private void OnEnable()
@@ -63,9 +60,6 @@ public class GameManager : MonoBehaviour
     {
         if (scene.name == "GameScene") // 실제 게임 씬 이름
         {
-            // 인게임 BGM 재생
-            PlayBgmIfNotPlaying("BGM_InGame"); // 인게임 BGM 이름
-
             GameObject livesTextObj = GameObject.Find("LivesCountText");
             if (livesTextObj != null)
                 livesText = livesTextObj.GetComponent<TextMeshProUGUI>();
@@ -74,9 +68,6 @@ public class GameManager : MonoBehaviour
         }
         else if (scene.name == "MainMenuScene") // 실제 메인 메뉴 씬 이름
         {
-            // 메인 메뉴 BGM 재생
-            PlayBgmIfNotPlaying("BGM_main"); // 메인 메뉴 BGM 이름
-
             livesText = null;
             Time.timeScale = 1f;
             IsGameOver = false;
@@ -114,19 +105,6 @@ public class GameManager : MonoBehaviour
             ResourceManager.Instance.ResetAllResources();
     }
 
-    private void PlayBgmIfNotPlaying(string bgmName)
-    {
-        // 재생하려는 BGM이 이미 재생 중이라면 아무것도 하지 않음
-        if (BGM_main == bgmName) return;
-
-        // AudioManager가 준비되었다면 BGM 재생
-        if (AudioManager.Instance != null)
-        {
-            AudioManager.Instance.PlayBGM(bgmName);
-            BGM_main = bgmName; // 현재 재생 중인 BGM 이름 기록
-        }
-    }
-
     private void InitializeLives()
     {
         initialLives = GameDataDatabase.GetInt("life_max", 5);
@@ -135,7 +113,6 @@ public class GameManager : MonoBehaviour
         UpdateLivesUI();
         IsGameOver = false;
         CurrentWave = GameDataDatabase.GetInt("wave", 1);
-        Debug.Log("게임 시작. 초기 목숨 및 웨이브 설정 완료.");
     }
 
 
@@ -147,7 +124,13 @@ public class GameManager : MonoBehaviour
             UpdateLivesUI(); // UI 업데이트
             Debug.Log("Life Lost! Current Lives: {currentLives}");
 
-            if(currentLives <= 0) // 목숨이 0이면 게임오버
+            // 목숨 잃는 소리 재생
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(SfxType.Lose_life);
+            }
+
+            if (currentLives <= 0) // 목숨이 0이면 게임오버
             {
                 GameOver();
             }
@@ -171,14 +154,9 @@ public class GameManager : MonoBehaviour
 
     private void UpdateLivesUI() // 목숨 UI 업데이트
     {
-        if(livesText != null)
+        if (livesText != null)
         {
-            livesText.text = currentLives.ToString(); // 남은 목숨은 텍스트로
-        }
-        else
-        {
-            Debug.LogWarning("GameManager: livesText (TextMeshProUGUI)가 Inspector에 할당되지 않았습니다." +
-            "목숨 UI를 표시할 수 없습니다.");
+            livesText.text = currentLives.ToString();
         }
     }
 
@@ -189,9 +167,14 @@ public class GameManager : MonoBehaviour
         GameSaveManager.Instance.ClearGameDataForNewGame(GameSaveManager.Instance.SelectedSlotIndex);
         Time.timeScale = 0f; // <- 게임 시간 정지
 
-        if (AudioManager.Instance != null)
+        // 단순히 BGM을 끄는 게 아니라, WaveManager에게 게임오버 브금을 틀라고 시킴
+        if (WaveManager.Instance != null)
         {
-            // BGM 정지
+            WaveManager.Instance.PlayGameOverBGM();
+        }
+        // 혹시 WaveManager가 없다면 안전하게 끄기만 함
+        else if (AudioManager.Instance != null)
+        {
             AudioManager.Instance.StopBGM();
         }
 
@@ -200,6 +183,7 @@ public class GameManager : MonoBehaviour
         else
             SceneManager.LoadScene("MainMenuScene");
     }
+
     public void ChangeScene(EScene scene)
     {
         SceneManager.LoadScene((int)scene);

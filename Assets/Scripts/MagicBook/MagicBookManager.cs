@@ -33,8 +33,31 @@ public class MagicBookManager : MonoBehaviour
         if (Instance == null) Instance = this;
         else Destroy(this);
 
+        // [안전장치] _allBooks 배열 자체가 연결 안 되어 있을 경우 방어
+        if (_allBooks == null)
+        {
+            Debug.LogError("MagicBookManager: '_allBooks' 배열이 인스펙터에서 연결되지 않았습니다!");
+            _allBooks = new MagicBookData[0]; // 빈 배열로 초기화하여 오류 방지
+        }
+
         _allBooksDict = new Dictionary<string, MagicBookData>(_allBooks.Length);
-        foreach (var book in _allBooks) _allBooksDict[book.Code] = book;
+
+        // 배열 안의 요소가 비어있는지(null) 확인하는 로직 추가
+        foreach (var book in _allBooks)
+        {
+            // [안전장치] 빈 껍데기(None) 데이터가 들어있으면 무시하고 넘어감
+            if (book == null)
+            {
+                Debug.LogWarning("MagicBookManager: '_allBooks' 배열에 비어있는(None) 항목이 있습니다. 인스펙터를 확인해주세요.");
+                continue;
+            }
+
+            // 중복된 코드가 있을 경우 덮어씌우거나 무시
+            if (!_allBooksDict.ContainsKey(book.Code))
+            {
+                _allBooksDict[book.Code] = book;
+            }
+        }
 
         _ownedBooksDict = new Dictionary<string, int>(_allBooks.Length);
 
@@ -45,12 +68,14 @@ public class MagicBookManager : MonoBehaviour
 
         foreach (var book in _allBooks)
         {
+            if (book == null) continue; // [안전장치] null 체크
+
             switch (book.Rank)
             {
                 case EBookRank.Normal: _normalBooks.Add(book); break;
                 case EBookRank.Rare: _rareBooks.Add(book); break;
                 case EBookRank.Epic: _epicBooks.Add(book); break;
-                // Special 등급은 확률 뽑기에서 제외
+                    // Special 등급은 확률 뽑기에서 제외
             }
         }
     }
@@ -193,6 +218,12 @@ public class MagicBookManager : MonoBehaviour
         {
             _ownedBooksDict[bookCode] = currentStack + 1;
             ApplyBookEffect(bookData, currentStack + 1);
+
+            // 마법서 획득(선택) 효과음 재생
+            if (AudioManager.Instance != null)
+            {
+                AudioManager.Instance.PlaySFX(SfxType.Magicbook_get);
+            }
         }
     }
 

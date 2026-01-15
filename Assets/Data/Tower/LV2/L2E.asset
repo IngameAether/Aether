@@ -34,8 +34,8 @@ MonoBehaviour:
   TimeDuration: 3
   Guided: 0
   Multi: 1
-  attackSound: 5
-  impactSound: 6
+  attackSound: 19
+  impactSound: 18
   nextUpgradeData: {fileID: 11400000, guid: a7cd8e24412622a49afe6200a2dc3f79, type: 2}
   upgradedPrefab: {fileID: 0}
   reinforcementThreshold: 10

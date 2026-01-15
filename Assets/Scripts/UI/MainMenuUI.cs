@@ -55,6 +55,9 @@ public class MainMenuUI : MonoBehaviour
     private Image _leftArrowImage;
     private Image _rightArrowImage;
 
+    [Header("Audio")]
+    public AudioClip mainBgmClip;
+
     private void Start()
     {
         _leftArrowImage = saveSlotLeftArrow.GetComponent<Image>();
@@ -74,6 +77,12 @@ public class MainMenuUI : MonoBehaviour
 
         // 다음 게임을 위해 PopUpManager의 상태를 리셋합니다.
         PopUpManager.ResetInitialBookFlag();
+
+        // 메인 메뉴 시작 시 BGM 재생
+        if (AudioManager.Instance != null && mainBgmClip != null)
+        {
+            AudioManager.Instance.PlayBGM(mainBgmClip, true);
+        }
     }
 
     private void OnDestroy()
@@ -235,6 +244,12 @@ public class MainMenuUI : MonoBehaviour
     // 게임 시작 함수 (씬 로딩)
     void StartGame(int waveIndex)
     {
+        // 게임 씬으로 넘어가면서 메인 BGM 정지
+        if (AudioManager.Instance != null)
+        {
+            AudioManager.Instance.StopBGM();
+        }
+
         FadeManager.Instance.TransitionToScene("GameScene");
     }
 
