@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMultiHit: 1
-  statusEffect: 1
+  statusEffect: 0
   effctValue: 30
   prepareAnim: {fileID: 7400000, guid: 2c07d57beadcbc140a9e897692e825ae, type: 2}
   prepareAnimSpeed: 1

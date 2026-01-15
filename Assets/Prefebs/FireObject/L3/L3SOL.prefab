@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isMultiHit: 1
-  statusEffect: 3
+  statusEffect: 2
   effctValue: 10
   prepareAnim: {fileID: 7400000, guid: 528e2359098d9e84e9dfefb17d2ac970, type: 2}
   prepareAnimSpeed: 1
@@ -56,6 +56,7 @@ MonoBehaviour:
   prepareOffsetY: 0
   attackAnim: {fileID: 7400000, guid: 06b34aeefc198494089259d4e20250ad, type: 2}
   changePosToTower: 1
+  needRotation: 0
   attackAnimSpeed: 1
   attackOffsetX: 0
   attackOffsetY: 0
