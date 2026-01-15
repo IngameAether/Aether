@@ -9,8 +9,6 @@ public class TowerDragSale : MonoBehaviour
     public bool IsDrag { get; private set; } = false;
 
     private bool _isDragging = false;
-    private Vector3 offset;
-    private Vector3 initialPosition; // 드래그 시작 시 초기 위치 저장
     private Vector3 _mouseDownPosition;
     private SaleController saleZone;
     private bool isOverSaleZone; // 판매 구역 위에 있는지 판단
@@ -20,21 +18,19 @@ public class TowerDragSale : MonoBehaviour
     private BoxCollider2D _boxCollider2D;
     private int _towerSellBonusCoin = 0;
 
+    // 드래그 시 보여줄 가짜(Ghost) 오브젝트 관련 변수
+    private GameObject _dragGhost;
+    private SpriteRenderer[] _allRenderers; // 내 타워의 모습을 복사하기 위함
+
     // 드래그로 인식될 최소 거리
     private const float DRAG_THRESHOLD = 0.1f;
 
     private void Awake()
     {
-        Debug.Log("TowerDragSale Awake 함수 호출됨! SaleController 찾기 시도.");
         saleZone = FindObjectOfType<SaleController>();
-        if (saleZone == null)
-        {
-            Debug.LogError("SaleController가 포함된 오브젝트를 씬에 추가하거나 활성화해야 합니다.");
-        }
-        else
-        {
-            Debug.Log("SaleController를 성공적으로 찾았습니다!");
-        }
+
+        // 내 스프라이트 렌더러를 찾아둡니다.
+        _allRenderers = GetComponentsInChildren<SpriteRenderer>();
     }
 
     private void Start()
@@ -55,12 +51,22 @@ public class TowerDragSale : MonoBehaviour
 
     private void OnEnable()
     {
-        MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        // MagicBookManager가 존재할 때만 이벤트를 구독합니다.
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
+        }
     }
 
     private void OnDisable()
     {
-        MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+        // MagicBookManager가 존재할 때만 이벤트를 해제합니다.
+        if (MagicBookManager.Instance != null)
+        {
+            MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
+        }
+        // 비활성화 시 잔상이 남아있으면 삭제
+        DestroyGhost();
     }
 
     private void OnMouseDown()
@@ -68,12 +74,18 @@ public class TowerDragSale : MonoBehaviour
         _isDragging = true;
         // 마우스 클릭 시에는 드래그 상태가 아니라고 초기화
         IsDrag = false;
-        initialPosition = transform.position; // 현재 위치를 초기 위치로 저장
-        _mouseDownPosition = GetMouseWorldPosition();
-        offset = transform.position - _mouseDownPosition;
 
-        // OnMouseDown에서는 UI를 띄우지 않고 드래그 시작만 준비
-        // saleZone.ShowSaleUI(true); // 이 부분을 제거했습니다.
+        // 마우스 클릭 위치만 저장
+        _mouseDownPosition = GetMouseWorldPosition();
+
+        // Ghost는 마우스 위치에 바로 붙일 예정
+
+        // 터치/클릭하자마자 정보창을 띄웁니다.
+        Tower myTower = GetComponent<Tower>();
+        if (TowerInfoDisplay.Instance != null && myTower != null)
+        {
+            TowerInfoDisplay.Instance.ShowTowerInfo(myTower);
+        }
     }
 
     private void OnMouseDrag()
@@ -90,8 +102,11 @@ public class TowerDragSale : MonoBehaviour
                 if (distance > DRAG_THRESHOLD)
                 {
                     IsDrag = true;
+                    CreateGhost();
 
-                    // 실제 드래그가 시작될 때만 판매 UI 표시
+                    // [핵심 변경] 모든 렌더러를 끕니다.
+                    SetRenderersEnabled(false);
+
                     if (saleZone != null)
                     {
                         saleZone.ShowSaleUI(true);
@@ -102,13 +117,18 @@ public class TowerDragSale : MonoBehaviour
             // 실제 드래그 중일 때만 타워 이동 및 판매 영역 체크
             if (IsDrag)
             {
-                transform.position = currentMousePosition + offset;
+                // 본체(transform)가 아니라 Ghost를 이동시킵니다.
+                if (_dragGhost != null)
+                {
+                    _dragGhost.transform.position = currentMousePosition;
+                }
 
+                // 판매 구역 체크 로직
                 if (saleZone != null && saleZone.SalePanelRectTransform != null)
                 {
-                    Vector2 screenPos = _camera.WorldToScreenPoint(transform.position);
-                    isOverSaleZone =
-                        RectTransformUtility.RectangleContainsScreenPoint(saleZone.SalePanelRectTransform, screenPos, null);
+                    // 마우스 화면 좌표 기준 체크
+                    Vector2 screenPos = Input.mousePosition;
+                    isOverSaleZone = RectTransformUtility.RectangleContainsScreenPoint(saleZone.SalePanelRectTransform, screenPos, null);
                     saleZone.SetHighlightColor(isOverSaleZone);
                 }
                 else
@@ -122,10 +142,14 @@ public class TowerDragSale : MonoBehaviour
 
     private void OnMouseUp()
     {
-        // _isDragging 상태를 먼저 확인
+        // 손을 떼면 정보창을 끕니다.
+        if (TowerInfoDisplay.Instance != null)
+        {
+            TowerInfoDisplay.Instance.HideUI();
+        }
+
         if (_isDragging)
         {
-            // 드래그가 실제로 발생했는지(IsDrag == true) 확인
             if (IsDrag)
             {
                 if (saleZone != null)
@@ -136,53 +160,113 @@ public class TowerDragSale : MonoBehaviour
 
                 if (isOverSaleZone) // 판매 확정 시
                 {
-                    int sellPrice = 0;
-                    
-                    var tower = GetComponent<Tower>();
-                    if (tower != null)
-                    {
-                        int level = tower.Rank;
-                        sellPrice = GameDataDatabase.GetInt($"Lv{level}_tower_sell", 10);
-                    }
-                    else
-                    {
-                        var element = GetComponent<ElementController>();
-                        if (element != null)
-                        {
-                            sellPrice = GameDataDatabase.GetInt("element_sell", 0);
-                        }
-                    }
-
-                    if (selectTile != null)
-                    {
-                        _boxCollider2D.enabled = true;
-                        selectTile.tower = null;
-                        selectTile.element = null;
-                        selectTile.isElementBuild = true;
-                    }
-                    Debug.Log($"{gameObject.name} 판매됨. 가격: {sellPrice}");
-                    ResourceManager.Instance.AddCoin(sellPrice + _towerSellBonusCoin);
-                    Destroy(gameObject);
+                    SellTower();
                 }
-                else // 판매 취소 시
+                else 
                 {
-                    transform.position = initialPosition;
+                    // 판매 취소 시 모든 렌더러를 다시 킵니다.
+                    SetRenderersEnabled(true);
                 }
-            }
-            // 드래그가 아닌 단순 클릭인 경우, 이 부분에서는 아무것도 하지 않음.
-            // (TowerSelectable 스크립트가 UI를 관리하도록 설계되어 있어야 함)
-            else
-            {
-                // 단순히 타워를 클릭했을 때의 로직 (예: 타워 정보 UI)이
-                // 이 스크립트의 OnMouseUp이 아닌 다른 스크립트에서 처리되도록 해야 합니다.
-                // 만약 이 스크립트에서 처리해야 한다면 여기에 추가 로직을 넣습니다.
-                // 예를 들어, GetComponent<TowerSelectable>().ShowInfoUI(); 등을 호출할 수 있습니다.
             }
         }
+
+        // 드래그 종료 시 Ghost 삭제
+        DestroyGhost();
 
         // 상태 리셋
         _isDragging = false;
         IsDrag = false;
+    }
+
+    // 모든 렌더러의 활성 상태를 설정하는 헬퍼 함수
+    private void SetRenderersEnabled(bool isEnabled)
+    {
+        if (_allRenderers == null) return;
+        foreach (var sr in _allRenderers)
+        {
+            if (sr != null) sr.enabled = isEnabled;
+        }
+    }
+
+    // Ghost 생성 함수
+    private void CreateGhost()
+    {
+        if (_dragGhost != null) return;
+
+        // Ghost의 부모 오브젝트 생성
+        _dragGhost = new GameObject($"{gameObject.name}_GhostParent");
+        _dragGhost.transform.position = transform.position;
+        _dragGhost.transform.localScale = transform.localScale;
+        _dragGhost.transform.rotation = transform.rotation;
+
+        if (_allRenderers == null) return;
+
+        // 모든 렌더러를 순회하며 Ghost 자식으로 복제
+        foreach (SpriteRenderer originalSr in _allRenderers)
+        {
+            if (originalSr == null) continue;
+
+            // 각 부품에 해당하는 Ghost 자식 오브젝트 생성
+            GameObject ghostPart = new GameObject($"{originalSr.gameObject.name}_GhostPart");
+            ghostPart.transform.SetParent(_dragGhost.transform);
+
+            // 원래 오브젝트와의 상대적인 위치와 회전을 맞춤
+            ghostPart.transform.localPosition = originalSr.transform.localPosition;
+            ghostPart.transform.localRotation = originalSr.transform.localRotation;
+            ghostPart.transform.localScale = originalSr.transform.localScale;
+
+            // SpriteRenderer 추가 및 속성 복사
+            SpriteRenderer ghostSr = ghostPart.AddComponent<SpriteRenderer>();
+            ghostSr.sprite = originalSr.sprite;
+            ghostSr.color = new Color(originalSr.color.r, originalSr.color.g, originalSr.color.b, 0.6f); // 반투명
+            ghostSr.sortingLayerID = originalSr.sortingLayerID;
+            // 원래 순서를 유지하되, 전체적으로 UI처럼 위에 뜨게 하기 위해 큰 값을 더함
+            ghostSr.sortingOrder = originalSr.sortingOrder + 200;
+            ghostSr.flipX = originalSr.flipX;
+            ghostSr.flipY = originalSr.flipY;
+        }
+    }
+
+    // Ghost 삭제 함수
+    private void DestroyGhost()
+    {
+        if (_dragGhost != null)
+        {
+            Destroy(_dragGhost);
+            _dragGhost = null;
+        }
+    }
+
+    // 판매 로직 분리 (기존 로직 동일)
+    private void SellTower()
+    {
+        int sellPrice = 0;
+
+        var tower = GetComponent<Tower>();
+        if (tower != null)
+        {
+            int level = tower.Rank;
+            sellPrice = GameDataDatabase.GetInt($"Lv{level}_tower_sell", 10);
+        }
+        else
+        {
+            var element = GetComponent<ElementController>();
+            if (element != null)
+            {
+                sellPrice = GameDataDatabase.GetInt("element_sell", 0);
+            }
+        }
+
+        if (selectTile != null)
+        {
+            _boxCollider2D.enabled = true;
+            selectTile.tower = null;
+            selectTile.element = null;
+            selectTile.isElementBuild = true;
+        }
+        Debug.Log($"{gameObject.name} 판매됨. 가격: {sellPrice}");
+        ResourceManager.Instance.AddCoin(sellPrice + _towerSellBonusCoin);
+        Destroy(gameObject);
     }
 
     private Vector3 GetMouseWorldPosition()
@@ -197,7 +281,6 @@ public class TowerDragSale : MonoBehaviour
     {
         selectTile = tile;
 
-        // TowerSelectable에도 타일 정보 전달
         var towerSelectable = GetComponent<TowerSelectable>();
         if (towerSelectable != null)
         {
@@ -205,13 +288,9 @@ public class TowerDragSale : MonoBehaviour
         }
     }
 
-    // 새로운 신호 형식 (BookEffect, float)을 받도록 파라미터를 변경합니다.
     private void HandleBookEffectApplied(BookEffect effect, float finalValue)
     {
-        // 효과 타입이 '판매 보너스'가 아니면 아무것도 하지 않고 함수를 종료합니다.
         if (effect.EffectType != EBookEffectType.SellBonus) return;
-
-        // finalValue는 float이지만, 코인 값은 정수여야 하므로 int로 변환해줍니다.
         _towerSellBonusCoin = (int)finalValue;
     }
 }
