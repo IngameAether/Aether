@@ -23,7 +23,7 @@ public class TowerDragSale : MonoBehaviour
     private SpriteRenderer[] _allRenderers; // 내 타워의 모습을 복사하기 위함
 
     // 드래그로 인식될 최소 거리
-    private const float DRAG_THRESHOLD = 0.1f;
+    private const float DRAG_THRESHOLD = 1f;
 
     private void Awake()
     {
