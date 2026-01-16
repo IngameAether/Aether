@@ -467,9 +467,8 @@ public class Tower : MonoBehaviour
         // 발사 직전 타겟 유효성 검사
         if (currentTarget == null || !isTargetAlive(currentTarget)) return;
 
-        FireObjectBase fireObject = towerData.fireObjectPrefeb.GetComponent<FireObjectBase>();
         // 프리팹 확인
-        if (fireObject == null)
+        if (towerData.fireObjectPrefeb == null)
         {
             Debug.LogWarning($"{towerData.Name}: 발사체 프리팹이 지정되지 않았습니다.");
             return;
@@ -487,6 +486,7 @@ public class Tower : MonoBehaviour
         float excessCritMultiplier = GetExcessCritDamageMultiplier();
         buffedDamage *= excessCritMultiplier;
 
+        FireObjectBase fireObject = towerData.fireObjectPrefeb.GetComponent<FireObjectBase>();
         var fireObj = FireObjectFactory.Spawn(fireObject, firePoint, currentTarget, buffedDamage);
 
         //// 발사체 생성 및 방향 설정 (Fire Point 사용)

@@ -15,11 +15,6 @@ public class EnemyMovement : MonoBehaviour
     // 컴포넌트 참조
     private NormalEnemy normalEnemyStats;
 
-    // 상태 이상 연동을 위한 변수
-    private float speedMultiplier = 1.0f; // 이동 속도 배율 (둔화 효과용)
-    private bool isStunned = false;       // 기절 상태 여부
-    private bool isFeared = false;        // 공포 상태 여부
-
     // 이벤트
     public static event Action OnReachEndPoint;
     public static event Action OnEnemyDestroyed;
@@ -38,12 +33,6 @@ public class EnemyMovement : MonoBehaviour
 
     private void Update()
     {
-        // 기절 또는 공포 상태일 때는 모든 이동 로직을 정지
-        if (isStunned || isFeared)
-        {
-            return;
-        }
-
         // 경로 무시 플래그 값에 따라 경로 지정
         List<Vector3> targetPoints = bypassPath ? points : waypoints;
 
@@ -54,7 +43,7 @@ public class EnemyMovement : MonoBehaviour
         }
 
         // 둔화 효과가 적용된 최종 이동 속도 계산
-        float finalMoveSpeed = normalEnemyStats.moveSpeed * speedMultiplier;
+        float finalMoveSpeed = normalEnemyStats.moveSpeed;
 
         // 경로 이동 로직
         if (currentWaypointIndex < targetPoints.Count)
@@ -114,56 +103,5 @@ public class EnemyMovement : MonoBehaviour
     {
         OnEnemyDestroyed?.Invoke();
         Destroy(gameObject);
-    }
-
-    #region Public API for EnemyStatusManager
-    // --- 상태 이상 관리 시스템(EnemyStatusManager)을 위한 Public API ---
-
-    public void ChangeSpeedMultiplier(float multiplier)
-    {
-        speedMultiplier = multiplier;
-    }
-
-    public void ResetSpeedMultiplier()
-    {
-        speedMultiplier = 1.0f;
-    }
-
-    public void SetStun(bool stunned)
-    {
-        isStunned = stunned;
-    }
-
-    public void ApplyFear(Vector3 sourcePosition, float duration)
-    {
-        if (!isFeared)
-        {
-            StartCoroutine(FearCoroutine(sourcePosition, duration));
-        }
-    }
-
-    public void RemoveFear()
-    {
-        isFeared = false;
-    }
-    #endregion
-
-    private IEnumerator FearCoroutine(Vector3 sourcePosition, float duration)
-    {
-        isFeared = true;
-        Vector3 fleeDirection = (transform.position - sourcePosition).normalized;
-        fleeDirection.z = 0; // 2D 게임 축에 맞게 조정
-
-        float finalMoveSpeed = normalEnemyStats.moveSpeed * speedMultiplier;
-        float timer = 0f;
-
-        while (timer < duration && isFeared) // isFeared 플래그를 통해 외부에서 중단 가능
-        {
-            transform.Translate(fleeDirection * finalMoveSpeed * Time.deltaTime, Space.World);
-            timer += Time.deltaTime;
-            yield return null;
-        }
-
-        isFeared = false;
     }
 }
