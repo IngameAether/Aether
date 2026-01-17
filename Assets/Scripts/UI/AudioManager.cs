@@ -29,6 +29,7 @@ public enum SfxType
     L2A_Flying,
     L2A_Attack,
     L3A_Attack,
+    L3A_Prepare,
     L4A_Attack,
     L4A_Prepare,
     // 대지 공격 사운드
@@ -38,6 +39,7 @@ public enum SfxType
     L3E_Attack,
     L3E_Prepare,
     L4E_Attack,
+    L4E_Prepare,
     // 불 공격 사운드
     L1F,
     L2F_Flying,
@@ -50,17 +52,29 @@ public enum SfxType
     L2W_Flying,
     L2W_Attack,
     L3W_Attack,
+    L4W_Flying,
     L4W_Attack,
     // 3단계 공격 사운드
     L3GLA_Attack,
+    L3GLA_Prepare,
+
     L3LIG_Prepare,
     L3LIG_Attack,
+
     L3MET_Prepare,
     L3MET_Attack,
+
     L3SOL_Prepare,
+
     L3STO_Flying,
+    L3STO_Attack,
+
     L3VIT_Prepare,
     L3VIT_Attack,
+
+    L3MOO_prepare,
+
+    L3ROT_prepare,
 }
 public class AudioManager : MonoBehaviour
 {
