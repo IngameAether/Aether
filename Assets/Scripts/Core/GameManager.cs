@@ -141,6 +141,7 @@ public class GameManager : MonoBehaviour
     {
         if (amout < 0) throw new ArgumentOutOfRangeException(nameof(amout));
         currentLives += amout;
+        if (currentLives > initialLives) currentLives = initialLives;
         UpdateLivesUI();
     }
 

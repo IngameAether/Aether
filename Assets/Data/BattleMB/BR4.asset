@@ -25,16 +25,22 @@ MonoBehaviour:
     bossIndex: 
     requiredTowerCount: 0
   Effects:
-  - EffectType: 15
+  - EffectType: 19
     ValueType: 0
-    Value: 2
-    TargetElement: 2
-    TargetTowerCode: L3VIT
-    TargetStatusEffect: 0
-  - EffectType: 15
-    ValueType: 0
-    Value: 2
+    Value: 30
     TargetElement: 2
     TargetTowerCode: L3ROT
     TargetStatusEffect: 0
-  EffectValuesByStack: 0100000001000000
+  - EffectType: 19
+    ValueType: 0
+    Value: 30
+    TargetElement: 2
+    TargetTowerCode: L3ROT
+    TargetStatusEffect: 1
+  - EffectType: 19
+    ValueType: 0
+    Value: 30
+    TargetElement: 2
+    TargetTowerCode: L3ROT
+    TargetStatusEffect: 3
+  EffectValuesByStack: 010000000100000001000000

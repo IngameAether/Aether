@@ -489,6 +489,18 @@ public class Tower : MonoBehaviour
         FireObjectBase fireObject = towerData.fireObjectPrefeb.GetComponent<FireObjectBase>();
         var fireObj = FireObjectFactory.Spawn(fireObject, firePoint, currentTarget, buffedDamage);
 
+        // 상태이상 보너스 수치 계산 및 주입
+        if (fireObj != null)
+        {
+            var (effectType, _) = fireObject.GetStatusEffectInfo(); // 프리팹의 기본 타입 확인
+            if (effectType != StatusEffectType.None)
+            {
+                float potencyBonus = GetTotalStatusEffectPotencyBonus(effectType);
+                float durationBonus = GetTotalStatusEffectDurationBonus(effectType);
+                fireObj.SetStatusEffectBonus(potencyBonus, durationBonus);
+            }
+        }
+
         //// 발사체 생성 및 방향 설정 (Fire Point 사용)
         //Vector3 spawnPos = firePoint.position;
         //GameObject proj = Instantiate(towerData.freObject, spawnPos, Quaternion.identity);
@@ -577,6 +589,50 @@ public class Tower : MonoBehaviour
     // 기존 보너스 값들 접근용 public 메서드 추가
     public float GetBonusRange() => bonusRange;
     public float GetBonusEffectDuration() => bonusEffectDuration;
+    
+    /// <summary>
+    /// 해당 상태이상에 대한 총 위력 보너스(고정값)를 계산합니다.
+    /// </summary>
+    private float GetTotalStatusEffectPotencyBonus(StatusEffectType type)
+    {
+        float totalBonus = 0f;
+
+        // 1. 타워 자체 누적 보너스 (아이템/강화 등)
+        totalBonus += bonusBuildup;
+
+        if (MagicBookBuffSystem.Instance != null)
+        {
+            // 2. 마법도서 전역 고정값 보너스 (예: 출혈 +10)
+            var modifier = MagicBookBuffSystem.Instance.GetStatusEffectModifier(type);
+            totalBonus += modifier.PotencyFlat;
+
+            // 3. 타워 개수 기반 상태이상 수치 증가 (BE2: 바닥 없는 심해 - 기절 수치 +5)
+            float countBonus = MagicBookBuffSystem.Instance.GetTowerCountBasedStatusPotency(this.TowerName, type);
+            totalBonus += countBonus;
+        }
+
+        return totalBonus;
+    }
+
+    /// <summary>
+    /// 해당 상태이상에 대한 총 지속시간 보너스를 계산합니다.
+    /// </summary>
+    private float GetTotalStatusEffectDurationBonus(StatusEffectType type)
+    {
+        float totalDuration = 0f;
+
+        // 1. 타워 자체 지속시간 보너스
+        totalDuration += bonusEffectDuration;
+
+        if (MagicBookBuffSystem.Instance != null)
+        {
+            // 2. 마법도서 전역 지속시간 보너스
+            var modifier = MagicBookBuffSystem.Instance.GetStatusEffectModifier(type);
+            totalDuration += modifier.DurationBonus;
+        }
+
+        return totalDuration;
+    }
 
     #endregion
 

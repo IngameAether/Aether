@@ -100,7 +100,8 @@ public class MagicBookManager : MonoBehaviour
         }
         else // BookRequestType.Regular
         {
-            return GetRandomBookSelection(3);
+            int bonusCount = (int)MagicBookBuffSystem.Instance.GetGlobalBuffValue(EBookEffectType.IncreaseSelectableBookCount);
+            return GetRandomBookSelection(3 + bonusCount);
         }
     }
 

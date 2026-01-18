@@ -26,15 +26,15 @@ MonoBehaviour:
     bossIndex: 
     requiredTowerCount: 0
   Effects:
-  - EffectType: 28
+  - EffectType: 30
     ValueType: 1
-    Value: 10
+    Value: 30
     TargetElement: 3
     TargetTowerCode: L3MOO
     TargetStatusEffect: 0
-  - EffectType: 28
+  - EffectType: 30
     ValueType: 1
-    Value: 10
+    Value: 30
     TargetElement: 0
     TargetTowerCode: L3MET
     TargetStatusEffect: 0

@@ -14,8 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uC11C\uB9AC \uB0B4\uB9BC"
   Code: BR7
-  Description: "\uB454\uD654\uC728 70%\uB85C \uC801\uC6A9, \uC9C0\uC18D\uC2DC\uAC04
-    1\uCD08 \uC99D\uAC00"
+  Description: "\uB454\uD654\uC728 75%\uB85C \uC801\uC6A9"
   Icon: {fileID: 0}
   Rank: 1
   MaxStack: 1
@@ -25,16 +24,10 @@ MonoBehaviour:
     bossIndex: 
     requiredTowerCount: 0
   Effects:
-  - EffectType: 19
+  - EffectType: 20
     ValueType: 1
     Value: 75
     TargetElement: 1
     TargetTowerCode: 
     TargetStatusEffect: 1
-  - EffectType: 20
-    ValueType: 0
-    Value: 2
-    TargetElement: 1
-    TargetTowerCode: 
-    TargetStatusEffect: 1
-  EffectValuesByStack: 0100000001000000
+  EffectValuesByStack: 01000000

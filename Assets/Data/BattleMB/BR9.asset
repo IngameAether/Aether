@@ -14,7 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: "\uB300\uADDC\uBAA8 \uD63C\uB780"
   Code: BR9
-  Description: "\uBAA8\uB4E0 \uC801\uC758 \uAE30\uC808 \uC218\uCE58 1/2\uB85C \uAC10\uC18C"
+  Description: "\uBAA8\uB4E0 \uC801\uC758 \uAE30\uC808(stun) \uC218\uCE58 1/2\uB85C
+    \uAC10\uC18C"
   Icon: {fileID: 0}
   Rank: 1
   MaxStack: 1
@@ -29,5 +30,5 @@ MonoBehaviour:
     Value: 50
     TargetElement: 4
     TargetTowerCode: 
-    TargetStatusEffect: 2
+    TargetStatusEffect: 1
   EffectValuesByStack: 01000000

@@ -27,13 +27,13 @@ MonoBehaviour:
     bossIndex: 
     requiredTowerCount: 0
   Effects:
-  - EffectType: 26
+  - EffectType: 27
     ValueType: 1
     Value: 5
     TargetElement: 2
     TargetTowerCode: L4E
     TargetStatusEffect: 0
-  - EffectType: 27
+  - EffectType: 29
     ValueType: 1
     Value: 1
     TargetElement: 2

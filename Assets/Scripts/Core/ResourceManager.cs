@@ -156,28 +156,14 @@ public class ResourceManager : MonoBehaviour
         // 이제 파라미터로 받은 effect의 EffectType을 사용합니다.
         switch (effect.EffectType)
         {
-            case EBookEffectType.LightElementChance:
-                _lightElementChance = finalValue;
-                break;
-            case EBookEffectType.DarkElementChance:
-                _darkElementChance = finalValue;
-                break;
-            case EBookEffectType.LightElementRate:
-                _lightElementRate = finalValue;
-                _darkElementRate = 100f - finalValue;
-                break;
-            case EBookEffectType.DarkElementRate:
-                _darkElementRate = finalValue;
-                _lightElementRate = 100f - finalValue;
-                break;
             case EBookEffectType.KillAetherBonus:
                 EnemyKillBonusCoin = value;
                 break;
-            case EBookEffectType.ElementMaxUpgrade:
-                MaxElementUpgrade += value;
-                break;
             case EBookEffectType.BossRewardDouble:
                 IsBossRewardDouble = true;
+                break;
+            case EBookEffectType.SupportFund:
+                AddCoin(value);
                 break;
         }
     }

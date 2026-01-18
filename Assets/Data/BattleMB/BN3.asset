@@ -27,7 +27,7 @@ MonoBehaviour:
   Effects:
   - EffectType: 12
     ValueType: 1
-    Value: 10
+    Value: 1
     TargetElement: 3
     TargetTowerCode: 
     TargetStatusEffect: 0
