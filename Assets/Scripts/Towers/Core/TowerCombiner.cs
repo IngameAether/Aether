@@ -161,11 +161,17 @@ public class TowerCombiner : MonoBehaviour
             }
             else if (level == 3)
             {
-                bool allDifferentTower = !((item1.GetName() == item2.GetName()) &&
-                    (item1.GetName() == item3.GetName()) && item2.GetName() == item3.GetName());
+                bool allDifferentTower = (item1.GetName() != item2.GetName()) &&
+                                         (item1.GetName() != item3.GetName()) &&
+                                         (item2.GetName() != item3.GetName());
                 if (allDifferentTower)
                 {
                     CreateUpgradedTower(elementType, 4, false);
+                }
+                else
+                {
+                    Debug.LogWarning("Lv4 조합 실패! 서로 다른 3종류의 Lv3 타워가 필요합니다.");
+                    ClearSelection();
                 }
             }
             else CreateUpgradedTower(elementType, level + 1, false);
@@ -293,6 +299,18 @@ public class TowerCombiner : MonoBehaviour
     };
     private string GetTowerId(ElementType elementType, int level)
     {
+        if (level == 4)
+        {
+            return elementType switch
+            {
+                ElementType.Fire => "L4F",
+                ElementType.Water => "L4A",
+                ElementType.Earth => "L4E",
+                ElementType.Air => "L4W",
+                _ => ""
+            };
+        }
+
         string prefix;
         int randInt = 0;
         if (level == 3) randInt = Random.Range(0, 3);
