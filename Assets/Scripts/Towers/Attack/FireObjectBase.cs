@@ -30,14 +30,27 @@ public class FireObjectBase : MonoBehaviour
         aroundTime = 0;
         return aroundTime;
     }
-    
+
     //[SerializeField]
     protected Animator animator;
     protected AnimatorOverrideController animatorOverride;
 
+    // 상태이상 보너스 (타워에서 주입됨)
+    protected float _bonusEffectValue = 0f;
+    protected float _bonusEffectDuration = 0f;
+
     private void Awake()
     {
         animator = this.GetComponent<Animator>();
+    }
+
+    /// <summary>
+    /// 외부(Tower)에서 계산된 상태이상 보너스 수치를 주입받는 메서드
+    /// </summary>
+    public void SetStatusEffectBonus(float valueBonus, float durationBonus)
+    {
+        _bonusEffectValue = valueBonus;
+        _bonusEffectDuration = durationBonus;
     }
 
     public virtual void Init(Vector2 tower, Transform target, float damage)
@@ -49,14 +62,26 @@ public class FireObjectBase : MonoBehaviour
         this.targetPos = target.position;
         this.damage = damage;
 
+        // 마법도서 상태이상 데미지 버프 (화상 등)
+        if (MagicBookBuffSystem.Instance != null && statusEffect == StatusEffectType.Burn)
+        {
+            var modifier = MagicBookBuffSystem.Instance.GetStatusEffectModifier(StatusEffectType.Burn);
+            if (modifier.DamageMultiplier > 1f)
+            {
+                this.damage *= modifier.DamageMultiplier;
+            }
+        }
+
         // 지정된 애니메이션으로 바꾸기
         SetAnimationClip();
     }
 
     public (StatusEffectType type, float value) GetStatusEffectInfo()
     {
-        return (statusEffect, effctValue);
+        // 기본 수치 + 보너스 수치 반환
+        return (statusEffect, effctValue + _bonusEffectValue);
     }
+
 
     protected void PlayPrepareAnim(float speed = 1.0f, float offsetX = 0f, float offsetY = 0f)
     {
@@ -135,7 +160,7 @@ public class FireObjectBase : MonoBehaviour
                     enemy = target.parent.GetComponent<NormalEnemy>();
                     if (enemy != null)
                     {
-                        if (statusEffect != StatusEffectType.None) enemy.TakeHit(statusEffect, effctValue, damage);
+                        if (statusEffect != StatusEffectType.None) enemy.TakeHit(statusEffect, effctValue + _bonusEffectValue, damage);
                         else enemy.TakeDamage(damage);
                     }
                 }
@@ -148,7 +173,7 @@ public class FireObjectBase : MonoBehaviour
     // 공격이 완전히 끝난 뒤에 제거
     protected virtual void AfterTargetHit(float t)
     {
-        Invoke("DestroySelf", t);
+        Invoke(nameof(DestroySelf), t);
     }
     private void DestroySelf()
     {

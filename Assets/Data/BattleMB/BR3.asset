@@ -25,15 +25,15 @@ MonoBehaviour:
     bossIndex: 
     requiredTowerCount: 0
   Effects:
-  - EffectType: 11
+  - EffectType: 12
     ValueType: 1
-    Value: 20
+    Value: 25
     TargetElement: 1
     TargetTowerCode: L3LIG
     TargetStatusEffect: 0
-  - EffectType: 11
+  - EffectType: 12
     ValueType: 1
-    Value: 20
+    Value: 25
     TargetElement: 1
     TargetTowerCode: L3STO
     TargetStatusEffect: 0

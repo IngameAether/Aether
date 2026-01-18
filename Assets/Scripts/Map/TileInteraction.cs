@@ -32,24 +32,6 @@ public class TileInteraction : MonoBehaviour
         _boxCollider2D = GetComponent<BoxCollider2D>();
     }
 
-    private void OnEnable()
-    {
-        // MagicBookManager.Instance가 존재하는지 먼저 확인
-        if (MagicBookManager.Instance != null)
-        {
-            MagicBookManager.Instance.OnBookEffectApplied += HandleBookEffectApplied;
-        }
-    }
-
-    private void OnDisable()
-    {
-        // 게임 종료 시 매니저가 먼저 파괴되었을 수 있으므로 여기서도 확인합니다.
-        if (MagicBookManager.Instance != null)
-        {
-            MagicBookManager.Instance.OnBookEffectApplied -= HandleBookEffectApplied;
-        }
-    }
-
     /// <summary>
     /// InputManager에서 호출하는 클릭 처리 (OnMouseDown 대체)
     /// </summary>
@@ -129,6 +111,32 @@ public class TileInteraction : MonoBehaviour
                 Debug.LogWarning("생성된 elementObj에 ElementController 컴포넌트가 없음, 초기화 불가능");
             }
 
+            // 마법도서 효과 적용: 원소응용학 (GR1~4) - 타워 소환 시 에테르 획득
+            if (MagicBookBuffSystem.Instance != null && ResourceManager.Instance != null)
+            {
+                float bonusEther = 0f;
+                switch (assignedElementType)
+                {
+                    case ElementType.Fire:
+                        bonusEther = MagicBookBuffSystem.Instance.GetGlobalBuffValue(EBookEffectType.FireTowerSummonEther);
+                        break;
+                    case ElementType.Water:
+                        bonusEther = MagicBookBuffSystem.Instance.GetGlobalBuffValue(EBookEffectType.WaterTowerSummonEther);
+                        break;
+                    case ElementType.Air:
+                        bonusEther = MagicBookBuffSystem.Instance.GetGlobalBuffValue(EBookEffectType.AirTowerSummonEther);
+                        break;
+                    case ElementType.Earth:
+                        bonusEther = MagicBookBuffSystem.Instance.GetGlobalBuffValue(EBookEffectType.EarthTowerSummonEther);
+                        break;
+                }
+
+                if (bonusEther > 0)
+                {
+                    ResourceManager.Instance.AddCoin((int)bonusEther);
+                }
+            }
+
             Debug.Log($"소환된 원소: {selectedPrefab.name} (Type: {selectedType})");
             _boxCollider2D.enabled = false;
             tile.isElementBuild = false;
@@ -169,14 +177,5 @@ public class TileInteraction : MonoBehaviour
         {
             targetCollider.enabled = true;
         }
-    }
-
-    private void HandleBookEffectApplied(BookEffect effect, float finalValue)
-    {
-        // 효과 타입이 '타워 즉시 설치'가 아니면 아무것도 하지 않고 함수를 종료합니다.
-        if (effect.EffectType != EBookEffectType.DirectTowerPlace) return;
-
-        // finalValue가 1이면 true, 아니면 false로 설정합니다.
-        _isDirectPlaceTower = (finalValue == 1);
     }
 }

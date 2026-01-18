@@ -20,6 +20,9 @@ public class MagicBookBuffSystem : MonoBehaviour
 
     private readonly Dictionary<string, CachedTowerBuffs> _towerBuffCache = new();
     private bool _cacheInvalidated = true;
+    
+    // 시너지 효과 값 (달빛검 등)
+    private float _synergyDamageBonusValue = 0f;
 
     private void Awake()
     {
@@ -40,6 +43,11 @@ public class MagicBookBuffSystem : MonoBehaviour
             case EBookEffectType.IncreaseAttackDuration:
             case EBookEffectType.IncreaseRange:
             case EBookEffectType.IncreaseCritChance:
+            case EBookEffectType.IncreaseSelectableBookCount:
+            case EBookEffectType.FireTowerSummonEther:
+            case EBookEffectType.WaterTowerSummonEther:
+            case EBookEffectType.AirTowerSummonEther:
+            case EBookEffectType.EarthTowerSummonEther:
                 ApplyGlobalBuff(effect.EffectType, value);
                 break;
 
@@ -59,7 +67,13 @@ public class MagicBookBuffSystem : MonoBehaviour
             case EBookEffectType.IncreaseDurationPerTowerCount:
             case EBookEffectType.IncreaseAttackSpeedPerTowerCount:
             case EBookEffectType.IncreaseCritChancePerTowerCount:
+            case EBookEffectType.IncreaseStatusEffectPotencyPerTowerCount:
                 ApplyTowerCountBuff(effect, value);
+                break;
+
+            case EBookEffectType.SynergyDamageBoost:
+                _synergyDamageBonusValue = value;
+                ApplyUniqueEffect(effect.EffectType);
                 break;
 
             default:
@@ -121,7 +135,7 @@ public class MagicBookBuffSystem : MonoBehaviour
         {
             if (buff.EffectType == effectType)
             {
-                int towerCount = GetTowerCount(buff.CountTargetTowerCode);
+                int towerCount = GetTowerCount(buff.CountTargetTowerCode, buff.CountTargetElement);
                 totalBonus += buff.ValuePerTower * towerCount;
             }
         }
@@ -130,9 +144,49 @@ public class MagicBookBuffSystem : MonoBehaviour
     }
 
     /// <summary>
+    /// 타워 개수 기반 상태이상 수치 버프 계산
+    /// </summary>
+    public float GetTowerCountBasedStatusPotency(string towerCode, StatusEffectType statusType)
+    {
+        if (!_towerCountBuffs.TryGetValue(towerCode, out var buffs)) return 0f;
+
+        float totalBonus = 0f;
+        foreach (var buff in buffs)
+        {
+            if (buff.EffectType == EBookEffectType.IncreaseStatusEffectPotencyPerTowerCount &&
+                buff.TargetStatusEffect == statusType)
+            {
+                int towerCount = GetTowerCount(buff.CountTargetTowerCode, buff.CountTargetElement);
+                totalBonus += buff.ValuePerTower * towerCount;
+            }
+        }
+        return totalBonus;
+    }
+
+    /// <summary>
     /// 특정 효과가 활성화되어 있는지 확인
     /// </summary>
     public bool HasUniqueEffect(EBookEffectType effectType) => _uniqueEffects.Contains(effectType);
+
+    /// <summary>
+    /// 전역 버프 값 조회 (예: 선택 가능한 마법도서 수)
+    /// </summary>
+    public float GetGlobalBuffValue(EBookEffectType effectType)
+    {
+        return _globalBuffs.GetValueOrDefault(effectType, 0f);
+    }
+
+    /// <summary>
+    /// 상태이상 타입별 수정치 조회
+    /// </summary>
+    public StatusEffectModifier GetStatusEffectModifier(StatusEffectType type)
+    {
+        if (_statusEffectModifiers.TryGetValue(type, out var modifier))
+        {
+            return modifier;
+        }
+        return new StatusEffectModifier(); // 기본값 반환
+    }
 
     #endregion
 
@@ -154,9 +208,13 @@ public class MagicBookBuffSystem : MonoBehaviour
             towerBuffs[effectType] += value;
     }
 
+    // 이미 수정된 ApplyTowerCountBuff는 건너뜀
+
     private void ApplyTowerCountBuff(BookEffect effect, float value)
     {
         string targetTower = effect.TargetTowerCode;
+        if (string.IsNullOrEmpty(targetTower) && effect.TargetElement == ElementType.None) return;
+
         if (string.IsNullOrEmpty(targetTower)) return;
 
         if (!_towerCountBuffs.ContainsKey(targetTower))
@@ -166,7 +224,9 @@ public class MagicBookBuffSystem : MonoBehaviour
         {
             EffectType = effect.EffectType,
             CountTargetTowerCode = effect.TargetTowerCode,
-            ValuePerTower = value
+            CountTargetElement = effect.TargetElement,
+            ValuePerTower = value,
+            TargetStatusEffect = effect.TargetStatusEffect
         });
     }
 
@@ -184,13 +244,22 @@ public class MagicBookBuffSystem : MonoBehaviour
                 modifier.DamageMultiplier += value / 100f; // % 증가를 배수로 변환
                 break;
             case EBookEffectType.IncreaseStatusEffectPotency:
-                modifier.PotencyMultiplier += value / 100f; // % 증가를 배수로 변환
+                if (effect.ValueType == 0) // Flat (고정값 합산)
+                {
+                    modifier.PotencyFlat += value;
+                }
+                else // Percentage (비율 곱연산/합연산)
+                {
+                    modifier.PotencyMultiplier += value / 100f;
+                }
                 break;
             case EBookEffectType.IncreaseStatusEffectDuration:
                 modifier.DurationBonus += value; // 초 단위로 직접 추가
                 break;
             case EBookEffectType.ModifyStatusEffectValue:
-                modifier.PotencyMultiplier += value / 100f; // % 증가를 배수로 변환
+                 // 기절 수치 감소 등 (보통 %로 감소)
+                 if (effect.ValueType == 0) modifier.PotencyFlat -= value;
+                 else modifier.PotencyMultiplier -= value / 100f;
                 break;
         }
     }
@@ -279,12 +348,31 @@ public class MagicBookBuffSystem : MonoBehaviour
         }
     }
 
-
-    private int GetTowerCount(string towerCode)
+    public int GetTowerCount(string towerCode, ElementType element = ElementType.None)
     {
-        // 바빠서 그냥 Find 사용함 나중에 타워 매니저 만들어야할듯
         Tower[] towers = FindObjectsOfType<Tower>();
-        return towers.Length - 1;
+
+        if (element != ElementType.None)
+        {
+            int count = 0;
+            foreach (var t in towers)
+            {
+                if (t.towerData != null && t.towerData.ElementType == element) count++;
+            }
+            return count;
+        }
+
+        if (!string.IsNullOrEmpty(towerCode))
+        {
+            int count = 0;
+            foreach (var t in towers)
+            {
+                if (t.TowerName == towerCode) count++;
+            }
+            return count;
+        }
+
+        return towers.Length;
     }
 
     public void InvalidateCache()
@@ -312,7 +400,6 @@ public class MagicBookBuffSystem : MonoBehaviour
             Range = CalculateFinalRange(baseRange, buffData),
             CritChance = CalculateFinalCritChance(towerCode, baseCrit, buffData),
             ExcessCritDamageMultiplier = CalculateExcessCritDamageMultiplier(towerCode, baseCrit, buffData),
-            // StatusEffect = CalculateBuffedStatusEffect(tower, buffData)
         };
 
         return finalStats;
@@ -329,7 +416,37 @@ public class MagicBookBuffSystem : MonoBehaviour
             finalDamage *= (1f + dynamicBonus / 100f);
         }
 
+        // 시너지 효과 (달빛검 등)
+        if (buffData.HasUniqueEffects.Contains(EBookEffectType.SynergyDamageBoost))
+        {
+            float synergyBonus = GetSynergyBonus(towerCode);
+            if (synergyBonus > 0)
+            {
+                finalDamage *= (1f + synergyBonus);
+            }
+        }
+
         return finalDamage;
+    }
+
+    private float GetSynergyBonus(string towerCode)
+    {
+        float bonus = 0f;
+        float valuePercent = _synergyDamageBonusValue / 100f;
+
+        // 달빛검 (BR5) 로직: 달빛타워(L3MOO) <-> 강철타워(L3MET)
+        if (towerCode == "L3MOO")
+        {
+            int count = GetTowerCount("L3MET");
+            bonus += count * valuePercent;
+        }
+        else if (towerCode == "L3MET")
+        {
+            int count = GetTowerCount("L3MOO");
+            bonus += count * valuePercent;
+        }
+
+        return bonus;
     }
 
     private float CalculateFinalAttackSpeed(string towerCode, float baseAttackSpeed, TowerBuffData buffData)
@@ -414,7 +531,8 @@ public struct TowerBuffData
 public class StatusEffectModifier
 {
     public float DamageMultiplier = 1f;     // Burn, Rot, Bleed용 데미지 배수
-    public float PotencyMultiplier = 1f;    // Slow, Stun 등의 효과 수치 배수
+    public float PotencyMultiplier = 1f;    // Slow, Stun 등의 효과 수치 배수 (기본 1f + a)
+    public float PotencyFlat = 0f;          // 효과 수치 고정값 추가 (기본 0f)
     public float DurationBonus = 0f;        // 지속시간 추가
 }
 
@@ -423,7 +541,9 @@ public class TowerCountBuff
 {
     public EBookEffectType EffectType;
     public string CountTargetTowerCode; // 개수를 세는 대상 타워
+    public ElementType CountTargetElement; // 개수를 세는 대상 속성 (None이 아니면 우선 사용)
     public float ValuePerTower; // 타워 하나당 증가값
+    public StatusEffectType TargetStatusEffect; // 상태이상 타겟
 }
 
 internal struct CachedTowerBuffs

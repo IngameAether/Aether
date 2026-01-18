@@ -51,6 +51,7 @@ public class WaveManager : MonoBehaviour
     private bool _isWaitingForChoice = false;
     private bool _waitingForEnemies = false;
     private bool _isExtraLife = false;
+    private int _extraLifeAmount = 0;
     private bool _initialChoiceMade = false;
 
     public int CurrentWaveLevel => currentWaveLevel;
@@ -234,7 +235,7 @@ public class WaveManager : MonoBehaviour
 
             if (_isExtraLife)
             {
-                GameManager.Instance.AddLife();
+                GameManager.Instance.AddLife(_extraLifeAmount);
             }
 
             //if (waveIndex == bossWaveIndex)
@@ -382,7 +383,8 @@ public class WaveManager : MonoBehaviour
                 _waveEndBonusCoin = (int)finalValue;
                 break;
             case EBookEffectType.ExtraLife:
-                GameManager.Instance.AddLife((int)finalValue);
+                _isExtraLife = true;
+                _extraLifeAmount = (int)finalValue;
                 break;
             case EBookEffectType.FullLife:
                 GameManager.Instance.SetMaxLives((int)finalValue);

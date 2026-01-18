@@ -24,9 +24,9 @@ MonoBehaviour:
     bossIndex: 
     requiredTowerCount: 0
   Effects:
-  - EffectType: 11
+  - EffectType: 3
     ValueType: 0
-    Value: 20
+    Value: 3
     TargetElement: 4
     TargetTowerCode: 
     TargetStatusEffect: 0

@@ -25,16 +25,16 @@ MonoBehaviour:
     bossIndex: 
     requiredTowerCount: 0
   Effects:
-  - EffectType: 12
+  - EffectType: 13
     ValueType: 0
-    Value: 1
+    Value: 0.25
     TargetElement: 0
     TargetTowerCode: L3SOL
     TargetStatusEffect: 0
-  - EffectType: 16
+  - EffectType: 13
     ValueType: 0
-    Value: 999
-    TargetElement: 0
-    TargetTowerCode: L3SOL
+    Value: 0.25
+    TargetElement: 2
+    TargetTowerCode: L3VIT
     TargetStatusEffect: 0
   EffectValuesByStack: 01000000
